@@ -1,0 +1,87 @@
+﻿<Window x:Class="TourPlanner.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TourPlanner"
+        mc:Ignorable="d"
+        Title="Tour Planner" Height="450" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.3*"/>
+            <RowDefinition Height="0.3*"/>
+            <RowDefinition Height="0.3*"/>
+            <RowDefinition Height="3*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button x:Name="FileButton" Grid.Column="0" Content="File" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
+            <Button x:Name="EditButton" Grid.Column="1" Content="Edit" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
+            <Button x:Name="OptionsButton" Grid.Column="2" Content="Options" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
+            <Button x:Name="HelpButton" Grid.Column="4" Content="Help" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
+        </Grid>
+        
+        <Grid Grid.Row="1">
+            <TextBox x:Name="SearchTextBox" Text="Search" Foreground="Gray" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="25" Background="White" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
+            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Text="&#xE721;" Margin="10"/>
+        </Grid>
+
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="White">
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Tour" FontSize="16"/>
+
+            </Border>
+            <Button x:Name="AddTourButton" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen">
+                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16"/>
+            </Button>
+
+            <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="LightGray">
+                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
+            </Button>
+            
+            <Button x:Name="EditTourButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Background="White">
+                <TextBlock Text="&#xE10C;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="3*"/>
+            </Grid.ColumnDefinitions>
+
+
+            <ListView x:Name="TourListView" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" SizeChanged="TourListView_SizeChanged">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Name"/>
+                        <GridViewColumn Header="Description"/>
+                        <GridViewColumn Header="From"/>
+                        <GridViewColumn Header="To"/>
+                        <GridViewColumn Header="Distance"/>
+                        <GridViewColumn Header="Route Information"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+        </Grid>
+    </Grid>
+</Window>
