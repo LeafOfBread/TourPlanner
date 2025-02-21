@@ -50,8 +50,8 @@
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Tour" FontSize="16"/>
 
             </Border>
-            <Button x:Name="AddTourButton" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen">
-                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16"/>
+            <Button x:Name="AddTourButton" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen" Click="AddTour">
+                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16" />
             </Button>
 
             <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="LightGray">
@@ -69,6 +69,9 @@
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
 
+            <ListBox x:Name="TourList" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" 
+         ItemsSource="{Binding Tours}" DisplayMemberPath="name">
+            </ListBox>
 
             <ListView x:Name="TourListView" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" SizeChanged="TourListView_SizeChanged">
                 <ListView.View>
@@ -78,7 +81,7 @@
                         <GridViewColumn Header="From"/>
                         <GridViewColumn Header="To"/>
                         <GridViewColumn Header="Distance"/>
-                        <GridViewColumn Header="Route Information"/>
+                        <GridViewColumn Header="Duration"/>
                     </GridView>
                 </ListView.View>
             </ListView>
