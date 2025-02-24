@@ -23,14 +23,11 @@ namespace TourPlanner
         public MainWindow()
         {
             InitializeComponent();
-
-            // Use an appropriate way to instantiate the TourDbContext, either with DI or directly.
             var options = new DbContextOptionsBuilder<TourDbContext>()
                           .UseNpgsql("Host=localhost;Port=5432;Database=TourDB;Username=postgres;Password=fhtw")
                           .Options;
             var dbContext = new TourDbContext(options);
 
-            // Pass the dbContext to TourService and then to TourViewModel
             var tourService = new TourService(dbContext);
             DataContext = new TourViewModel(new TourService(dbContext));
         }

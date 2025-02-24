@@ -35,7 +35,7 @@
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Text="&#xE721;" Margin="10"/>
         </Grid>
 
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" HorizontalAlignment="Right" Width="800">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"/>
@@ -76,7 +76,7 @@
             <ListView x:Name="TourListView" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" SizeChanged="TourListView_SizeChanged">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Name"/>
+                        <GridViewColumn Header="Name" />
                         <GridViewColumn Header="Description"/>
                         <GridViewColumn Header="From"/>
                         <GridViewColumn Header="To"/>
