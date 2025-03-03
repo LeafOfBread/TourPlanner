@@ -74,6 +74,18 @@ namespace TourPlanner
         private void AddTour(object sender, RoutedEventArgs e)
         {
         }
+
+        private void DisplayTourDetails(object sender, RoutedEventArgs e)
+        {
+            if (TourList.SelectedItem != null)
+            {
+                var selectedTour = TourList.SelectedItem as Tours;
+                if (selectedTour != null)
+                {
+                    TourListView.ItemsSource = new List<Tours> { selectedTour };
+                }
+            }
+        }
     }
 
     public class RelayCommand : ICommand

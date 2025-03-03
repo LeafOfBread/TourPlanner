@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:TourPlanner"
         mc:Ignorable="d"
         Title="Tour Planner" Height="450" Width="800">
     <Grid>
@@ -23,13 +22,13 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            
+
             <Button x:Name="FileButton" Grid.Column="0" Content="File" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
             <Button x:Name="EditButton" Grid.Column="1" Content="Edit" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
             <Button x:Name="OptionsButton" Grid.Column="2" Content="Options" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
             <Button x:Name="HelpButton" Grid.Column="4" Content="Help" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
         </Grid>
-        
+
         <Grid Grid.Row="1">
             <TextBox x:Name="SearchTextBox" Text="Search" Foreground="Gray" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="25" Background="White" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Text="&#xE721;" Margin="10"/>
@@ -57,7 +56,7 @@
             <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="LightGray">
                 <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
-            
+
             <Button x:Name="EditTourButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Background="White">
                 <TextBlock Text="&#xE10C;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
@@ -70,18 +69,18 @@
             </Grid.ColumnDefinitions>
 
             <ListBox x:Name="TourList" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" 
-         ItemsSource="{Binding Tours}" DisplayMemberPath="name">
+         ItemsSource="{Binding AllTours}" DisplayMemberPath="name" SelectedItem="{Binding SelectedTour}" GotFocus="DisplayTourDetails">
             </ListBox>
 
-            <ListView x:Name="TourListView" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" SizeChanged="TourListView_SizeChanged">
+            <ListView x:Name="TourListView" ItemsSource="{Binding TourDetails}" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" SizeChanged="TourListView_SizeChanged">
                 <ListView.View>
                     <GridView>
-                        <GridViewColumn Header="Name" />
-                        <GridViewColumn Header="Description"/>
-                        <GridViewColumn Header="From"/>
-                        <GridViewColumn Header="To"/>
-                        <GridViewColumn Header="Distance"/>
-                        <GridViewColumn Header="Duration"/>
+                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}"/>
+                        <GridViewColumn Header="Description" DisplayMemberBinding="{Binding description}"/>
+                        <GridViewColumn Header="From" DisplayMemberBinding="{Binding from}"/>
+                        <GridViewColumn Header="To" DisplayMemberBinding="{Binding to}"/>
+                        <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding distance}"/>
+                        <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding duration}"/>
                     </GridView>
                 </ListView.View>
             </ListView>

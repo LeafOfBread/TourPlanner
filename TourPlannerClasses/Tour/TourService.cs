@@ -22,5 +22,6 @@ namespace TourPlannerClasses.Tour
         {
             return await _context.Tours.ToListAsync();
         }
+        
     }
 }
