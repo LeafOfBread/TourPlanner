@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TourPlannerClasses.DB;
+using TourPlannerClasses.Models;
 
 
 namespace TourPlannerClasses.Tour

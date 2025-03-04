@@ -11,7 +11,10 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using TourPlannerClasses;
 using TourPlannerClasses.DB;
+using TourPlannerClasses.Models;
 using TourPlannerClasses.Tour;
+using TourPlanner.ViewModels;
+using TourPlanner.Views;
 
 namespace TourPlanner
 {
@@ -32,60 +35,30 @@ namespace TourPlanner
             DataContext = new TourViewModel(new TourService(dbContext));
         }
 
+
         private void SearchBox_GotFocus(object sender, RoutedEventArgs e)
         {
-            SearchTextBox.Text = "";
-            SearchTextBox.Foreground = Brushes.Black;
+            SetSearchBoxPlaceholder(string.Empty, Brushes.Black);
         }
 
         private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(SearchTextBox.Text))
             {
-                SearchTextBox.Text = "Search";
-                SearchTextBox.Foreground = Brushes.Gray;
+                SetSearchBoxPlaceholder("Search", Brushes.Gray);
             }
         }
 
-        private void AdjustColumnWidths()
+        private void SetSearchBoxPlaceholder(string text, Brush color)
         {
-            if (TourListView.View is GridView gridView)
-            {
-                double totalWidth = TourListView.ActualWidth - SystemParameters.VerticalScrollBarWidth;
-                int columnCount = gridView.Columns.Count;
-
-                if (columnCount > 0)
-                {
-                    double columnWidth = totalWidth / columnCount; // Equal width for all
-                    foreach (var column in gridView.Columns)
-                    {
-                        column.Width = columnWidth;
-                    }
-                }
-            }
-        }
-
-        // Call this method when the window resizes
-        private void TourListView_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            AdjustColumnWidths();
-        }
+            SearchTextBox.Text = text;
+            SearchTextBox.Foreground = color;
+        }        
 
         private void AddTour(object sender, RoutedEventArgs e)
         {
         }
 
-        private void DisplayTourDetails(object sender, RoutedEventArgs e)
-        {
-            if (TourList.SelectedItem != null)
-            {
-                var selectedTour = TourList.SelectedItem as Tours;
-                if (selectedTour != null)
-                {
-                    TourListView.ItemsSource = new List<Tours> { selectedTour };
-                }
-            }
-        }
     }
 
     public class RelayCommand : ICommand
@@ -100,7 +73,6 @@ namespace TourPlanner
         }
 
         public bool CanExecute(object parameter) => _canExecute();
-
         public void Execute(object parameter) => _execute();
 
         public event EventHandler CanExecuteChanged

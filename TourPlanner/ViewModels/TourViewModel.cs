@@ -8,9 +8,10 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using TourPlannerClasses.Models;
 using TourPlannerClasses.Tour;
 
-namespace TourPlanner
+namespace TourPlanner.ViewModels
 {
     public class TourViewModel : INotifyPropertyChanged
     {

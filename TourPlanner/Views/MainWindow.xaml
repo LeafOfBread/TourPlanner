@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:views="clr-namespace:TourPlanner.Views"
         mc:Ignorable="d"
         Title="Tour Planner" Height="450" Width="800">
     <Grid>
@@ -68,22 +69,11 @@
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
 
-            <ListBox x:Name="TourList" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" 
-         ItemsSource="{Binding AllTours}" DisplayMemberPath="name" SelectedItem="{Binding SelectedTour}" GotFocus="DisplayTourDetails">
-            </ListBox>
-
-            <ListView x:Name="TourListView" ItemsSource="{Binding TourDetails}" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="LightGray" SizeChanged="TourListView_SizeChanged">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}"/>
-                        <GridViewColumn Header="Description" DisplayMemberBinding="{Binding description}"/>
-                        <GridViewColumn Header="From" DisplayMemberBinding="{Binding from}"/>
-                        <GridViewColumn Header="To" DisplayMemberBinding="{Binding to}"/>
-                        <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding distance}"/>
-                        <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding duration}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <!--ListBox that displays all available tours by name-->
+            <views:TourListBox Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
+            
+            <!--ListView that displays all the selected tour's information-->
+            <views:TourListView Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
         </Grid>
     </Grid>
 </Window>

@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Windows.Controls;
 using System.Windows.Markup;
 
-namespace TourPlannerClasses.Tour
+namespace TourPlannerClasses.Models
 {
     public class TourList
     {

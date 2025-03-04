@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using System.Windows.Controls;
-using TourPlannerClasses.Tour;
+using TourPlannerClasses.Models;
 
 namespace TourPlannerClasses.DB
 {
