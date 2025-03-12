@@ -9,12 +9,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TourPlannerClasses.Models;
+using TourPlannerClasses.Services;
 using TourPlannerClasses.Tour;
 
 namespace TourPlanner.ViewModels
 {
     public class TourViewModel : INotifyPropertyChanged
     {
+        //tour fields
         private readonly TourService _tourService;
         private ObservableCollection<Tours> _allTours;
         private Tours _selectedTour;
@@ -54,17 +56,70 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        public TourViewModel(TourService tourService)
+        //tourlog fields
+        private readonly TourLogService _tourlogService;
+        private ObservableCollection<Tourlog> _allTourLogs;
+        private Tourlog _selectedTourLog;
+        private ObservableCollection<Tourlog> _tourlogDetails;
+
+        public ObservableCollection<Tourlog> TourLogDetails
         {
-            _tourService = tourService;
-            TourDetails = new ObservableCollection<Tours>();
-            LoadTours();
+            get => _tourlogDetails;
+            set
+            {
+                _allTourLogs = value;
+                OnPropertyChanged(nameof(AllTourLogs));
+            }
         }
 
-        private async void LoadTours()
+        public ObservableCollection<Tourlog> AllTourLogs
+        {
+            get => _allTourLogs;
+            set
+            {
+                _allTourLogs = value;
+                OnPropertyChanged(nameof(AllTourLogs));
+            }
+        }
+
+        public Tourlog SelectedTourLog
+        {
+            get => _selectedTourLog;
+            set
+            {
+                if (_selectedTourLog != value)
+                {
+                    _selectedTourLog = value;
+                    OnPropertyChanged(nameof(SelectedTour));
+                    UpdateTourLogDetails();
+                }
+            }
+        }
+
+        public TourViewModel(TourService tourService, TourLogService tourlogService)
+        {
+            _tourService = tourService;
+            _tourlogService = tourlogService;
+            TourDetails = new ObservableCollection<Tours>();
+            LoadDataAsync();
+        }
+
+        private async Task LoadDataAsync()
+        {
+            await LoadTourLogs();
+            await LoadTours();
+        }
+
+        private async Task LoadTours()
         {
             var tours = await _tourService.GetAllTours();
             AllTours = new ObservableCollection<Tours>(tours);
+        }
+
+        private async Task LoadTourLogs()
+        {
+            var tourlogs = await _tourlogService.GetTourlogsAsync();
+            AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
         }
 
         public void UpdateTourDetails()
@@ -75,6 +130,17 @@ namespace TourPlanner.ViewModels
                 return;
             }
             TourDetails.Clear();
+            TourDetails.Add(SelectedTour);
+        }
+
+        public void UpdateTourLogDetails()
+        {
+            if (SelectedTourLog == null)
+            {
+                TourLogDetails.Clear();
+                return;
+            }
+            TourLogDetails.Clear();
             TourDetails.Add(SelectedTour);
         }
 

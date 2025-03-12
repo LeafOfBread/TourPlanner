@@ -1,5 +1,6 @@
 
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Controls;
 using System.Windows.Markup;
@@ -14,6 +15,7 @@ namespace TourPlannerClasses.Models
 
     public class Tours
     {
+        [Key]   //primary key
         public int id { get; set; }
         public string name { get; set; }
         public string description { get; set; }
@@ -22,6 +24,8 @@ namespace TourPlannerClasses.Models
         public string imagePath { get; set; }
         public TimeSpan duration { get; set; }
         public double distance { get; set; }
+
+        public virtual ICollection<Tourlog> Tourlogs { get; set; } = new List<Tourlog>();
 
         public Tours() { }
 

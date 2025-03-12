@@ -15,6 +15,7 @@ using TourPlannerClasses.Models;
 using TourPlannerClasses.Tour;
 using TourPlanner.ViewModels;
 using TourPlanner.Views;
+using TourPlannerClasses.Services;
 
 namespace TourPlanner
 {
@@ -32,7 +33,9 @@ namespace TourPlanner
             var dbContext = new TourDbContext(options);
 
             var tourService = new TourService(dbContext);
-            DataContext = new TourViewModel(new TourService(dbContext));
+            var tourlogService = new TourLogService(dbContext);
+
+            DataContext = new TourViewModel(new TourService(dbContext), new TourLogService(dbContext));
         }
 
 
