@@ -11,8 +11,8 @@
                  Background="LightGray" 
                  ItemsSource="{Binding AllTours}" 
                  DisplayMemberPath="name" 
-                 SelectedItem="{Binding SelectedTour}" 
-                 GotFocus="DisplayTourDetails">
+                 GotFocus="DisplayTourDetails"
+                 SelectedItem="{Binding SelectedTour}">
         </ListBox>
     </Grid>
 </UserControl>

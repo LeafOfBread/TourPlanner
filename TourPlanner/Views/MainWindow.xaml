@@ -35,14 +35,11 @@
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Text="&#xE721;" Margin="10"/>
         </Grid>
 
-        <Grid Grid.Row="2" HorizontalAlignment="Right" Width="800">
+        <Grid Grid.Row="2" HorizontalAlignment="Stretch">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="0.5*"/>
-                <ColumnDefinition Width="0.5*"/>
-                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
 
@@ -65,15 +62,16 @@
 
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="51*"/>
+                <ColumnDefinition Width="149*"/>
+                <ColumnDefinition Width="600*"/>
             </Grid.ColumnDefinitions>
 
             <!--ListBox that displays all available tours by name-->
-            <views:TourListBox Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
-            
+            <views:TourListBox Grid.Column="0" SelectedTour="{Binding SelectedTour, Mode=TwoWay}" Grid.ColumnSpan="2"/>
+
             <!--ListView that displays all the selected tour's information-->
-            <views:TourListView Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
+            <views:TourListView Grid.Column="2" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
         </Grid>
     </Grid>
 </Window>

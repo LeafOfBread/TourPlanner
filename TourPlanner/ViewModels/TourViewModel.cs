@@ -125,10 +125,8 @@ namespace TourPlanner.ViewModels
         public void UpdateTourDetails()
         {
             if (SelectedTour == null)
-            {
-                TourDetails.Clear();
                 return;
-            }
+
             TourDetails.Clear();
             TourDetails.Add(SelectedTour);
         }
@@ -141,7 +139,7 @@ namespace TourPlanner.ViewModels
                 return;
             }
             TourLogDetails.Clear();
-            TourDetails.Add(SelectedTour);
+            TourLogDetails.Add(SelectedTourLog);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

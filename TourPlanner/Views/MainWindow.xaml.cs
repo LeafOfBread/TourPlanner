@@ -16,6 +16,7 @@ using TourPlannerClasses.Tour;
 using TourPlanner.ViewModels;
 using TourPlanner.Views;
 using TourPlannerClasses.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace TourPlanner
 {
@@ -24,20 +25,16 @@ namespace TourPlanner
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(TourService tourService, TourLogService tourlogService)
         {
             InitializeComponent();
-            var options = new DbContextOptionsBuilder<TourDbContext>()
-                          .UseNpgsql("Host=localhost;Port=5432;Database=TourDB;Username=postgres;Password=Passwort2802!")
-                          .Options;
-            var dbContext = new TourDbContext(options);
-
-            var tourService = new TourService(dbContext);
-            var tourlogService = new TourLogService(dbContext);
-
-            DataContext = new TourViewModel(new TourService(dbContext), new TourLogService(dbContext));
+            DataContext = new TourViewModel(tourService, tourlogService);
         }
 
+        public MainWindow() : this(App.ServiceProvider.GetRequiredService<TourService>(),
+                                   App.ServiceProvider.GetRequiredService<TourLogService>())
+        {
+        }
 
         private void SearchBox_GotFocus(object sender, RoutedEventArgs e)
         {
