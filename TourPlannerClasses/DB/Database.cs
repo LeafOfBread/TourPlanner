@@ -43,11 +43,33 @@ namespace TourPlannerClasses.DB
 
     public class JsonReader
     {
+        private static readonly string ConfigFilePath = GetConfigFilePath();
         public string GetConnectionString()
         {
-            string json = File.ReadAllText("dbconfig.json");
+            string json = File.ReadAllText(ConfigFilePath);
             var jsonObj = JObject.Parse(json);
             return jsonObj["ConnectionString"]?.ToString();
+        }
+
+        private static string GetConfigFilePath()
+        {
+            string basePath = AppDomain.CurrentDomain.BaseDirectory;
+            string configFileName = "dbconfig.json";
+
+            string[] possiblePaths =
+            {
+                Path.Combine(basePath, configFileName),
+                Path.Combine(basePath, "..", "..", "..", "..", "TourPlannerClasses", "DB", configFileName)
+            };
+
+            foreach (string path in possiblePaths)
+            {
+                if (File.Exists(path))
+                {
+                    return Path.GetFullPath(path);
+                }
+            }
+            throw new FileNotFoundException("Could not find dbconfig.json in expected locations.", ConfigFilePath);
         }
         public JsonReader() { }
     }
