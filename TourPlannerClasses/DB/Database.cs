@@ -30,7 +30,7 @@ namespace TourPlannerClasses.DB
         public TourDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<TourDbContext>();
-            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=TourDB;Username=postgres;Password=fhtw");
+            optionsBuilder.UseNpgsql("Host=localhost;Port=5432;Database=TourDB;Username=postgres;Password=Passwort2802!");
 
             return new TourDbContext(optionsBuilder.Options);
         }

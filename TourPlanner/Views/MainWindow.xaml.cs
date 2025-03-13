@@ -28,7 +28,7 @@ namespace TourPlanner
         {
             InitializeComponent();
             var options = new DbContextOptionsBuilder<TourDbContext>()
-                          .UseNpgsql("Host=localhost;Port=5432;Database=TourDB;Username=postgres;Password=fhtw")
+                          .UseNpgsql("Host=localhost;Port=5432;Database=TourDB;Username=postgres;Password=Passwort2802!")
                           .Options;
             var dbContext = new TourDbContext(options);
 
