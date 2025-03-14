@@ -62,16 +62,24 @@
 
         <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="51*"/>
-                <ColumnDefinition Width="149*"/>
-                <ColumnDefinition Width="600*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
 
-            <!--ListBox that displays all available tours by name-->
-            <views:TourListBox Grid.Column="0" SelectedTour="{Binding SelectedTour, Mode=TwoWay}" Grid.ColumnSpan="2"/>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-            <!--ListView that displays all the selected tour's information-->
-            <views:TourListView Grid.Column="2" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
+                <!-- TourListView now in Grid.Row 0 -->
+                <views:TourListView Grid.Row="0" Grid.Column="1" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
+                <!-- New view for more details in Grid.Row 1 -->
+                <views:TourLogsView Grid.Row="1" Grid.Column="1" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
+            </Grid>
+
+            <!-- TourListBox remains in Grid.Column 0 -->
+            <views:TourListBox Grid.RowSpan="2" Grid.Column="0" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
         </Grid>
     </Grid>
 </Window>

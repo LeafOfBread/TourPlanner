@@ -50,8 +50,9 @@ namespace TourPlanner.ViewModels
                 if (_selectedTour != value)
                 {
                     _selectedTour = value;
-                    OnPropertyChanged(nameof(SelectedTour));
+                    OnPropertyChanged(nameof(SelectedTour));    //if selected tour changes, call updatetourdetails and updatetourlogs
                     UpdateTourDetails();
+                    UpdateTourLogDetails();
                 }
             }
         }
@@ -59,7 +60,6 @@ namespace TourPlanner.ViewModels
         //tourlog fields
         private readonly TourLogService _tourlogService;
         private ObservableCollection<Tourlog> _allTourLogs;
-        private Tourlog _selectedTourLog;
         private ObservableCollection<Tourlog> _tourlogDetails;
 
         public ObservableCollection<Tourlog> TourLogDetails
@@ -67,8 +67,8 @@ namespace TourPlanner.ViewModels
             get => _tourlogDetails;
             set
             {
-                _allTourLogs = value;
-                OnPropertyChanged(nameof(AllTourLogs));
+                _tourlogDetails = value;
+                OnPropertyChanged(nameof(TourLogDetails));
             }
         }
 
@@ -82,26 +82,13 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        public Tourlog SelectedTourLog
-        {
-            get => _selectedTourLog;
-            set
-            {
-                if (_selectedTourLog != value)
-                {
-                    _selectedTourLog = value;
-                    OnPropertyChanged(nameof(SelectedTour));
-                    UpdateTourLogDetails();
-                }
-            }
-        }
-
         public TourViewModel(TourService tourService, TourLogService tourlogService)
         {
             _tourService = tourService;
             _tourlogService = tourlogService;
             TourDetails = new ObservableCollection<Tours>();
-            LoadDataAsync();
+            TourLogDetails = new ObservableCollection<Tourlog>();
+            _ = LoadDataAsync();
         }
 
         private async Task LoadDataAsync()
@@ -133,13 +120,23 @@ namespace TourPlanner.ViewModels
 
         public void UpdateTourLogDetails()
         {
-            if (SelectedTourLog == null)
+            if (SelectedTour == null)
             {
                 TourLogDetails.Clear();
                 return;
             }
+            if (TourLogDetails == null)
+                TourLogDetails = new ObservableCollection<Tourlog>();
+
+            //all logs that belong to the tour with the same ID
+            var matchingLogs = AllTourLogs.Where(log => log.TourId == SelectedTour.id).ToList();
+
             TourLogDetails.Clear();
-            TourLogDetails.Add(SelectedTourLog);
+            foreach(var log in matchingLogs)    //fill TourLogDetails
+            {
+                TourLogDetails.Add(log);
+            }
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
