@@ -7,11 +7,16 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ListView x:Name="TourLogs" ItemsSource="{Binding TourLogDetails}" Background="LightGray">
+        <ListView x:Name="TourLogs" ItemsSource="{Binding TourLogDetails}" Background="LightGray" SizeChanged="TourLogsView_SizeChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}"/>
-                    <GridViewColumn Header="Comment" DisplayMemberBinding="{Binding Content}"/>
+                    <GridViewColumn Header="Date" DisplayMemberBinding="{Binding Date}"/>
+                    <GridViewColumn Header="Difficulty" DisplayMemberBinding="{Binding Difficulty}"/>
+                    <GridViewColumn Header="Total Distance" DisplayMemberBinding="{Binding TotalDistance}"/>
+                    <GridViewColumn Header="Time Spent" DisplayMemberBinding="{Binding TotalTime}"/>
+                    <GridViewColumn Header="Rating" DisplayMemberBinding="{Binding Rating}"/>
+                    <GridViewColumn x:Name="CommentColumn" Header="Comment" DisplayMemberBinding="{Binding Comment}"/>
                 </GridView>
             </ListView.View>
         </ListView>

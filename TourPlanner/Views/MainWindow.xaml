@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:TourPlanner.Views"
         mc:Ignorable="d"
-        Title="Tour Planner" Height="450" Width="800">
+        Title="Tour Planner" Height="600" Width="1000">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.3*"/>
@@ -68,17 +68,20 @@
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="0.35*"/>
+                    <RowDefinition Height="2*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- TourListView now in Grid.Row 0 -->
+                <!-- TourListView for details of a certain tour-->
                 <views:TourListView Grid.Row="0" Grid.Column="1" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
-                <!-- New view for more details in Grid.Row 1 -->
-                <views:TourLogsView Grid.Row="1" Grid.Column="1" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
+                <!--View containing the image of a given tour-->
+                <views:TourImageView Grid.Row="1" Grid.Column="1"/>
+                <!--Listview for tourlogs of a specific tour-->
+                <views:TourLogsView Grid.Row="2" Grid.Column="1" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
             </Grid>
 
-            <!-- TourListBox remains in Grid.Column 0 -->
+            <!--ListBox contains a list of all available tours-->
             <views:TourListBox Grid.RowSpan="2" Grid.Column="0" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
         </Grid>
     </Grid>

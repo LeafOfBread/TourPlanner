@@ -42,5 +42,30 @@ namespace TourPlanner.Views
                 tourListView.TourList.ItemsSource = new List<Tours> { newTour };
             }
         }
+
+        private void TourLogsView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (TourLogs.View is GridView gridView)
+            {
+                double totalWidth = TourLogs.ActualWidth - SystemParameters.VerticalScrollBarWidth; // Account for scrollbar
+                double usedWidth = 0;
+
+                // Sum up all column widths except "Comment"
+                foreach (var column in gridView.Columns)
+                {
+                    if (column != CommentColumn)
+                    {
+                        usedWidth += column.Width;
+                    }
+                }
+
+                // Assign remaining space to the Comment column
+                double remainingWidth = totalWidth - usedWidth;
+                if (remainingWidth > 0)
+                {
+                    CommentColumn.Width = remainingWidth;
+                }
+            }
+        }
     }
 }

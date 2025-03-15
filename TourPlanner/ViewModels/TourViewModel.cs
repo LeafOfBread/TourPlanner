@@ -111,11 +111,10 @@ namespace TourPlanner.ViewModels
 
         public void UpdateTourDetails()
         {
-            if (SelectedTour == null)
+            if (SelectedTour == null || AllTours == null)
                 return;
 
-            TourDetails.Clear();
-            TourDetails.Add(SelectedTour);
+            TourDetails = AllTours;
         }
 
         public void UpdateTourLogDetails()

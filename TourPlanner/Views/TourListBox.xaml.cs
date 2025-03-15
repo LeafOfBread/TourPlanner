@@ -40,7 +40,7 @@ namespace TourPlanner.Views
         {
             if (TourList.SelectedItem is Tours selectedTour)
             {
-                TourList.ItemsSource = new List<Tours> { selectedTour };
+                SelectedTour = selectedTour;
             }
         }
 

@@ -9,6 +9,15 @@ using TourPlannerClasses.Models;
 
 namespace TourPlannerClasses.Models
 {
+    public enum Difficulty
+    {
+        TooEasy,
+        Easy,
+        Medium,
+        Hard,
+        TooHard
+    }
+
     public class Tourlog
     {
         [Key]   //primary key
@@ -16,19 +25,30 @@ namespace TourPlannerClasses.Models
 
         [ForeignKey("Tour")] //foreign key referencing the Tour model
         public int TourId { get; set; }
-        public string Content { get; set; }
+        public DateTime Date { get; set; }
+        public string Comment { get; set; }
+        public Difficulty Difficulty { get; set; }
+        
+        public double TotalDistance { get; set; }
+        public TimeSpan TotalTime { get; set; }
+        public int Rating { get; set; }
         public string Author { get; set; }
 
         public virtual Tours Tour { get; set; }
 
         public Tourlog() { }
 
-        public Tourlog(int tourid, int tourlogid, string content, string author)
+        public Tourlog(int tourlogId, int tourId, DateTime date, string comment, Difficulty difficulty, double distance, TimeSpan time, int rating, string author)
         {
-            this.TourId = tourid;
-            this.TourLogId = tourlogid;
-            this.Content = content;
+            this.TourLogId = tourlogId;
+            this.TourId = TourId;
+            this.Date = date;
+            this.Comment = comment;
+            this.Difficulty = difficulty;
+            this.TotalDistance = distance;
+            this.TotalTime = time;
+            this.Rating = rating;
             this.Author = author;
-        }
+        } 
     }
 }

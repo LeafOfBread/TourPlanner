@@ -43,18 +43,9 @@ namespace TourPlanner.Views
             }
         }
 
-        private void AdjustColumnWidths()
+        private void TourListView_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (TourList.View is GridView gridView && gridView.Columns.Count > 0)
-            {
-                double columnWidth = (TourList.ActualWidth - SystemParameters.VerticalScrollBarWidth) / gridView.Columns.Count;
-                foreach (var column in gridView.Columns)
-                {
-                    column.Width = columnWidth;
-                }
-            }
+            ListViewHelper.AdjustColumnsWidth(TourList);
         }
-
-        private void TourListView_SizeChanged(object sender, SizeChangedEventArgs e) => AdjustColumnWidths();
     }
 }

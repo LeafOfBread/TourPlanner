@@ -14,6 +14,10 @@
     <ProjectReference Include="..\TourPlannerClasses\TourPlannerClasses.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Images\" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
