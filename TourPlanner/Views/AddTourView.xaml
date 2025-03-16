@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="TourPlanner.Views.AddTourView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:TourPlanner.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="800">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="50"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid Grid.Column="1" Background="Green">
+            <Border BorderBrush="Black" BorderThickness="1">
+                <Button Content="+" Background="Transparent" FontSize="25" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Background="LightGreen">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="Name" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="From" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="To" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Description" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Grid>
+
+            <Grid Background="LightGray" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Row="1" Grid.Column="0">
+                    <TextBox x:Name="AddName" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="1">
+                    <TextBox x:Name="AddFrom" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="2">
+                    <TextBox x:Name="AddTo" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="3">
+                    <TextBox x:Name="AddDescription" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
+                </Border>
+            </Grid>
+        </Grid>
+
+
+    </Grid>
+</UserControl>

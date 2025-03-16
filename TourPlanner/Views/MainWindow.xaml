@@ -5,12 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:TourPlanner.Views"
         mc:Ignorable="d"
-        Title="Tour Planner" Height="600" Width="1000">
+        Title="Tour Planner" Height="650" Width="1000">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.3*"/>
-            <RowDefinition Height="0.3*"/>
-            <RowDefinition Height="0.3*"/>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="0.2*"/>
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
 
@@ -24,15 +24,15 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="FileButton" Grid.Column="0" Content="File" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
-            <Button x:Name="EditButton" Grid.Column="1" Content="Edit" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
-            <Button x:Name="OptionsButton" Grid.Column="2" Content="Options" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
-            <Button x:Name="HelpButton" Grid.Column="4" Content="Help" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="White"/>
+            <Button x:Name="FileButton" Grid.Column="0" Content="File" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
+            <Button x:Name="EditButton" Grid.Column="1" Content="Edit" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
+            <Button x:Name="OptionsButton" Grid.Column="2" Content="Options" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
+            <Button x:Name="HelpButton" Grid.Column="4" Content="Help" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
         </Grid>
 
         <Grid Grid.Row="1">
-            <TextBox x:Name="SearchTextBox" Text="Search" Foreground="Gray" HorizontalAlignment="Stretch" VerticalAlignment="Center" Height="25" Background="White" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
-            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Text="&#xE721;" Margin="10"/>
+            <TextBox x:Name="SearchTextBox" Text="Search" Foreground="Gray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
+            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Stretch" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Text="&#xE721;" Margin="10"/>
         </Grid>
 
         <Grid Grid.Row="2" HorizontalAlignment="Stretch">
@@ -40,18 +40,18 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"/>
                 <ColumnDefinition Width="0.5*"/>
-                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0" Background="White">
-                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Tour" FontSize="16"/>
+                <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Tours" FontSize="16"/>
 
             </Border>
-            <Button x:Name="AddTourButton" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen" Click="AddTour">
+            <Button x:Name="AddTourButton" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen">
                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16" />
             </Button>
 
-            <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="LightGray">
+            <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="IndianRed">
                 <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
 
@@ -68,7 +68,7 @@
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="0.35*"/>
+                    <RowDefinition Height="45"/>
                     <RowDefinition Height="2*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>

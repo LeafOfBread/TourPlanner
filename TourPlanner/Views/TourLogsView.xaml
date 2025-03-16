@@ -14,19 +14,19 @@
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
 
-        <Grid Background="LightGreen">
+        <Grid Background="LightGray">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Tourlogs" Grid.Row="0" Background="LightGreen" TextAlignment="Justify" VerticalAlignment="Stretch"/>
+            <TextBlock Text="Tourlogs" Grid.Row="0" Background="LightGray" TextAlignment="Justify" VerticalAlignment="Stretch"/>
 
-            <Button x:Name="AddTourButton" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="Green">
+            <Button x:Name="AddTourButton" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen">
                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16" />
             </Button>
 
-            <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="LightGray">
+            <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="IndianRed">
                 <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
 
