@@ -15,29 +15,43 @@ namespace TourPlannerClasses.Models
 
     public class Tours
     {
+        
         [Key]   //primary key
-        public int id { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
-        public string from { get; set; }
-        public string to { get; set; }
-        public string imagePath { get; set; }
-        public TimeSpan duration { get; set; }
-        public double distance { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string From { get; set; }
+        public string To { get; set; }
+        public TimeSpan Duration { get; set; }
+        public double Distance { get; set; }
+        public TransportType Transport { get; set; }
 
         public virtual ICollection<Tourlog> Tourlogs { get; set; } = new List<Tourlog>();
 
         public Tours() { }
 
-        public Tours(string Name, string Description, string StartLocation, string EndLocation, string imagePath, TimeSpan Duration, double Distance)
+        public Tours(int id, string name, string description, string from, string to, TimeSpan duration, double distance, TransportType transport)
         {
-            name = Name;
-            description = Description;
-            from = StartLocation;
-            to = EndLocation;
-            duration = Duration;
-            distance = Distance;
-            this.imagePath = imagePath;
+            this.Id = id;
+            this.Name = name;
+            this.Description = description;
+            this.From = from;
+            this.To = to;
+            this.Duration = duration;
+            this.Distance = distance;
+            this.Transport = transport;
         }
+    }
+
+    public enum TransportType
+    {
+        Walking,    //0
+        Bicycle,    //1
+        Tram,       //2
+        Bus,        //3
+        Train,      //4
+        Car,        //5
+        Plane,      //6
+        Boat        //7
     }
 }

@@ -10,12 +10,12 @@
         <ListView x:Name="TourList" ItemsSource="{Binding TourDetails}" Background="LightGray" SizeChanged="TourListView_SizeChanged">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}"/>
-                    <GridViewColumn Header="Description" DisplayMemberBinding="{Binding description}"/>
-                    <GridViewColumn Header="From" DisplayMemberBinding="{Binding from}"/>
-                    <GridViewColumn Header="To" DisplayMemberBinding="{Binding to}"/>
-                    <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding distance}"/>
-                    <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding duration}"/>
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}"/>
+                    <GridViewColumn Header="From" DisplayMemberBinding="{Binding From}"/>
+                    <GridViewColumn Header="To" DisplayMemberBinding="{Binding To}"/>
+                    <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding Distance}"/>
+                    <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding Duration}"/>
                 </GridView>
             </ListView.View>
         </ListView>

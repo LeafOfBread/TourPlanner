@@ -41,7 +41,7 @@ namespace TourPlannerClasses.Models
         public Tourlog(int tourlogId, int tourId, DateTime date, string comment, Difficulty difficulty, double distance, TimeSpan time, int rating, string author)
         {
             this.TourLogId = tourlogId;
-            this.TourId = TourId;
+            this.TourId = tourId;
             this.Date = date;
             this.Comment = comment;
             this.Difficulty = difficulty;

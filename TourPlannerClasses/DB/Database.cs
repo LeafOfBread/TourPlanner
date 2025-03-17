@@ -21,9 +21,9 @@ namespace TourPlannerClasses.DB
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Tourlog>()
-                .HasOne(tl => tl.Tour)  // Each Tourlog belongs to one Tour
-                .WithMany(t => t.Tourlogs)  // Each Tour can have many Tourlogs
-                .HasForeignKey(tl => tl.TourId)  // Foreign key reference
+                .HasOne(tl => tl.Tour)  // each tourlog belongs to one tour
+                .WithMany(t => t.Tourlogs)  // each tour can have many tourlogs
+                .HasForeignKey(tl => tl.TourId)  // foreign key
                 .OnDelete(DeleteBehavior.Cascade);
         }
     }

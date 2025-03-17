@@ -1,6 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <None Remove="Views\Images\placeholder1.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Views\Images\placeholder1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
       <PrivateAssets>all</PrivateAssets>
@@ -12,10 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\TourPlannerClasses\TourPlannerClasses.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Views\Images\" />
   </ItemGroup>
 
   <PropertyGroup>

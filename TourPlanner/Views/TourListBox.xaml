@@ -10,7 +10,7 @@
         <ListBox x:Name="TourList" 
                  Background="LightGray" 
                  ItemsSource="{Binding AllTours}" 
-                 DisplayMemberPath="name" 
+                 DisplayMemberPath="Name" 
                  GotFocus="DisplayTourDetails"
                  SelectedItem="{Binding SelectedTour}">
         </ListBox>

@@ -7,10 +7,12 @@ using System.ComponentModel;
 using System.Windows.Input;
 using System.Windows.Controls;
 using TourPlannerClasses.Models;
+using System.Runtime.Serialization.DataContracts;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace TourPlanner.ViewModels
 {
-    public class AddTourViewModel : INotifyPropertyChanged
+    public class AddTourView : UserControl ,INotifyPropertyChanged
     {
         private string _tourName;
         private string _tourFrom;
@@ -59,9 +61,11 @@ namespace TourPlanner.ViewModels
 
         public ICommand SaveTourCommand { get; }
 
-        public AddTourViewModel()
+        public AddTourView(MainViewModel mainVM)
         {
+            //InitializeComponent();
             SaveTourCommand = new RelayCommand(SaveTour);
+            DataContext = mainVM;
         }
 
         public void SaveTour()

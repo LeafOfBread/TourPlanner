@@ -128,7 +128,7 @@ namespace TourPlanner.ViewModels
                 TourLogDetails = new ObservableCollection<Tourlog>();
 
             //all logs that belong to the tour with the same ID
-            var matchingLogs = AllTourLogs.Where(log => log.TourId == SelectedTour.id).ToList();
+            var matchingLogs = AllTourLogs.Where(log => log.TourId == SelectedTour.Id).ToList();
 
             TourLogDetails.Clear();
             foreach(var log in matchingLogs)    //fill TourLogDetails

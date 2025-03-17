@@ -19,8 +19,8 @@ public class ServiceTest
         // Sample data to return
         var mockTours = new List<Tours>
         {
-            new Tours("Tour 1", "Description 1", "Start 1", "End 1", "Image1.jpg", new System.TimeSpan(1, 0, 0), 10.5),
-            new Tours("Tour 2", "Description 2", "Start 2", "End 2", "Image2.jpg", new System.TimeSpan(2, 0, 0), 20.0)
+            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new System.TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
+            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new System.TimeSpan(2, 0, 0), 20.0, TransportType.Bus)
         };
 
         // Set up the mock to return the mockTours when GetAllTours() is called
@@ -35,7 +35,7 @@ public class ServiceTest
         // Assert: Check if AllTours is updated correctly
         Assert.NotNull(viewModel.AllTours);
         Assert.Equal(2, viewModel.AllTours.Count);
-        Assert.Equal("Tour 1", viewModel.AllTours[0].name);
-        Assert.Equal("Tour 2", viewModel.AllTours[1].name);
+        Assert.Equal("Tour 1", viewModel.AllTours[0].Name);
+        Assert.Equal("Tour 2", viewModel.AllTours[1].Name);
     }
 }

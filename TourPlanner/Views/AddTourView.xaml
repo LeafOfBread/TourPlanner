@@ -31,16 +31,19 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Text="Name" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <TextBlock Text="From" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <TextBlock Text="To" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <TextBlock Text="Description" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Transport" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
 
             <Grid Background="LightGray" Grid.Row="1">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -58,6 +61,9 @@
                 </Border>
                 <Border Grid.Row="1" Grid.Column="3">
                     <TextBox x:Name="AddDescription" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
+                </Border>
+                <Border Grid.Row="1" Grid.Column="4">
+                    <TextBox x:Name="AddTransport" Text="{Binding Transport, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
                 </Border>
             </Grid>
         </Grid>
