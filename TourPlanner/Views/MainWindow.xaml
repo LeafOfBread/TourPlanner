@@ -30,6 +30,7 @@
             <Button x:Name="HelpButton" Grid.Column="4" Content="Help" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
         </Grid>
 
+
         <Grid Grid.Row="1">
             <TextBox x:Name="SearchTextBox" Text="Search" Foreground="Gray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Stretch" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Text="&#xE721;" Margin="10"/>
@@ -47,20 +48,27 @@
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Tours" FontSize="16"/>
 
             </Border>
-            <Button x:Name="AddTourButton" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen">
-                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16" />
+            <Button x:Name="AddTourButton" Command="{Binding AddTourCommand}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen">
+                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16"/>
             </Button>
 
-            <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="IndianRed">
+            <Button x:Name="RemoveButton" Command="{Binding DeleteTourCommand}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="IndianRed">
                 <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
 
-            <Button x:Name="EditTourButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Background="White">
+            <Button x:Name="EditTourButton" Command="{Binding EditTourViewCommand}" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Background="White">
                 <TextBlock Text="&#xE10C;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
         </Grid>
 
-        <Grid Grid.Row="3">
+
+        <Grid Grid.Row="2" Grid.Column="2">
+            <Button x:Name="BackButton" Click="BackToTourList_Click" HorizontalAlignment="Right"  Margin="5" VerticalAlignment="Stretch">
+                <TextBlock Text="Back"/>
+            </Button>
+        </Grid>
+
+                <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="4*"/>
@@ -73,8 +81,13 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- TourListView for details of a certain tour-->
-                <views:TourListView Grid.Row="0" Grid.Column="1" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
+                
+                <!--Either Listview of selected tour details OR addtour-->
+                <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding CurrentView}">
+                    
+                </ContentControl>
+
+
                 <!--View containing the image of a given tour-->
                 <views:TourImageView Grid.Row="1" Grid.Column="1"/>
                 <!--Listview for tourlogs of a specific tour-->

@@ -25,15 +25,27 @@ namespace TourPlanner
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly TourViewModel _viewModel;
         public MainWindow(TourService tourService, TourLogService tourlogService)
         {
             InitializeComponent();
-            DataContext = new TourViewModel(tourService, tourlogService);
+            _viewModel = new TourViewModel(tourService, tourlogService);
+            DataContext = _viewModel;
         }
 
         public MainWindow() : this(App.ServiceProvider.GetRequiredService<TourService>(),
                                    App.ServiceProvider.GetRequiredService<TourLogService>())
         {
+        }
+
+        private void AddTourButton_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ShowAddTourView();
+        }
+
+        private void BackToTourList_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ShowTourListView();
         }
 
         private void SearchBox_GotFocus(object sender, RoutedEventArgs e)

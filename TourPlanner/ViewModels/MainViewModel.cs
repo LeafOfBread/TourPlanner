@@ -15,7 +15,7 @@ namespace TourPlanner.ViewModels
 
         public MainViewModel(TourService tourService, TourLogService tourlogService)
         {
-                TourVM = new TourViewModel(tourService, tourlogService);
+            TourVM = new TourViewModel(tourService, tourlogService);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

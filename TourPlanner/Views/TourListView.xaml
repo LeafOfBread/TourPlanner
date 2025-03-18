@@ -16,6 +16,7 @@
                     <GridViewColumn Header="To" DisplayMemberBinding="{Binding To}"/>
                     <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding Distance}"/>
                     <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding Duration}"/>
+                    <GridViewColumn Header="Transport" DisplayMemberBinding="{Binding Transport}"/>
                 </GridView>
             </ListView.View>
         </ListView>

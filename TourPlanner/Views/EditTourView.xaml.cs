@@ -12,25 +12,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TourPlanner.ViewModels;
 
 namespace TourPlanner.Views
 {
     /// <summary>
-    /// Interaction logic for AddTourView.xaml
+    /// Interaction logic for EditTourView.xaml
     /// </summary>
-    public partial class AddTourView : UserControl
+    public partial class EditTourView : UserControl
     {
-        private readonly TourViewModel _viewModel;
-        public AddTourView()
+        public EditTourView()
         {
             InitializeComponent();
-            _viewModel = (TourViewModel)DataContext;
-        }
-
-        private void BackButton_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ShowTourListView();
         }
     }
 }
