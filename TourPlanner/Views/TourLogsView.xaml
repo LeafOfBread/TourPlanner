@@ -22,7 +22,7 @@
 
             <TextBlock Text="Tourlogs" Grid.Row="0" Background="LightGray" TextAlignment="Justify" VerticalAlignment="Stretch"/>
 
-            <Button x:Name="AddTourButton" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen">
+            <Button x:Name="AddTourButton" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen" Command="{Binding AddTourLogCommand}">
                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16" />
             </Button>
 

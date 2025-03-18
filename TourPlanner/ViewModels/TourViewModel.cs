@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -17,14 +18,25 @@ namespace TourPlanner.ViewModels
 {
     public class TourViewModel : INotifyPropertyChanged
     {
-        private UserControl _currentView;
-        public UserControl CurrentView
+        private UserControl _currentTourView;
+        public UserControl CurrentTourView
         {
-            get => _currentView;
+            get => _currentTourView;
             set
             {
-                _currentView = value;
-                OnPropertyChanged(nameof(CurrentView));
+                _currentTourView = value;
+                OnPropertyChanged(nameof(CurrentTourView));
+            }
+        }
+
+        private UserControl _currentLogView;
+        public UserControl CurrentLogView
+        {
+            get => _currentLogView;
+            set
+            {
+                _currentLogView = value;
+                OnPropertyChanged(nameof(CurrentLogView));
             }
         }
 
@@ -34,7 +46,8 @@ namespace TourPlanner.ViewModels
         public ICommand DeleteTourCommand { get; private set; }
         public ICommand EditTourViewCommand { get; private set; }
         public ICommand UpdateTourCommand { get; private set; }
-
+        public ICommand AddTourLogCommand { get; private set; }
+        public ICommand SubmitLogCommand { get; private set; }
 
         //tour fields and services
         private readonly TourService _tourService;
@@ -122,8 +135,23 @@ namespace TourPlanner.ViewModels
                 TransportType.Boat,
                 TransportType.Plane
             };
+            Difficulties = new ObservableCollection<Difficulty>
+            {
+                Difficulty.TooEasy,
+                Difficulty.Easy,
+                Difficulty.Medium,
+                Difficulty.Hard,
+                Difficulty.TooHard
+            };
+
             //set base view
-            CurrentView = new Views.TourListView();
+            CurrentTourView = new Views.TourListView();
+            CurrentLogView = new Views.TourLogsView();
+
+            _newTourLog = new Tourlog
+            {
+                TourId = GetSelectedTourId()
+            };
 
             //initialize commands
             AddTourCommand = new RelayCommand(ShowAddTourView);
@@ -131,6 +159,8 @@ namespace TourPlanner.ViewModels
             DeleteTourCommand = new RelayCommand(() => DeleteTourAsync());
             EditTourViewCommand = new RelayCommand(() => ShowEditTourView());
             UpdateTourCommand = new RelayCommand(() => EditTourAsync());
+            AddTourLogCommand = new RelayCommand(() => ShowAddTourLog());
+            SubmitLogCommand = new RelayCommand(() => SubmitLog());
 
             //fire and forget - load all the necessary data asap
             _ = LoadDataAsync();
@@ -139,18 +169,23 @@ namespace TourPlanner.ViewModels
         public void ShowAddTourView()
         {
             NewTour = new Tours();
-            CurrentView = new Views.AddTourView();
+            CurrentTourView = new Views.AddTourView();
         }
 
         public void ShowTourListView()
         {
-            CurrentView = new Views.TourListView();
+            CurrentTourView = new Views.TourListView();
         }
 
         public void ShowEditTourView()
         {
             if (SelectedTour != null)
-                CurrentView = new Views.EditTourView();
+                CurrentTourView = new Views.EditTourView();
+        }
+
+        public void ShowAddTourLog()
+        {
+            CurrentLogView = new Views.AddTourLogView();
         }
 
         private async Task LoadDataAsync()
@@ -208,6 +243,14 @@ namespace TourPlanner.ViewModels
         private string _addTourDescription;
         private TransportType _addTourTransport;
 
+        private string _addAuthor;
+        private DateTime _addDate;
+        private Difficulty _addDifficulty;
+        private double _addDistance;
+        private TimeSpan _addTime;
+        private int _addRating;
+        private string _addComment;
+
         private Tours _newTour = new Tours
         {
             Duration = new TimeSpan(1, 30, 0),
@@ -219,6 +262,8 @@ namespace TourPlanner.ViewModels
             Duration = new TimeSpan(2, 0, 0),
             Distance = 10.1
         };
+
+        private Tourlog _newTourLog = new Tourlog();
 
         public Tours NewTour
         {
@@ -254,7 +299,27 @@ namespace TourPlanner.ViewModels
             }
         }
 
+        public Tourlog NewTourLog
+        {
+            get => _newTourLog;
+            set
+            {
+                if (_newTourLog != null)
+                {
+                    OnPropertyChanged(nameof(NewTourLog));
+                    OnPropertyChanged(nameof(AddAuthor));
+                    OnPropertyChanged(nameof(AddDate));
+                    OnPropertyChanged(nameof(AddDifficulty));
+                    OnPropertyChanged(nameof(AddDistance));
+                    OnPropertyChanged(nameof(AddTime));
+                    OnPropertyChanged(nameof(AddRating));
+                    OnPropertyChanged(nameof(AddComment));
+                }
+            }
+        }
+
         public ObservableCollection<TransportType> TransportTypes { get; }
+        public ObservableCollection<Difficulty> Difficulties { get; }
 
         public string AddTourName
         {
@@ -267,7 +332,6 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(AddTourName));
             }
         }
-
         public string AddTourFrom
         {
             get => _addTourFrom;
@@ -279,7 +343,6 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(AddTourFrom));
             }
         }
-
         public string AddTourTo
         {
             get => _addTourTo;
@@ -291,7 +354,6 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(AddTourTo));
             }
         }
-
         public string AddTourDescription
         {
             get => _addTourDescription;
@@ -303,7 +365,6 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(AddTourDescription));
             }
         }
-
         public TransportType AddTourTransport
         {
             get => _addTourTransport;
@@ -316,6 +377,69 @@ namespace TourPlanner.ViewModels
             }
         }
 
+        public string AddAuthor
+        {
+            get => _addAuthor;
+            set
+            {
+                _addAuthor = value;
+                OnPropertyChanged(nameof(AddAuthor));
+            }
+        }
+        public DateTime AddDate
+        {
+            get => _addDate;
+            set
+            {
+                _addDate = value;
+                OnPropertyChanged(nameof(AddDate));
+            }
+        }
+        public Difficulty AddDifficulty
+        {
+            get => _addDifficulty;
+            set
+            {
+                _addDifficulty = value;
+                OnPropertyChanged(nameof(AddDifficulty));
+            }
+        }
+        public double AddDistance
+        {
+            get => _addDistance;
+            set
+            {
+                _addDistance = value;
+                OnPropertyChanged(nameof(AddDistance));
+            }
+        }
+        public TimeSpan AddTime
+        {
+            get => _addTime;
+            set
+            {
+                _addTime = value;
+                OnPropertyChanged(nameof(AddTime));
+            }
+        }
+        public int AddRating
+        {
+            get => _addRating;
+            set
+            {
+                _addRating = value;
+                OnPropertyChanged(nameof(AddRating));
+            }
+        }
+        public string AddComment
+        {
+            get => _addComment;
+            set
+            {
+                _addComment = value;
+                OnPropertyChanged(nameof(AddComment));
+            }
+        }
 
         public async Task SaveTour()
         {
@@ -357,6 +481,19 @@ namespace TourPlanner.ViewModels
             var tours = await _tourService.GetAllTours();
             AllTours = new ObservableCollection<Tours>(tours);
             ShowTourListView(); //show tourlist again
+        }
+
+        public async Task SubmitLog()
+        {
+            //do something...
+        }
+
+        public int GetSelectedTourId()
+        {
+            if (SelectedTour != null)
+                return SelectedTour.Id;
+            else
+                return 0;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

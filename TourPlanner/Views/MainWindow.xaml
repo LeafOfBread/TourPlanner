@@ -83,15 +83,17 @@
 
                 
                 <!--Either Listview of selected tour details OR addtour-->
-                <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding CurrentView}">
+                <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding CurrentTourView}">
                     
                 </ContentControl>
 
+                <!--Show either all tourlogs, or show AddTourLogView-->
+                <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding CurrentLogView}">
+                        
+                </ContentControl>
 
-                <!--View containing the image of a given tour-->
+                    <!--View containing the image of a given tour-->
                 <views:TourImageView Grid.Row="1" Grid.Column="1"/>
-                <!--Listview for tourlogs of a specific tour-->
-                <views:TourLogsView Grid.Row="2" Grid.Column="1" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
             </Grid>
 
             <!--ListBox contains a list of all available tours-->
