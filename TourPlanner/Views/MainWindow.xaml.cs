@@ -46,6 +46,7 @@ namespace TourPlanner
         private void BackToTourList_Click(object sender, RoutedEventArgs e)
         {
             _viewModel.ShowTourListView();
+            _viewModel.ShowTourlogView();
         }
 
         private void SearchBox_GotFocus(object sender, RoutedEventArgs e)

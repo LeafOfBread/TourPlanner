@@ -46,8 +46,11 @@ namespace TourPlanner.ViewModels
         public ICommand DeleteTourCommand { get; private set; }
         public ICommand EditTourViewCommand { get; private set; }
         public ICommand UpdateTourCommand { get; private set; }
-        public ICommand AddTourLogCommand { get; private set; }
+        public ICommand ShowAddLogViewCommand { get; private set; }
         public ICommand SubmitLogCommand { get; private set; }
+        public ICommand DeleteLogCommand { get; private set; }
+        public ICommand ShowEditLogViewCommand { get; private set; }
+        public ICommand EditLogCommand { get; private set; }
 
         //tour fields and services
         private readonly TourService _tourService;
@@ -94,6 +97,7 @@ namespace TourPlanner.ViewModels
         private readonly TourLogService _tourlogService;
         private ObservableCollection<Tourlog> _allTourLogs;
         private ObservableCollection<Tourlog> _tourlogDetails;
+        private Tourlog _selectedTourLog;
 
         public ObservableCollection<Tourlog> TourLogDetails
         {
@@ -112,6 +116,16 @@ namespace TourPlanner.ViewModels
             {
                 _allTourLogs = value;
                 OnPropertyChanged(nameof(AllTourLogs));
+            }
+        }
+
+        public Tourlog SelectedTourLog
+        {
+            get => _selectedTourLog;
+            set
+            {
+                _selectedTourLog = value;
+                OnPropertyChanged(nameof(SelectedTourLog));
             }
         }
 
@@ -159,8 +173,11 @@ namespace TourPlanner.ViewModels
             DeleteTourCommand = new RelayCommand(() => DeleteTourAsync());
             EditTourViewCommand = new RelayCommand(() => ShowEditTourView());
             UpdateTourCommand = new RelayCommand(() => EditTourAsync());
-            AddTourLogCommand = new RelayCommand(() => ShowAddTourLog());
+            ShowAddLogViewCommand = new RelayCommand(() => ShowAddTourLog());
             SubmitLogCommand = new RelayCommand(() => SubmitLog());
+            DeleteLogCommand = new RelayCommand(() => DeleteTourLog());
+            ShowEditLogViewCommand = new RelayCommand(() => ShowEditTourLog());
+            EditLogCommand = new RelayCommand(() => EditTourLog());
 
             //fire and forget - load all the necessary data asap
             _ = LoadDataAsync();
@@ -177,6 +194,11 @@ namespace TourPlanner.ViewModels
             CurrentTourView = new Views.TourListView();
         }
 
+        public void ShowTourlogView()
+        {
+            CurrentLogView = new Views.TourLogsView();
+        }
+
         public void ShowEditTourView()
         {
             if (SelectedTour != null)
@@ -185,7 +207,14 @@ namespace TourPlanner.ViewModels
 
         public void ShowAddTourLog()
         {
-            CurrentLogView = new Views.AddTourLogView();
+            if (SelectedTour != null)
+                CurrentLogView = new Views.AddTourLogView();
+        }
+
+        public void ShowEditTourLog()
+        {
+            if (SelectedTour != null && SelectedTourLog != null)
+                CurrentLogView = new Views.EditTourlogView();
         }
 
         private async Task LoadDataAsync()
@@ -264,6 +293,7 @@ namespace TourPlanner.ViewModels
         };
 
         private Tourlog _newTourLog = new Tourlog();
+        private Tourlog _tourlogToEdit = new Tourlog();
 
         public Tours NewTour
         {
@@ -307,6 +337,25 @@ namespace TourPlanner.ViewModels
                 if (_newTourLog != null)
                 {
                     OnPropertyChanged(nameof(NewTourLog));
+                    OnPropertyChanged(nameof(AddAuthor));
+                    OnPropertyChanged(nameof(AddDate));
+                    OnPropertyChanged(nameof(AddDifficulty));
+                    OnPropertyChanged(nameof(AddDistance));
+                    OnPropertyChanged(nameof(AddTime));
+                    OnPropertyChanged(nameof(AddRating));
+                    OnPropertyChanged(nameof(AddComment));
+                }
+            }
+        }
+
+        public Tourlog TourlogToEdit
+        {
+            get => _tourlogToEdit;
+            set
+            {
+                if (_tourlogToEdit != null)
+                {
+                    OnPropertyChanged(nameof(TourlogToEdit));
                     OnPropertyChanged(nameof(AddAuthor));
                     OnPropertyChanged(nameof(AddDate));
                     OnPropertyChanged(nameof(AddDifficulty));
@@ -383,6 +432,8 @@ namespace TourPlanner.ViewModels
             set
             {
                 _addAuthor = value;
+                _newTourLog.Author = value;
+                _tourlogToEdit.Author = value;
                 OnPropertyChanged(nameof(AddAuthor));
             }
         }
@@ -391,7 +442,9 @@ namespace TourPlanner.ViewModels
             get => _addDate;
             set
             {
-                _addDate = value;
+                _addDate = DateTime.SpecifyKind(value, DateTimeKind.Utc);
+                _newTourLog.Date = _addDate;
+                _tourlogToEdit.Date = _addDate;
                 OnPropertyChanged(nameof(AddDate));
             }
         }
@@ -401,6 +454,8 @@ namespace TourPlanner.ViewModels
             set
             {
                 _addDifficulty = value;
+                _newTourLog.Difficulty = value;
+                _tourlogToEdit.Difficulty = value;
                 OnPropertyChanged(nameof(AddDifficulty));
             }
         }
@@ -410,6 +465,8 @@ namespace TourPlanner.ViewModels
             set
             {
                 _addDistance = value;
+                _newTourLog.TotalDistance = value;
+                _tourlogToEdit.TotalDistance = value;
                 OnPropertyChanged(nameof(AddDistance));
             }
         }
@@ -419,6 +476,8 @@ namespace TourPlanner.ViewModels
             set
             {
                 _addTime = value;
+                _newTourLog.TotalTime = value;
+                _tourlogToEdit.TotalTime = value;
                 OnPropertyChanged(nameof(AddTime));
             }
         }
@@ -428,6 +487,8 @@ namespace TourPlanner.ViewModels
             set
             {
                 _addRating = value;
+                _newTourLog.Rating = value;
+                _tourlogToEdit.Rating = value;
                 OnPropertyChanged(nameof(AddRating));
             }
         }
@@ -437,6 +498,8 @@ namespace TourPlanner.ViewModels
             set
             {
                 _addComment = value;
+                _newTourLog.Comment = value;
+                _tourlogToEdit.Comment = value;
                 OnPropertyChanged(nameof(AddComment));
             }
         }
@@ -475,7 +538,7 @@ namespace TourPlanner.ViewModels
                 tourFromDb.Duration = EditTour.Duration;
                 tourFromDb.Distance = EditTour.Distance;
                 
-                await _tourService.UpdateTour(EditTour);
+                await _tourService.UpdateTour(tourFromDb);
             }
 
             var tours = await _tourService.GetAllTours();
@@ -485,7 +548,51 @@ namespace TourPlanner.ViewModels
 
         public async Task SubmitLog()
         {
-            //do something...
+            var tourFromDb = await _tourService.GetTourById(SelectedTour.Id);
+
+            if(tourFromDb != null)
+            {
+                NewTourLog.TourId = tourFromDb.Id;
+
+                await _tourlogService.InsertTourLog(NewTourLog);
+            }
+
+            var tourlogs = await _tourlogService.GetTourlogsAsync();
+            AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
+            ShowTourlogView();
+        }
+
+        public async Task DeleteTourLog()
+        {
+            if (SelectedTourLog != null)
+            {
+                await _tourlogService.DeleteTourLog(SelectedTourLog);
+                var tourlogs = await _tourlogService.GetTourlogsAsync();
+                AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
+                ShowTourlogView();
+            }
+        }
+
+        public async Task EditTourLog()
+        {
+            if (SelectedTourLog != null)
+            {
+                var tourlogFromDb = await _tourlogService.GetTourlogById(SelectedTourLog.TourLogId);
+                if (tourlogFromDb != null)
+                {
+                    tourlogFromDb.Author = TourlogToEdit.Author;
+                    tourlogFromDb.Date = DateTime.SpecifyKind(TourlogToEdit.Date, DateTimeKind.Utc);
+                    tourlogFromDb.Difficulty = TourlogToEdit.Difficulty;
+                    tourlogFromDb.TotalDistance = TourlogToEdit.TotalDistance;
+                    tourlogFromDb.TotalTime = TourlogToEdit.TotalTime;
+                    tourlogFromDb.Comment = TourlogToEdit.Comment;
+
+                    await _tourlogService.EditTourLog(tourlogFromDb);
+                }
+                var tourlogs = await _tourlogService.GetTourlogsAsync();
+                AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
+                ShowTourlogView();
+            }
         }
 
         public int GetSelectedTourId()

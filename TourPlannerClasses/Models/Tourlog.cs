@@ -21,6 +21,7 @@ namespace TourPlannerClasses.Models
     public class Tourlog
     {
         [Key]   //primary key
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TourLogId { get; set; }
 
         [ForeignKey("Tour")] //foreign key referencing the Tour model
@@ -36,13 +37,16 @@ namespace TourPlannerClasses.Models
 
         public virtual Tours Tour { get; set; }
 
-        public Tourlog() { }
+        public Tourlog() 
+        {
+            Date = DateTime.UtcNow;
+        }
 
         public Tourlog(int tourlogId, int tourId, DateTime date, string comment, Difficulty difficulty, double distance, TimeSpan time, int rating, string author)
         {
             this.TourLogId = tourlogId;
             this.TourId = tourId;
-            this.Date = date;
+            this.Date = DateTime.SpecifyKind(date, DateTimeKind.Utc); // Ensure Date is UTC
             this.Comment = comment;
             this.Difficulty = difficulty;
             this.TotalDistance = distance;

@@ -49,13 +49,29 @@ namespace TourPlannerClasses.Tour
         {
             try
             {
-                _context.Update(tourToUpdate);
+                var existingTour = await _context.Tours.FindAsync(tourToUpdate.Id);
+
+                if (existingTour == null)
+                {
+                    Console.WriteLine("Tour not found, update aborted.");
+                    return;
+                }
+
+                // Copy new values into existingTour
+                _context.Entry(existingTour).CurrentValues.SetValues(tourToUpdate);
+
+                // Explicitly mark entity as modified
+                _context.Entry(existingTour).State = EntityState.Modified;
+
+                int changes = await _context.SaveChangesAsync();
+                Console.WriteLine($"Rows affected: {changes}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error inserting tour: {ex.Message}");
+                Console.WriteLine($"Error updating tour: {ex.Message}");
             }
         }
+
 
         public async Task<Tours> GetTourById(int id)
         {

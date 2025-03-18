@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="TourPlanner.Views.AddTourLogView"
+﻿<UserControl x:Class="TourPlanner.Views.EditTourlogView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -19,10 +19,10 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Add a new Tourlog" FontSize="14" FontWeight="SemiBold" Grid.Row="0" Background="LightGreen" TextAlignment="Justify" VerticalAlignment="Stretch"/>
+            <TextBlock Text="Add a new Tourlog" FontSize="14" FontWeight="SemiBold" Grid.Row="0" Background="Gold" TextAlignment="Justify" VerticalAlignment="Stretch"/>
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="0" Background="LightGreen">
+        <Grid Grid.Row="1" Grid.Column="0" Background="Gold">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -32,7 +32,7 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="45"/>
                 <RowDefinition Height="30"/>
@@ -56,8 +56,8 @@
             <TextBox x:Name="AddComment" Grid.Column="6" Grid.Row="1" Text="{Binding AddComment, Mode=TwoWay}"/>
 
             <Button x:Name="SubmitLog" Content="+" Background="Transparent" Grid.Row="2" Grid.Column="6" 
-                    FontSize="26" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                    Command="{Binding SubmitLogCommand}"/>
+                FontSize="26" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                Command="{Binding EditLogCommand}"/>
         </Grid>
     </Grid>
 </UserControl>
