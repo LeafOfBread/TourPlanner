@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <ListBox x:Name="TourList" 
-         Background="LightGray" 
+         Background="#E3D7C2" 
          ItemsSource="{Binding AllTours}" 
          DisplayMemberPath="Name" 
          GotFocus="DisplayTourDetails"

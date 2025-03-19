@@ -14,7 +14,7 @@
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
 
-        <Grid Grid.Row="0">
+        <Grid Grid.Row="0" Background="#E3D7C2">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
@@ -24,19 +24,19 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="FileButton" Grid.Column="0" Content="File" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
-            <Button x:Name="EditButton" Grid.Column="1" Content="Edit" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
-            <Button x:Name="OptionsButton" Grid.Column="2" Content="Options" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
-            <Button x:Name="HelpButton" Grid.Column="4" Content="Help" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White"/>
+            <Button x:Name="FileButton" Grid.Column="0" Content="File" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#E3D7C2"/>
+            <Button x:Name="EditButton" Grid.Column="1" Content="Edit" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#E3D7C2"/>
+            <Button x:Name="OptionsButton" Grid.Column="2" Content="Options" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#E3D7C2"/>
+            <Button x:Name="HelpButton" Grid.Column="4" Content="Help" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#E3D7C2"/>
         </Grid>
 
 
         <Grid Grid.Row="1">
-            <TextBox x:Name="SearchTextBox" Text="Search" Foreground="Gray" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="White" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
+            <TextBox x:Name="SearchTextBox" Text="Search" FontSize="20" Foreground="#E3E2E2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#064F89" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Stretch" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Text="&#xE721;" Margin="10"/>
         </Grid>
 
-        <Grid Grid.Row="2" HorizontalAlignment="Stretch">
+        <Grid Grid.Row="2" HorizontalAlignment="Stretch" Background="#5295C4">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="0.5*"/>
@@ -44,7 +44,7 @@
                 <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Background="White">
+            <Border Grid.Column="0">
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Tours" FontSize="16"/>
 
             </Border>

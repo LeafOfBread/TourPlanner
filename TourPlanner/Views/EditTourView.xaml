@@ -12,7 +12,7 @@
             <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="1" Background="Goldenrod">
+        <Grid Grid.Column="1" Background="#C48152">
             <Border BorderBrush="White" BorderThickness="1">
                 <Button Content="+" Background="Transparent" FontSize="25" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding UpdateTourCommand}"/>
             </Border>
@@ -24,7 +24,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Grid Background="Gold">
+            <Grid Background="#C48152">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

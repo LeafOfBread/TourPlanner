@@ -14,13 +14,13 @@
             <RowDefinition Height="3*"/>
         </Grid.RowDefinitions>
 
-        <Grid Background="LightGray">
+        <Grid Background="#5295C4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="100"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Tourlogs" Grid.Row="0" Background="LightGray" TextAlignment="Justify" VerticalAlignment="Stretch"/>
+            <TextBlock Text="Tourlogs" Grid.Row="0" Background="#5295C4" TextAlignment="Justify" VerticalAlignment="Stretch"/>
 
             <Button x:Name="AddTourButton" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen" Command="{Binding ShowAddLogViewCommand}">
                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16" />
@@ -34,9 +34,9 @@
                 <TextBlock Text="&#xE10C;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
         </Grid>
-        
 
-        <ListView x:Name="TourLogs" Grid.Row="1" ItemsSource="{Binding TourLogDetails}" Background="LightGray" SizeChanged="TourLogsView_SizeChanged" SelectedItem="{Binding SelectedTourLog}">
+
+        <ListView x:Name="TourLogs" Grid.Row="1" ItemsSource="{Binding TourLogDetails}" Background="#E3D7C2" SizeChanged="TourLogsView_SizeChanged" SelectedItem="{Binding SelectedTourLog}">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}"/>

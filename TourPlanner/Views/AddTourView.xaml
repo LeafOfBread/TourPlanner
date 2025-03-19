@@ -12,7 +12,7 @@
             <ColumnDefinition Width="50"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="1" Background="Green">
+        <Grid Grid.Column="1" Background="#5295C4">
             <Border BorderBrush="Black" BorderThickness="1">
                 <Button Content="+" Background="Transparent" FontSize="25" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Command="{Binding SaveTourCommand}"/>
             </Border>
@@ -24,7 +24,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Grid Background="LightGreen">
+            <Grid Background="#064F89">
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
@@ -34,11 +34,11 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="Tour Name" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Text="From" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Text="To" Grid.Row="0" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Text="Description" Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <TextBlock Text="Transport" Grid.Row="0" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Tour Name" Grid.Row="0" Grid.Column="0" Foreground="#E3D7C2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="From" Grid.Row="0" Grid.Column="1" Foreground="#E3D7C2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="To" Grid.Row="0" Grid.Column="2" Foreground="#E3D7C2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Description" Grid.Row="0" Grid.Column="3" Foreground="#E3D7C2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <TextBlock Text="Transport" Grid.Row="0" Grid.Column="4" Foreground="#E3D7C2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Grid>
 
             <Grid Background="LightGray" Grid.Row="1">
@@ -51,20 +51,20 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Row="1" Grid.Column="0">
-                    <TextBox x:Name="AddName" Text="{Binding AddTourName, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
+                    <TextBox x:Name="AddName" Text="{Binding AddTourName, UpdateSourceTrigger=PropertyChanged}" Margin="1" Background="#E3D7C2"/>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="1">
-                    <TextBox x:Name="AddFrom" Text="{Binding AddTourFrom, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
+                    <TextBox x:Name="AddFrom" Text="{Binding AddTourFrom, UpdateSourceTrigger=PropertyChanged}" Margin="1" Background="#E3D7C2"/>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="2">
-                    <TextBox x:Name="AddTo" Text="{Binding AddTourTo, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
+                    <TextBox x:Name="AddTo" Text="{Binding AddTourTo, UpdateSourceTrigger=PropertyChanged}" Margin="1" Background="#E3D7C2"/>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="3">
-                    <TextBox x:Name="AddDescription" Text="{Binding AddTourDescription, UpdateSourceTrigger=PropertyChanged}" Margin="1"/>
+                    <TextBox x:Name="AddDescription" Text="{Binding AddTourDescription, UpdateSourceTrigger=PropertyChanged}" Margin="1" Background="#E3D7C2"/>
                 </Border>
                 <Border Grid.Row="1" Grid.Column="4">
                     <ComboBox x:Name="AddTransport" SelectedItem="{Binding AddTourTransport, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="1"
-                              ItemsSource="{Binding TransportTypes}"/>
+                              ItemsSource="{Binding TransportTypes}" Background="#E3D7C2"/>
                 </Border>
             </Grid>
         </Grid>

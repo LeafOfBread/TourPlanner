@@ -19,10 +19,10 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock Text="Add a new Tourlog" FontSize="14" FontWeight="SemiBold" Grid.Row="0" Background="Gold" TextAlignment="Justify" VerticalAlignment="Stretch"/>
+            <TextBlock Text="Add a new Tourlog" FontSize="14" FontWeight="SemiBold" Grid.Row="0" Background="#5295C4" TextAlignment="Justify" VerticalAlignment="Stretch"/>
         </Grid>
 
-        <Grid Grid.Row="1" Grid.Column="0" Background="Gold">
+        <Grid Grid.Row="1" Grid.Column="0" Background="#C48152">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>

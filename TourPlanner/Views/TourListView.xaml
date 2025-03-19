@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
-        <ListView x:Name="TourList" ItemsSource="{Binding TourDetails}" Background="LightGray" SizeChanged="TourListView_SizeChanged">
+        <ListView x:Name="TourList" ItemsSource="{Binding TourDetails}" Background="#E3D7C2" SizeChanged="TourListView_SizeChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
