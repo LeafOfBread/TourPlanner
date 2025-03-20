@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace TourPlanner.Views
+namespace TourPlanner.HelperClasses
 {
     public static class ListViewHelper
     {

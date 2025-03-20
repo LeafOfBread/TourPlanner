@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TourPlannerClasses\TourPlannerClasses.csproj" />
-    <ProjectReference Include="..\TourPlanner\TourPlanner.csproj" />
+    <ProjectReference Include="..\TourPlannerClasses\TourPlanner.BusinessLogic.csproj" />
+    <ProjectReference Include="..\TourPlanner\TourPlanner.UI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

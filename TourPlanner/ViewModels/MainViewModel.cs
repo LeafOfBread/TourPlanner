@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TourPlanner.HelperClasses;
 using TourPlannerClasses.Services;
 using TourPlannerClasses.Tour;
 
@@ -13,9 +14,9 @@ namespace TourPlanner.ViewModels
     {
         public TourViewModel TourVM { get; }
 
-        public MainViewModel(TourService tourService, TourLogService tourlogService)
+        public MainViewModel(TourService tourService, TourLogService tourlogService, InputValidator validator)
         {
-            TourVM = new TourViewModel(tourService, tourlogService);
+            TourVM = new TourViewModel(tourService, tourlogService, validator);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -40,7 +40,7 @@
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Author}"/>
-                    <GridViewColumn Header="Date" DisplayMemberBinding="{Binding Date}"/>
+                    <GridViewColumn Header="Date" DisplayMemberBinding="{Binding Date, StringFormat=d}"/>
                     <GridViewColumn Header="Difficulty" DisplayMemberBinding="{Binding Difficulty}"/>
                     <GridViewColumn Header="Total Distance" DisplayMemberBinding="{Binding TotalDistance}"/>
                     <GridViewColumn Header="Time Spent" DisplayMemberBinding="{Binding TotalTime}"/>

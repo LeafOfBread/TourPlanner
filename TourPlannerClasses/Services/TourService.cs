@@ -20,7 +20,9 @@ namespace TourPlannerClasses.Tour
             _context = context;
         }
 
-        public async Task<List<Tours>> GetAllTours()
+        public TourService() { }
+
+        public virtual async Task<List<Tours>> GetAllTours()
         {
             return await _context.Tours.ToListAsync();
         }

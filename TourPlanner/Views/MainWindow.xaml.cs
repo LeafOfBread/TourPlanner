@@ -17,6 +17,7 @@ using TourPlanner.ViewModels;
 using TourPlanner.Views;
 using TourPlannerClasses.Services;
 using Microsoft.Extensions.DependencyInjection;
+using TourPlanner.HelperClasses;
 
 namespace TourPlanner
 {
@@ -26,15 +27,16 @@ namespace TourPlanner
     public partial class MainWindow : Window
     {
         private readonly TourViewModel _viewModel;
-        public MainWindow(TourService tourService, TourLogService tourlogService)
+        public MainWindow(TourService tourService, TourLogService tourlogService, InputValidator validator)
         {
             InitializeComponent();
-            _viewModel = new TourViewModel(tourService, tourlogService);
+            _viewModel = new TourViewModel(tourService, tourlogService, validator);
             DataContext = _viewModel;
         }
 
         public MainWindow() : this(App.ServiceProvider.GetRequiredService<TourService>(),
-                                   App.ServiceProvider.GetRequiredService<TourLogService>())
+                                   App.ServiceProvider.GetRequiredService<TourLogService>(),
+                                   App.ServiceProvider.GetRequiredService<InputValidator>())
         {
         }
 

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TourPlanner", "TourPlanner\TourPlanner.csproj", "{90ACB511-B24F-44C5-A6CB-907F675BE395}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TourPlanner.UI", "TourPlanner\TourPlanner.UI.csproj", "{90ACB511-B24F-44C5-A6CB-907F675BE395}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TourPlannerClasses", "TourPlannerClasses\TourPlannerClasses.csproj", "{70555B07-28F1-41EB-B14D-3121EA7FDC0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TourPlanner.BusinessLogic", "TourPlannerClasses\TourPlanner.BusinessLogic.csproj", "{70555B07-28F1-41EB-B14D-3121EA7FDC0B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{EE859DC9-F9F5-413D-A170-4BE603871BCA}"
 EndProject

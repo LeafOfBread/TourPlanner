@@ -10,6 +10,7 @@ using TourPlannerClasses.Services;
 using TourPlannerClasses.Tour;
 using Newtonsoft.Json.Linq;
 using System.IO;
+using TourPlanner.HelperClasses;
 
 namespace TourPlanner
 {
@@ -34,6 +35,7 @@ namespace TourPlanner
             //services
             services.AddScoped<TourService>();
             services.AddScoped<TourLogService>();
+            services.AddScoped<InputValidator>();
 
             services.AddSingleton<TourViewModel>();
 

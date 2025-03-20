@@ -8,8 +8,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Markup;
+using TourPlanner.HelperClasses;
+using TourPlanner.Views;
 using TourPlannerClasses.Models;
 using TourPlannerClasses.Services;
 using TourPlannerClasses.Tour;
@@ -39,6 +43,8 @@ namespace TourPlanner.ViewModels
                 OnPropertyChanged(nameof(CurrentLogView));
             }
         }
+
+        private readonly InputValidator _validator;
 
         //Commands
         public ICommand AddTourCommand { get; private set; }
@@ -89,6 +95,7 @@ namespace TourPlanner.ViewModels
                     OnPropertyChanged(nameof(SelectedTour));
                     UpdateTourDetails();
                     UpdateTourLogDetails();
+                    HandleTourSelectionChanged();
                 }
             }
         }
@@ -129,10 +136,11 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        public TourViewModel(TourService tourService, TourLogService tourlogService)
+        public TourViewModel(TourService tourService, TourLogService tourlogService, InputValidator validator)
         {   //DI
             _tourService = tourService;
             _tourlogService = tourlogService;
+            _validator = validator;
 
             //initialization
             TourDetails = new ObservableCollection<Tours>();
@@ -181,6 +189,7 @@ namespace TourPlanner.ViewModels
 
             //fire and forget - load all the necessary data asap
             _ = LoadDataAsync();
+            ClearInputs();
         }
 
         public void ShowAddTourView()
@@ -506,7 +515,14 @@ namespace TourPlanner.ViewModels
 
         public async Task SaveTour()
         {
-            await _tourService.InsertTours(NewTour);
+            string errMessage = _validator.ValidateTourInput(NewTour);
+            if (errMessage == "")
+                await _tourService.InsertTours(NewTour);
+            else
+            {
+                MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             // reload all tours from the database
             var tours = await _tourService.GetAllTours();
@@ -514,6 +530,7 @@ namespace TourPlanner.ViewModels
             // new collection to replace the old one and trigger property change
             AllTours = new ObservableCollection<Tours>(tours);
             ShowTourListView();
+            ClearInputs();
         }
 
         public async Task DeleteTourAsync()
@@ -537,13 +554,22 @@ namespace TourPlanner.ViewModels
                 tourFromDb.Transport = EditTour.Transport;
                 tourFromDb.Duration = EditTour.Duration;
                 tourFromDb.Distance = EditTour.Distance;
-                
-                await _tourService.UpdateTour(tourFromDb);
+
+                string errMessage = _validator.ValidateTourInput(tourFromDb);
+                if (errMessage == "")
+                    await _tourService.UpdateTour(tourFromDb);
+
+                else
+                {
+                    MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
             }
 
             var tours = await _tourService.GetAllTours();
             AllTours = new ObservableCollection<Tours>(tours);
             ShowTourListView(); //show tourlist again
+            ClearInputs();    //clear user inputs when insertion is finished
         }
 
         public async Task SubmitLog()
@@ -554,12 +580,22 @@ namespace TourPlanner.ViewModels
             {
                 NewTourLog.TourId = tourFromDb.Id;
 
-                await _tourlogService.InsertTourLog(NewTourLog);
+                string errMessage = _validator.ValidateTourlogInput(NewTourLog);
+
+                if (errMessage == "")
+                    await _tourlogService.InsertTourLog(NewTourLog);
+
+                else
+                {
+                    MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
             }
 
             var tourlogs = await _tourlogService.GetTourlogsAsync();
             AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
             ShowTourlogView();
+            ClearInputs();
         }
 
         public async Task DeleteTourLog()
@@ -587,7 +623,16 @@ namespace TourPlanner.ViewModels
                     tourlogFromDb.TotalTime = TourlogToEdit.TotalTime;
                     tourlogFromDb.Comment = TourlogToEdit.Comment;
 
-                    await _tourlogService.EditTourLog(tourlogFromDb);
+                    string errMessage = _validator.ValidateTourlogInput(tourlogFromDb);
+
+                    if (errMessage == "")
+                        await _tourlogService.EditTourLog(tourlogFromDb);
+
+                    else
+                    {
+                        MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
                 }
                 var tourlogs = await _tourlogService.GetTourlogsAsync();
                 AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
@@ -601,6 +646,32 @@ namespace TourPlanner.ViewModels
                 return SelectedTour.Id;
             else
                 return 0;
+        }
+
+        private void ClearInputs()
+        {
+            //Tour
+            _addTourName = "";
+            _addTourFrom = "";
+            _addTourTo = "";
+            _addTourDescription = "";
+
+            //Tourlog
+            _addAuthor = "";
+            _addComment = "";
+            _addDistance = 0;
+            _addTime = TimeSpan.Zero;
+            _addRating = 5;
+            _addDate = DateTime.Now;
+        }
+
+        private void HandleTourSelectionChanged()
+        {
+            if (CurrentTourView is AddTourView || CurrentTourView is EditTourView)
+                ShowTourListView();
+
+            if (CurrentLogView is AddTourLogView || CurrentLogView is EditTourlogView)
+                ShowTourlogView();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
