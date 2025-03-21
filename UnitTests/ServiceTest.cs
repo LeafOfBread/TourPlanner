@@ -27,7 +27,7 @@ public class ServiceTest
         mockTourService.Setup(s => s.GetAllTours()).ReturnsAsync(mockTours);
 
         // Create an instance of TourViewModel with the mock service
-        var viewModel = new TourViewModel(mockTourService.Object, null);
+        var viewModel = new TourViewModel(mockTourService.Object, null, null);
 
         // Act: Call the method
         await Task.Delay(500);
