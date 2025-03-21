@@ -11,7 +11,15 @@ using TourPlannerClasses.Models;
 
 namespace TourPlannerClasses.Tour
 {
-    public class TourService
+    public interface ITourService
+    {
+        Task<List<Tours>> GetAllTours();
+        Task<Tours> GetTourById(int id);
+        Task InsertTours(Tours newTour);
+        Task UpdateTour(Tours tourToUpdate);
+        Task DeleteTour(Tours tourToDelete);
+    }
+    public class TourService : ITourService
     {
         private readonly TourDbContext _context;
 
@@ -26,7 +34,22 @@ namespace TourPlannerClasses.Tour
         {
             return await _context.Tours.ToListAsync();
         }
-        
+
+        public async Task<Tours> GetTourById(int id)
+        {
+            try
+            {
+                var foundTour = await _context.Tours.FindAsync(id);
+                if (foundTour != null)
+                    return foundTour;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error finding Tour by Id: {ex.Message}");
+            }
+            return null;
+        }
+
         public async Task InsertTours(Tours newTour)
         {
             try
@@ -40,13 +63,6 @@ namespace TourPlannerClasses.Tour
                 Console.WriteLine($"Error inserting tour: {ex.Message}");
             }
         }
-
-        public async Task DeleteTour(Tours tourToDelete)
-        {
-            _context.Remove(tourToDelete);
-            await _context.SaveChangesAsync();
-        }
-
         public async Task UpdateTour(Tours tourToUpdate)
         {
             try
@@ -74,20 +90,10 @@ namespace TourPlannerClasses.Tour
             }
         }
 
-
-        public async Task<Tours> GetTourById(int id)
+        public async Task DeleteTour(Tours tourToDelete)
         {
-            try
-            {
-                var foundTour = await _context.Tours.FindAsync(id);
-                if (foundTour != null)
-                    return foundTour;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error finding Tour by Id: {ex.Message}");
-            }
-            return null;
+            _context.Remove(tourToDelete);
+            await _context.SaveChangesAsync();
         }
     }
 }

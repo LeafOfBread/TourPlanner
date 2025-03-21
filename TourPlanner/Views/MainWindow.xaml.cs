@@ -27,7 +27,7 @@ namespace TourPlanner
     public partial class MainWindow : Window
     {
         private readonly TourViewModel _viewModel;
-        public MainWindow(TourService tourService, TourLogService tourlogService, InputValidator validator)
+        public MainWindow(ITourService tourService, TourLogService tourlogService, InputValidator validator)
         {
             InitializeComponent();
             _viewModel = new TourViewModel(tourService, tourlogService, validator);

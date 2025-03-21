@@ -2,7 +2,7 @@ using TourPlanner;
 using TourPlannerClasses.Models;
 
 
-namespace UnitTests
+namespace ModelTests
 {
     public class ModelsTest
     {

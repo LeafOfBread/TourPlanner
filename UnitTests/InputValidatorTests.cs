@@ -9,7 +9,7 @@ using TourPlanner.HelperClasses;
 
 using TourPlannerClasses.Models;
 
-namespace UnitTests
+namespace ValidatorTests
 {
     public class InputValidatorTests
     {

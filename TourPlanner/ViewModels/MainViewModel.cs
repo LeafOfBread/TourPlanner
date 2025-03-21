@@ -14,7 +14,7 @@ namespace TourPlanner.ViewModels
     {
         public TourViewModel TourVM { get; }
 
-        public MainViewModel(TourService tourService, TourLogService tourlogService, InputValidator validator)
+        public MainViewModel(ITourService tourService, TourLogService tourlogService, InputValidator validator)
         {
             TourVM = new TourViewModel(tourService, tourlogService, validator);
         }

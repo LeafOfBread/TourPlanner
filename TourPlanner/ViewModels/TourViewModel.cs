@@ -59,7 +59,7 @@ namespace TourPlanner.ViewModels
         public ICommand EditLogCommand { get; private set; }
 
         //tour fields and services
-        private readonly TourService _tourService;
+        private readonly ITourService _tourService;
         private ObservableCollection<Tours> _allTours;
         private Tours _selectedTour;
         private ObservableCollection<Tours> _tourDetails;
@@ -136,7 +136,7 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        public TourViewModel(TourService tourService, TourLogService tourlogService, InputValidator validator)
+        public TourViewModel(ITourService tourService, TourLogService tourlogService, InputValidator validator)
         {   //DI
             _tourService = tourService;
             _tourlogService = tourlogService;
