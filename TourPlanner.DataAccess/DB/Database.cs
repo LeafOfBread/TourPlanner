@@ -1,11 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using System.Windows.Controls;
 using TourPlannerClasses.Models;
-using TourPlannerClasses.Services;
-using TourPlannerClasses.Tour;
 using Newtonsoft.Json.Linq;
-using System.IO;
+using System.IO; 
 
 namespace TourPlannerClasses.DB
 {
@@ -59,7 +56,7 @@ namespace TourPlannerClasses.DB
             string[] possiblePaths =
             {
                 Path.Combine(basePath, configFileName),
-                Path.Combine(basePath, "..", "..", "..", "..", "TourPlannerClasses", "DB", configFileName)
+                Path.Combine(basePath, "..", "..", "..", "..", "TourPlanner.DataAccess", "DB", configFileName)
             };
 
             foreach (string path in possiblePaths)

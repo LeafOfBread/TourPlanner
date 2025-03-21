@@ -1,0 +1,84 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.1.1 Chrome/132.0.6834.210 Electron/34.3.3 Safari/537.36" version="26.1.1">
+  <diagram name="Seite-1" id="kvY6v6d2Isxz4_RPQcc7">
+    <mxGraphModel dx="1098" dy="828" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-1" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;&lt;b&gt;DataAccess Layer&lt;/b&gt;&lt;/font&gt;&lt;div&gt;(DB)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="481" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-2" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;&lt;b&gt;BusinessLogic Layer&lt;/b&gt;&lt;/font&gt;&lt;div&gt;(Tourservice, Tourlogservice,&amp;nbsp;&lt;/div&gt;&lt;div&gt;Input Validator)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="341" width="170" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-3" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;&lt;b&gt;Presentation Layer&lt;/b&gt;&lt;/font&gt;&lt;div&gt;(All Views, TourViewModel)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="201" width="170" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-4" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-1" target="h2Br5b4KSalk7Fo1bpV8-2">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="140" y="471" as="sourcePoint" />
+            <mxPoint x="190" y="421" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-7" target="h2Br5b4KSalk7Fo1bpV8-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-7" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Tours&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;int Id (PK)&lt;/div&gt;&lt;div&gt;string Name&lt;/div&gt;&lt;div&gt;string Description&lt;/div&gt;&lt;div&gt;string From&lt;/div&gt;&lt;div&gt;string To&lt;/div&gt;&lt;div&gt;TimeSpan Duration&lt;/div&gt;&lt;div&gt;double Distance&lt;/div&gt;&lt;div&gt;enum TransportType&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry y="661" width="140" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-8" target="h2Br5b4KSalk7Fo1bpV8-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-8" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Tourlogs&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;int TourlogId(PK)&lt;/div&gt;&lt;div&gt;int TourId(FK)&lt;/div&gt;&lt;div&gt;DateTime Date&lt;/div&gt;&lt;div&gt;string Comment&lt;/div&gt;&lt;div&gt;enum Difficulty&lt;/div&gt;&lt;div&gt;double TotalDistance&lt;/div&gt;&lt;div&gt;int Rating&lt;/div&gt;&lt;div&gt;string Author&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="140" y="661" width="140" height="164" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-32" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-9" target="h2Br5b4KSalk7Fo1bpV8-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-9" value="Models" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="588" width="120" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-13" target="h2Br5b4KSalk7Fo1bpV8-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-13" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;TourlogService&lt;/font&gt;&lt;div&gt;TourDbContext context&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Task&amp;lt;List&amp;lt;Tourlog&amp;gt;&amp;gt; GetTourlogsAsync()&lt;/div&gt;&lt;div&gt;Task InsertTourLog(Tourlog)&lt;/div&gt;&lt;div&gt;Task DeleteTourLog(Tourlog)&lt;/div&gt;&lt;div&gt;Task EditTourLog(Tourlog)&lt;/div&gt;&lt;div&gt;Task&amp;lt;Tourlog&amp;gt; GetTourlogById(int id)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="570" y="705" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-15" target="h2Br5b4KSalk7Fo1bpV8-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-15" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;TourService&lt;/font&gt;&lt;div&gt;TourDbContext context&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Task&amp;lt;List&amp;lt;Tours&amp;gt;&amp;gt; GetAllTours()&lt;/div&gt;&lt;div&gt;Task InsertTours(Tours)&lt;/div&gt;&lt;div&gt;Task DeleteTour(Tours)&lt;/div&gt;&lt;div&gt;Task UpdateTour(Tours)&lt;/div&gt;&lt;div&gt;Task &amp;lt;Tours&amp;gt; GetTourById(int id)&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="705" width="240" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-16" target="h2Br5b4KSalk7Fo1bpV8-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-16" value="Services / Helpers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="625" width="120" height="35" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-21" target="h2Br5b4KSalk7Fo1bpV8-16">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-21" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;InputValidator&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;string ValidateTourInput(Tours&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;string ValidateTourlogInput(Tourlog)&lt;/span&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="505" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" target="h2Br5b4KSalk7Fo1bpV8-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="479.9999999999998" y="251.00000000000023" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-23" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;TourViewModel&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;&lt;br&gt;&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;UserControl CurrentTourView /&amp;nbsp;&lt;/font&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;CurrentLogView&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;InputValidator _validator&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font&gt;ICommand AddTourCommand, SaveTourCommand,....&lt;/font&gt;&lt;/div&gt;&lt;div&gt;TourService _tourService&lt;/div&gt;&lt;div&gt;TourlogService _tourlogService&lt;/div&gt;&lt;div&gt;ObservableCollection AllTours, SelectedTour, TourDetails&lt;/div&gt;&lt;div&gt;ObservableCollection AllTourLogs, SelectedTourlog, TourlogDetails&lt;/div&gt;&lt;div&gt;string _addTourName, _addTourFrom,......&lt;/div&gt;&lt;div&gt;Tours NewTour, EditTour&lt;/div&gt;&lt;div&gt;Tourlog NewTourLog, TourlogToEdit&lt;/div&gt;&lt;div&gt;...&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Task LoadDataAsync()&lt;/div&gt;&lt;div&gt;void UpdateTourDetails() / UpdateTourlogDetails()&lt;/div&gt;&lt;div&gt;Task SaveTourAsync() / SaveLogAsync()&lt;/div&gt;&lt;div&gt;Task DeleteTourAsync() / DeleteTourLogAsync()&lt;/div&gt;&lt;div&gt;Task EditTourAsync() / EditTourLogAsync()&lt;/div&gt;&lt;div&gt;int GetSelectedTourId()&lt;/div&gt;&lt;div&gt;void ClearInputs&lt;/div&gt;&lt;div&gt;void HandleTourSelectionChanged()&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="35" width="320" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-25" target="h2Br5b4KSalk7Fo1bpV8-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-25" value="&lt;font style=&quot;font-size: 16px;&quot;&gt;Views&lt;/font&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;MainWindow&lt;/div&gt;&lt;div&gt;TourListBox&lt;/div&gt;&lt;div&gt;TourListView&lt;/div&gt;&lt;div&gt;TourLogsView&lt;/div&gt;&lt;div&gt;AddTourView&lt;/div&gt;&lt;div&gt;AddTourLogView&lt;/div&gt;&lt;div&gt;EditTourView&lt;/div&gt;&lt;div&gt;EditTourlogView&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="330" y="50" width="120" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="h2Br5b4KSalk7Fo1bpV8-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.501;entryY=0.972;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="h2Br5b4KSalk7Fo1bpV8-2" target="h2Br5b4KSalk7Fo1bpV8-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

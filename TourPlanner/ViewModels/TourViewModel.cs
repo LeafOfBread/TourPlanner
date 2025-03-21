@@ -177,15 +177,15 @@ namespace TourPlanner.ViewModels
 
             //initialize commands
             AddTourCommand = new RelayCommand(ShowAddTourView);
-            SaveTourCommand = new RelayCommand(() => SaveTour());
+            SaveTourCommand = new RelayCommand(() => SaveTourAsync());
             DeleteTourCommand = new RelayCommand(() => DeleteTourAsync());
             EditTourViewCommand = new RelayCommand(() => ShowEditTourView());
             UpdateTourCommand = new RelayCommand(() => EditTourAsync());
             ShowAddLogViewCommand = new RelayCommand(() => ShowAddTourLog());
-            SubmitLogCommand = new RelayCommand(() => SubmitLog());
-            DeleteLogCommand = new RelayCommand(() => DeleteTourLog());
+            SubmitLogCommand = new RelayCommand(() => SaveLogAsync());
+            DeleteLogCommand = new RelayCommand(() => DeleteTourLogAsync());
             ShowEditLogViewCommand = new RelayCommand(() => ShowEditTourLog());
-            EditLogCommand = new RelayCommand(() => EditTourLog());
+            EditLogCommand = new RelayCommand(() => EditTourLogAsync());
 
             //fire and forget - load all the necessary data asap
             _ = LoadDataAsync();
@@ -513,7 +513,7 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        public async Task SaveTour()
+        public async Task SaveTourAsync()
         {
             string errMessage = _validator.ValidateTourInput(NewTour);
             if (errMessage == "")
@@ -572,7 +572,7 @@ namespace TourPlanner.ViewModels
             ClearInputs();    //clear user inputs when insertion is finished
         }
 
-        public async Task SubmitLog()
+        public async Task SaveLogAsync()
         {
             var tourFromDb = await _tourService.GetTourById(SelectedTour.Id);
 
@@ -598,7 +598,7 @@ namespace TourPlanner.ViewModels
             ClearInputs();
         }
 
-        public async Task DeleteTourLog()
+        public async Task DeleteTourLogAsync()
         {
             if (SelectedTourLog != null)
             {
@@ -609,7 +609,7 @@ namespace TourPlanner.ViewModels
             }
         }
 
-        public async Task EditTourLog()
+        public async Task EditTourLogAsync()
         {
             if (SelectedTourLog != null)
             {
@@ -637,6 +637,7 @@ namespace TourPlanner.ViewModels
                 var tourlogs = await _tourlogService.GetTourlogsAsync();
                 AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
                 ShowTourlogView();
+                ClearInputs();
             }
         }
 
