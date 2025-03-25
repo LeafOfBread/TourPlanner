@@ -4,8 +4,10 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:TourPlanner.Views"
+        xmlns:vm="clr-namespace:TourPlanner.UI.ViewModels"
         mc:Ignorable="d"
         Title="Tour Planner" Height="650" Width="1000">
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="0.2*"/>
@@ -52,7 +54,7 @@
                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16"/>
             </Button>
 
-            <Button x:Name="RemoveButton" Command="{Binding DeleteTourCommand}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="IndianRed">
+            <Button x:Name="RemoveButton" Command="{Binding DeleteTourCommand}" DataContext="{Binding TourViewModel}" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="IndianRed">
                 <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
 
@@ -83,12 +85,16 @@
 
                 
                 <!--Either Listview of selected tour details OR addtour-->
-                <ContentControl Grid.Row="0" Grid.Column="1" Content="{Binding CurrentTourView}">
+                <ContentControl Grid.Row="0" Grid.Column="1"
+                                Content="{Binding CurrentTourView}"
+                                DataContext="{Binding TourViewModel}">
                     
                 </ContentControl>
 
                 <!--Show either all tourlogs, or show AddTourLogView-->
-                <ContentControl Grid.Row="2" Grid.Column="1" Content="{Binding CurrentLogView}">
+                <ContentControl Grid.Row="2" Grid.Column="1" 
+                                Content="{Binding CurrentLogView}" 
+                                DataContext="{Binding TourLogViewModel}">
                         
                 </ContentControl>
 
@@ -97,7 +103,9 @@
             </Grid>
 
             <!--ListBox contains a list of all available tours-->
-            <views:TourListBox Grid.RowSpan="2" Grid.Column="0" SelectedTour="{Binding SelectedTour, Mode=TwoWay}"/>
+            <views:TourListBox Grid.RowSpan="2" Grid.Column="0"
+                               SelectedTour="{Binding SelectedTour, Mode=TwoWay}" 
+                               DataContext="{Binding TourViewModel}"/>
         </Grid>
     </Grid>
 </Window>

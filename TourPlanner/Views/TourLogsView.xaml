@@ -4,11 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TourPlanner.Views"
+             xmlns:vm="clr-namespace:TourPlanner.UI.ViewModels" d:DataContext="{d:DesignInstance Type=vm:TourLogViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
 
-        
+    <Grid>
+   
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
             <RowDefinition Height="3*"/>
@@ -22,15 +23,18 @@
 
             <TextBlock Text="Tourlogs" Grid.Row="0" Background="#5295C4" TextAlignment="Justify" VerticalAlignment="Stretch"/>
 
-            <Button x:Name="AddTourButton" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen" Command="{Binding ShowAddLogViewCommand}">
+            <Button x:Name="AddTourButton" Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="LightGreen" 
+                    Command="{Binding ShowAddLogViewCommand}">
                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16" />
             </Button>
 
-            <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="IndianRed" Command="{Binding DeleteLogCommand}">
+            <Button x:Name="RemoveButton" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Background="IndianRed" 
+                    Command="{Binding DeleteLogCommand}">
                 <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
 
-            <Button x:Name="EditTourButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Background="White" Command="{Binding ShowEditLogViewCommand}">
+            <Button x:Name="EditTourButton" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"  Background="White" 
+                    Command="{Binding ShowEditLogViewCommand}">
                 <TextBlock Text="&#xE10C;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
         </Grid>

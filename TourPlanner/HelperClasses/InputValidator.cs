@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TourPlannerClasses.Models;
 
-namespace TourPlanner.HelperClasses
+namespace TourPlanner.UI.HelperClasses
 {
     public class InputValidator
     {

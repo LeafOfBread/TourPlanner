@@ -12,12 +12,11 @@ using System.Windows.Shapes;
 using TourPlannerClasses;
 using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
-using TourPlannerClasses.Tour;
-using TourPlanner.ViewModels;
 using TourPlanner.Views;
-using TourPlannerClasses.Services;
 using Microsoft.Extensions.DependencyInjection;
-using TourPlanner.HelperClasses;
+using TourPlanner.UI.HelperClasses;
+using TourPlanner.UI.ViewModels;
+using TourPlanner.BusinessLogic.Services;
 
 namespace TourPlanner
 {
@@ -26,11 +25,11 @@ namespace TourPlanner
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly TourViewModel _viewModel;
+        private readonly MainViewModel _viewModel;
         public MainWindow(ITourService tourService, TourLogService tourlogService, InputValidator validator)
         {
             InitializeComponent();
-            _viewModel = new TourViewModel(tourService, tourlogService, validator);
+            _viewModel = new MainViewModel(tourService, tourlogService, validator);
             DataContext = _viewModel;
         }
 

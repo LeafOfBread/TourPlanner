@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using TourPlanner.BusinessLogic.Services;
 using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
-using TourPlannerClasses.Services;
-using TourPlannerClasses.Tour;
 using Xunit;
 
-namespace ServiceTests
+namespace UnitTests
 {
     public class TourServiceTests
     {
@@ -37,8 +36,8 @@ namespace ServiceTests
             // Arrange
             var mockTours = new List<Tours>
         {
-            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new System.TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
-            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new System.TimeSpan(2, 0, 0), 20.0, TransportType.Bus)
+            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
+            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus)
         };
 
             // Add mock tours to the in-memory database
@@ -61,8 +60,8 @@ namespace ServiceTests
             //Arrange
             var mockTours = new List<Tours>
         {
-            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new System.TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
-            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new System.TimeSpan(2, 0, 0), 20.0, TransportType.Bus)
+            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
+            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus)
         };
 
             await _context.Tours.AddRangeAsync(mockTours);
@@ -81,7 +80,7 @@ namespace ServiceTests
         public async Task InsertTour_ShouldCorrectlyInsert()
         {
             //Arrange
-            var tourToInsert = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new System.TimeSpan(1, 0, 0), 10.5, TransportType.Boat);
+            var tourToInsert = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat);
             //Act
             await _tourService.InsertTours(tourToInsert);
 
@@ -95,7 +94,7 @@ namespace ServiceTests
         public async Task DeleteTour_ShouldCorrectlyDelete()
         {
             //Arrange
-            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new System.TimeSpan(1, 0, 0), 10.5, TransportType.Boat);
+            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat);
             await _context.Tours.AddAsync(mockTour);
             await _context.SaveChangesAsync();
 
@@ -112,12 +111,12 @@ namespace ServiceTests
         public async Task UpdateTour_ShouldCorrectlyUpdate()
         {
             //Arrange
-            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new System.TimeSpan(1, 0, 0), 10.5, TransportType.Boat);
+            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat);
             await _context.AddAsync(mockTour);
             await _context.SaveChangesAsync();
 
             //Act
-            var mockTourWithEdits = new Tours(1, "Updated Tour", "New Description", "Another Start", "Different End", new System.TimeSpan(1, 1, 0), 55.89, TransportType.Plane);
+            var mockTourWithEdits = new Tours(1, "Updated Tour", "New Description", "Another Start", "Different End", new TimeSpan(1, 1, 0), 55.89, TransportType.Plane);
             await _tourService.UpdateTour(mockTourWithEdits);
 
             //Assert

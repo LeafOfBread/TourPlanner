@@ -3,14 +3,13 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Configuration;
 using System.Data;
 using System.Windows;
-using TourPlanner.ViewModels;
 using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
-using TourPlannerClasses.Services;
-using TourPlannerClasses.Tour;
 using Newtonsoft.Json.Linq;
 using System.IO;
-using TourPlanner.HelperClasses;
+using TourPlanner.UI.HelperClasses;
+using TourPlanner.UI.ViewModels;
+using TourPlanner.BusinessLogic.Services;
 
 namespace TourPlanner
 {
@@ -37,7 +36,7 @@ namespace TourPlanner
             services.AddScoped<TourLogService>();
             services.AddScoped<InputValidator>();
 
-            services.AddSingleton<TourViewModel>();
+            services.AddSingleton<MainViewModel>();
 
             services.AddSingleton<MainWindow>();
 

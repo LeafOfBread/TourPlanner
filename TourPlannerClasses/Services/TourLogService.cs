@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
 
-namespace TourPlannerClasses.Services
+namespace TourPlanner.BusinessLogic.Services
 {
     public class TourLogService
     {

@@ -9,7 +9,7 @@ using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
 
 
-namespace TourPlannerClasses.Tour
+namespace TourPlanner.BusinessLogic.Services
 {
     public interface ITourService
     {

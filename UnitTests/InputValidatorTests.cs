@@ -4,12 +4,10 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TourPlanner.HelperClasses;
-
-
 using TourPlannerClasses.Models;
+using TourPlanner.UI.HelperClasses;
 
-namespace ValidatorTests
+namespace UnitTests
 {
     public class InputValidatorTests
     {

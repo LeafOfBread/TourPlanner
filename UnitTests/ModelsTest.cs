@@ -1,8 +1,7 @@
 using TourPlanner;
 using TourPlannerClasses.Models;
 
-
-namespace ModelTests
+namespace UnitTests
 {
     public class ModelsTest
     {

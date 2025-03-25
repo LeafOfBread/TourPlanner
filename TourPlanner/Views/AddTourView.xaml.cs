@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using TourPlanner.ViewModels;
+using TourPlanner.UI.ViewModels;
 
 namespace TourPlanner.Views
 {
@@ -30,7 +30,6 @@ namespace TourPlanner.Views
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
-            _viewModel.ShowTourListView();
         }
     }
 }
