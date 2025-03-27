@@ -34,8 +34,11 @@
 
 
         <Grid Grid.Row="1">
-            <TextBox x:Name="SearchTextBox" Text="Search" FontSize="20" Foreground="#E3E2E2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="#064F89" GotFocus="SearchBox_GotFocus" LostFocus="SearchBox_LostFocus"/>
-            <TextBlock HorizontalAlignment="Right" VerticalAlignment="Stretch" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Text="&#xE721;" Margin="10"/>
+            <TextBox x:Name="SearchTextBox" Text="{Binding SearchInput}" FontSize="20" Foreground="#E3E2E2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                     Background="#064F89"
+                     DataContext="{Binding SearchViewModel}"/>
+            <Button x:Name="SearchButton" HorizontalAlignment="Right" VerticalAlignment="Stretch" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Content="&#xE721;" FontSize="25" Background="#E3D7C2"
+                    DataContext="{Binding SearchViewModel}" Command="{Binding SearchTourCommand}"/>
         </Grid>
 
         <Grid Grid.Row="2" HorizontalAlignment="Stretch" Background="#5295C4">
@@ -65,7 +68,7 @@
 
 
         <Grid Grid.Row="2" Grid.Column="2">
-            <Button x:Name="BackButton" Click="BackToTourList_Click" HorizontalAlignment="Right"  Margin="5" VerticalAlignment="Stretch">
+            <Button x:Name="BackButton" Command="{Binding ShowHomeMenuCommand}" HorizontalAlignment="Right"  Margin="5" VerticalAlignment="Stretch">
                 <TextBlock Text="Back"/>
             </Button>
         </Grid>

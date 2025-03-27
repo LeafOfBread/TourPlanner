@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 using Microsoft.EntityFrameworkCore;
 using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
-
+using FuzzySharp;
+using System.Data;
 
 namespace TourPlanner.BusinessLogic.Services
 {
@@ -18,7 +21,9 @@ namespace TourPlanner.BusinessLogic.Services
         Task InsertTours(Tours newTour);
         Task UpdateTour(Tours tourToUpdate);
         Task DeleteTour(Tours tourToDelete);
+        Task<ObservableCollection<Tours>> SearchForTours(string tourToFind, ObservableCollection<Tours> allTours);
     }
+
     public class TourService : ITourService
     {
         private readonly TourDbContext _context;
@@ -48,6 +53,28 @@ namespace TourPlanner.BusinessLogic.Services
                 Console.WriteLine($"Error finding Tour by Id: {ex.Message}");
             }
             return null;
+        }
+
+        public async Task<ObservableCollection<Tours>> SearchForTours(string name, ObservableCollection<Tours> allTours)
+        {
+            try
+            {
+                ObservableCollection<Tours> matchingTours = new ObservableCollection<Tours>();
+                const int fuzzyRatio = 50;
+                foreach(var tour in allTours)
+                {
+                    if (Fuzz.Ratio(name, tour.Name) > fuzzyRatio)
+                    {
+                        matchingTours.Add(tour);
+                    }
+                }
+                return matchingTours;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error looking for tours via their name: {ex.Message}");
+            }
+            return new ObservableCollection<Tours>();
         }
 
         public async Task InsertTours(Tours newTour)

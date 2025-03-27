@@ -33,7 +33,6 @@ namespace TourPlannerClasses.DB
             var optionsBuilder = new DbContextOptionsBuilder<TourDbContext>();
             var connectionString = reader.GetConnectionString();
             optionsBuilder.UseNpgsql(connectionString);
-
             return new TourDbContext(optionsBuilder.Options);
         }
     }

@@ -22,7 +22,10 @@ namespace TourPlanner.UI.ViewModels
     public class TourViewModel : INotifyPropertyChanged
     {
         private readonly MainViewModel _mainViewModel;
+        private readonly ITourService _tourService;
+        private readonly InputValidator _validator;
         private UserControl _currentTourView;
+
         public UserControl CurrentTourView
         {
             get => _currentTourView;
@@ -33,17 +36,12 @@ namespace TourPlanner.UI.ViewModels
             }
         }
 
-
-
-        private readonly InputValidator _validator;
-
         //Commands
         public ICommand SaveTourCommand { get; private set; }
         public ICommand DeleteTourCommand { get; private set; }
         public ICommand UpdateTourCommand { get; private set; }
 
-        //tour fields and services
-        private readonly ITourService _tourService;
+        //tour fields
         private ObservableCollection<Tours> _allTours;
         private Tours _selectedTour;
         private ObservableCollection<Tours> _tourDetails;
@@ -84,7 +82,6 @@ namespace TourPlanner.UI.ViewModels
             }
         }
 
-
         public TourViewModel() { }
         public TourViewModel(MainViewModel mainViewModel, ITourService tourService, InputValidator validator)
         {   //DI
@@ -117,7 +114,6 @@ namespace TourPlanner.UI.ViewModels
             ClearInputs();
         }
 
-
         public void UpdateTourDetails()
         {
             if (SelectedTour == null || AllTours == null)
@@ -126,13 +122,13 @@ namespace TourPlanner.UI.ViewModels
             TourDetails = new ObservableCollection<Tours> { SelectedTour };
         }
 
-
         //required add tour properties
         private string _addTourName;
         private string _addTourFrom;
         private string _addTourTo;
         private string _addTourDescription;
         private TransportType _addTourTransport;
+        public ObservableCollection<TransportType> TransportTypes { get; }
 
         private Tours _newTour = new Tours
         {
@@ -179,9 +175,6 @@ namespace TourPlanner.UI.ViewModels
                 }
             }
         }
-
-        public ObservableCollection<TransportType> TransportTypes { get; }
-
         public string AddTourName
         {
             get => _addTourName;
@@ -240,7 +233,7 @@ namespace TourPlanner.UI.ViewModels
 
          public async Task SaveTourAsync()
         {
-            string errMessage = _validator.ValidateTourInput(NewTour);
+            string errMessage = _validator.ValidateTourInput(NewTour);  //if validator returns no error -> insert new tour
             if (errMessage == "")
                 await _tourService.InsertTours(NewTour);
             else
@@ -249,10 +242,10 @@ namespace TourPlanner.UI.ViewModels
                 return;
             }
 
-            // reload all tours from the database
+            // reload all tours to also display the new one
             var tours = await _tourService.GetAllTours();
 
-            // new collection to replace the old one and trigger property change
+            // new collection to trigger property change
             AllTours = new ObservableCollection<Tours>(tours);
             _mainViewModel.ShowTourListView();
             ClearInputs();

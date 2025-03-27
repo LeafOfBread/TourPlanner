@@ -38,41 +38,6 @@ namespace TourPlanner
                                    App.ServiceProvider.GetRequiredService<InputValidator>())
         {
         }
-
-        private void AddTourButton_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ShowAddTourView();
-        }
-
-        private void BackToTourList_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.ShowTourListView();
-            _viewModel.ShowTourlogView();
-        }
-
-        private void SearchBox_GotFocus(object sender, RoutedEventArgs e)
-        {
-            SetSearchBoxPlaceholder(string.Empty, Brushes.Black);
-        }
-
-        private void SearchBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(SearchTextBox.Text))
-            {
-                SetSearchBoxPlaceholder("Search", Brushes.Gray);
-            }
-        }
-
-        private void SetSearchBoxPlaceholder(string text, Brush color)
-        {
-            SearchTextBox.Text = text;
-            SearchTextBox.Foreground = color;
-        }        
-
-        private void AddTour(object sender, RoutedEventArgs e)
-        {
-        }
-
     }
 
     public class RelayCommand : ICommand

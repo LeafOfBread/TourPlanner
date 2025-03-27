@@ -18,21 +18,25 @@ namespace TourPlanner.UI.ViewModels
     {
         public TourViewModel TourViewModel { get; }
         public TourLogViewModel TourLogViewModel { get; }
+        public SearchViewModel SearchViewModel { get; }
 
         public ICommand AddTourCommand { get; private set; }
         public ICommand EditTourViewCommand { get; private set; }
         public ICommand ShowAddLogViewCommand { get; private set; }
         public ICommand ShowEditLogViewCommand { get; private set; }
+        public ICommand ShowHomeMenuCommand { get; private set; }
 
         public MainViewModel(ITourService tourService, TourLogService tourlogService, InputValidator validator)
         {
             TourViewModel = new TourViewModel(this, tourService, validator);
             TourLogViewModel = new TourLogViewModel(this, tourService, tourlogService, validator);
+            SearchViewModel = new SearchViewModel(this, tourService);
 
             AddTourCommand = new RelayCommand(ShowAddTourView);
             EditTourViewCommand = new RelayCommand(() => ShowEditTourView());
             ShowAddLogViewCommand = new RelayCommand(() => ShowAddTourLog());
             ShowEditLogViewCommand = new RelayCommand(() => ShowEditTourLog());
+            ShowHomeMenuCommand = new RelayCommand(() => ShowHomeMenu(tourService, tourlogService));
 
             _ = LoadDataAsync(tourService, tourlogService);
         }
@@ -109,7 +113,13 @@ namespace TourPlanner.UI.ViewModels
 
                 TourLogViewModel.CurrentLogView = new EditTourlogView();
             }
+        }
 
+        public void ShowHomeMenu(ITourService tourService, TourLogService tourlogService)
+        {
+            TourViewModel.CurrentTourView = new TourListView();
+            TourLogViewModel.CurrentLogView = new TourLogsView();
+            _ = LoadDataAsync(tourService, tourlogService);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

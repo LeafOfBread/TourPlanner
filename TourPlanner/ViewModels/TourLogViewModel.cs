@@ -34,21 +34,7 @@ namespace TourPlanner.UI.ViewModels
         }
 
         private Tourlog _selectedTourLog;
-        private Tours _selectedTour;
 
-        public Tours SelectedTour
-        {
-            get => _selectedTour;
-            set
-            {
-                if (_selectedTour != value)
-                {
-                    _selectedTour = value;
-                    OnPropertyChanged(nameof(SelectedTour));
-                    UpdateTourLogDetails();
-                }
-            }
-        }
         public Tourlog SelectedTourLog
         {
             get => _selectedTourLog;
@@ -207,6 +193,29 @@ namespace TourPlanner.UI.ViewModels
                 ClearInputs();
             }
         }
+        public void ClearInputs()
+        {
+            _addAuthor = "";
+            _addComment = "";
+            _addDistance = 0;
+            _addTime = TimeSpan.Zero;
+            _addRating = 5;
+            _addDate = DateTime.Now;
+        }
+
+
+        //input fields
+        private string _addAuthor;
+        private DateTime _addDate;
+        private Difficulty _addDifficulty;
+        private double _addDistance;
+        private TimeSpan _addTime;
+        private int _addRating;
+        private string _addComment;
+
+        private Tourlog _newTourLog = new Tourlog();
+        private Tourlog _tourlogToEdit = new Tourlog();
+
         public Tourlog NewTourLog
         {
             get => _newTourLog;
@@ -226,17 +235,6 @@ namespace TourPlanner.UI.ViewModels
             }
         }
 
-
-        private string _addAuthor;
-        private DateTime _addDate;
-        private Difficulty _addDifficulty;
-        private double _addDistance;
-        private TimeSpan _addTime;
-        private int _addRating;
-        private string _addComment;
-
-        private Tourlog _newTourLog = new Tourlog();
-        private Tourlog _tourlogToEdit = new Tourlog();
         public Tourlog TourlogToEdit
         {
             get => _tourlogToEdit;
@@ -333,16 +331,6 @@ namespace TourPlanner.UI.ViewModels
                 _tourlogToEdit.Comment = value;
                 OnPropertyChanged(nameof(AddComment));
             }
-        }
-        public void ClearInputs()
-        {
-            //Tourlog
-            _addAuthor = "";
-            _addComment = "";
-            _addDistance = 0;
-            _addTime = TimeSpan.Zero;
-            _addRating = 5;
-            _addDate = DateTime.Now;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

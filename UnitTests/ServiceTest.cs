@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using TourPlanner.BusinessLogic.Services;
 using TourPlannerClasses.DB;
@@ -128,6 +129,39 @@ namespace UnitTests
             Assert.InRange(mockTourWithEdits.Distance - result.Distance, -0.0001, 0.0001);
             Assert.Equal(mockTourWithEdits.Duration, result.Duration);
             Assert.Equal(mockTourWithEdits.Transport, result.Transport);
+        }
+
+        [Fact]
+        public async Task SearchForTours_ShouldReturnSimilarTours()
+        {
+            //Arrange
+            ObservableCollection <Tours> listOfTours = new ObservableCollection<Tours>()
+            {
+                new Tours(1, "SimilarSoundingTour", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
+                new Tours(2, "SmilerSoundTour", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus),
+                new Tours(1, "ThisIsNotTheSame", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
+                new Tours(2, "Smiler", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus),
+                new Tours(1, "Simulation", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
+                new Tours(2, "Test", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus),
+            };
+
+            string tourNameToLookFor = "SimilarTour";
+            var expectedTourNames = new List<string> { "SimilarSoundingTour", "SmilerSoundTour", "Smiler", "Simulation" };
+
+            //Act
+            var result = await _tourService.SearchForTours(tourNameToLookFor, listOfTours);
+
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.IsType<ObservableCollection<Tours>>(result);
+            Assert.Equal(expectedTourNames.Count, result.Count);
+
+            var resultNames = result.Select(t => t.Name).ToList();
+            foreach (var expectedName in expectedTourNames)
+            {
+                Assert.Contains(expectedName, resultNames);
+            }
         }
     }
 }

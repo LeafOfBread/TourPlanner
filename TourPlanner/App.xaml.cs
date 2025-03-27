@@ -1,12 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 using TourPlannerClasses.DB;
-using TourPlannerClasses.Models;
-using Newtonsoft.Json.Linq;
-using System.IO;
 using TourPlanner.UI.HelperClasses;
 using TourPlanner.UI.ViewModels;
 using TourPlanner.BusinessLogic.Services;
