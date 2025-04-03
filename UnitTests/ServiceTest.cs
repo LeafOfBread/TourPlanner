@@ -14,6 +14,8 @@ namespace UnitTests
         private readonly TourDbContext _context;
         private readonly TourService _tourService;
         private readonly TourLogService _tourlogService;
+        private readonly ApiHandler _apiHandler;
+        private readonly ConfigReader _configReader;
 
         public TourServiceTests()
         {
@@ -162,6 +164,12 @@ namespace UnitTests
             {
                 Assert.Contains(expectedName, resultNames);
             }
+        }
+
+        [Fact]
+        public async Task InitializeApiHandlerCorrectly()
+        {
+            //Arrange
         }
     }
 }

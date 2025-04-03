@@ -20,7 +20,7 @@ namespace TourPlanner
             var services = new ServiceCollection();
 
             //database
-            JsonReader reader = new JsonReader();
+            ConfigReader reader = new ConfigReader();
             var connectionString = reader.GetConnectionString();
             services.AddDbContext<TourDbContext>(options =>
             options.UseNpgsql(connectionString),

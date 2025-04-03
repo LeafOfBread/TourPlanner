@@ -44,7 +44,7 @@ namespace TourPlanner.BusinessLogic.Services
         {
             try
             {
-                var foundTour = await _context.Tours.FindAsync(id);
+                var foundTour = _context.Tours.Find(id);
                 if (foundTour != null)
                     return foundTour;
             }
@@ -82,8 +82,8 @@ namespace TourPlanner.BusinessLogic.Services
             try
             {
                 newTour.Id = 0;
-                await _context.Tours.AddAsync(newTour);
-                await _context.SaveChangesAsync();
+                _context.Tours.Add(newTour);
+                _context.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -108,7 +108,7 @@ namespace TourPlanner.BusinessLogic.Services
                 // Explicitly mark entity as modified
                 _context.Entry(existingTour).State = EntityState.Modified;
 
-                int changes = await _context.SaveChangesAsync();
+                int changes = _context.SaveChanges();
                 Console.WriteLine($"Rows affected: {changes}");
             }
             catch (Exception ex)
@@ -119,8 +119,12 @@ namespace TourPlanner.BusinessLogic.Services
 
         public async Task DeleteTour(Tours tourToDelete)
         {
-            _context.Remove(tourToDelete);
-            await _context.SaveChangesAsync();
+            var foundTour = await GetTourById(tourToDelete.Id);
+            if (foundTour != null)
+            {
+                _context.Remove(tourToDelete);
+                _context.SaveChanges();
+            }
         }
     }
 }

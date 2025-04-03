@@ -2,7 +2,8 @@
 using Microsoft.EntityFrameworkCore.Design;
 using TourPlannerClasses.Models;
 using Newtonsoft.Json.Linq;
-using System.IO; 
+using System.IO;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 
 namespace TourPlannerClasses.DB
 {
@@ -14,7 +15,7 @@ namespace TourPlannerClasses.DB
         public TourDbContext(DbContextOptions<TourDbContext> options) : base(options) { }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        { 
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Tourlog>()
@@ -23,13 +24,18 @@ namespace TourPlannerClasses.DB
                 .HasForeignKey(tl => tl.TourId)  // foreign key
                 .OnDelete(DeleteBehavior.Cascade);
         }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            //optionsBuilder.AddInterceptors([new LogInterceptor()]);
+        }
     }
 
     public class TourDbContextFactory : IDesignTimeDbContextFactory<TourDbContext>
     {
         public TourDbContext CreateDbContext(string[] args)
         {
-            JsonReader reader = new JsonReader();
+            ConfigReader reader = new ConfigReader();
             var optionsBuilder = new DbContextOptionsBuilder<TourDbContext>();
             var connectionString = reader.GetConnectionString();
             optionsBuilder.UseNpgsql(connectionString);
@@ -37,13 +43,14 @@ namespace TourPlannerClasses.DB
         }
     }
 
-    public class JsonReader
+    public class ConfigReader
     {
         private static readonly string ConfigFilePath = GetConfigFilePath();
         public string GetConnectionString()
         {
             string json = File.ReadAllText(ConfigFilePath);
             var jsonObj = JObject.Parse(json);
+            var test = GetApiKeys();
             return jsonObj["ConnectionString"]?.ToString();
         }
 
@@ -67,6 +74,26 @@ namespace TourPlannerClasses.DB
             }
             throw new FileNotFoundException("Could not find dbconfig.json in expected locations.", ConfigFilePath);
         }
-        public JsonReader() { }
+
+        public List<string> GetApiKeys()
+        {
+            //initialize list
+            List<string> ApiKeys = new List<string>();
+
+            string json = File.ReadAllText(ConfigFilePath);
+            var jsonObject = JObject.Parse(json);
+
+            //read both apikeys from config file
+            string ApiKey1 = jsonObject["OpenRouteApiKey"]?.ToString();
+            string ApiKey2 = jsonObject["MapBoxApiKey"]?.ToString();
+
+            //add to list and return both keys
+            ApiKeys.Add(ApiKey1);
+            ApiKeys.Add(ApiKey2);
+
+            return ApiKeys;
+        }
+
+        public ConfigReader() { }
     }
 }

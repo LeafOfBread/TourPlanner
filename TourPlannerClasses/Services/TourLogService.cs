@@ -20,7 +20,7 @@ namespace TourPlanner.BusinessLogic.Services
 
         public async Task<List<Tourlog>> GetTourlogsAsync()
         {
-            return await _context.TourLogs.ToListAsync();
+            return _context.TourLogs.ToList();
         }
 
         public async Task InsertTourLog(Tourlog newLog)
@@ -29,8 +29,8 @@ namespace TourPlanner.BusinessLogic.Services
             {
                 newLog.TourLogId = 0;
                 newLog.Date = DateTime.SpecifyKind(newLog.Date, DateTimeKind.Utc);
-                await _context.TourLogs.AddAsync(newLog);
-                await _context.SaveChangesAsync();
+                _context.TourLogs.Add(newLog);
+                _context.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace TourPlanner.BusinessLogic.Services
             try
             {
                 _context.TourLogs.Remove(tourlogToRemove);
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
             catch (Exception ex)
             {
@@ -71,14 +71,14 @@ namespace TourPlanner.BusinessLogic.Services
         {
             try
             {
-                var existingTourlog = await _context.TourLogs.FindAsync(tourlogToEdit.TourLogId);
+                var existingTourlog = _context.TourLogs.Find(tourlogToEdit.TourLogId);
                     
                 if (existingTourlog != null)
                 {
                     _context.Entry(existingTourlog).CurrentValues.SetValues(tourlogToEdit);
                     _context.Entry(existingTourlog).State = EntityState.Modified;
 
-                    int changes = await _context.SaveChangesAsync();
+                    int changes = _context.SaveChanges();
                 }
             }
             catch (Exception ex)

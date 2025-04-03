@@ -4,26 +4,38 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TourPlannerClasses.Models;
+using TourPlannerClasses.DB;
 using System;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 
 namespace TourPlanner.BusinessLogic.Services
 {
     public interface IApiHandler
     {
-        public Task<Tours> GetRouteInformation(string start, string end);
+        public Task GetRouteInformation(string start, string end);
     }
 
     public class ApiHandler : IApiHandler           //unfinished, no idea if this actually works, took this code from the openrouteservices documentation. api key should work in theory
     {
-        public string Url;
-        private readonly string ApiKey = "5b3ce3597851110001cf62485cf43c3fbd16446584cc2d3271c39cd0";
+        private readonly string OpenRouteApiKey;
+        private readonly string MapBoxApiKey;
+        private readonly List<string> ApiKeys;
+        private readonly ConfigReader _configReader;
 
-        public async Task<Tours> GetRouteInformation(string start, string end)
+        ApiHandler(ConfigReader configReader)
         {
-            var baseAddress = new Uri($"https://api.openrouteservice.org/v2/directions/driving-car?api_key={ApiKey}&start={start}&end={end}");
+            _configReader = configReader;
+            ApiKeys = _configReader.GetApiKeys();
+            OpenRouteApiKey = ApiKeys[0];
+            MapBoxApiKey = ApiKeys[1];
+        }
 
+        public async Task GetRouteInformation(string start, string end)
+        {
+            var baseAddress = new Uri($"https://api.openrouteservice.org/v2/directions/driving-car?api_key={OpenRouteApiKey}&start={start}&end={end}");
+            
             using (var httpClient = new HttpClient { BaseAddress = baseAddress })
             {
                 httpClient.DefaultRequestHeaders.Clear();
@@ -35,7 +47,6 @@ namespace TourPlanner.BusinessLogic.Services
                     var data = JsonConvert.DeserializeObject(responseData);
                 }
             }
-            return null;
         }
     }
 }
