@@ -21,7 +21,7 @@ namespace TourPlanner.BusinessLogic.Services
         Task InsertTours(Tours newTour);
         Task UpdateTour(Tours tourToUpdate);
         Task DeleteTour(Tours tourToDelete);
-        Task<ObservableCollection<Tours>> SearchForTours(string tourToFind, ObservableCollection<Tours> allTours);
+        Task<ObservableCollection<Tours>> SearchForTours(string tourToFind, ObservableCollection<Tours> allTours, ObservableCollection<Tourlog> allTourlogs);
     }
 
     public class TourService : ITourService
@@ -55,17 +55,32 @@ namespace TourPlanner.BusinessLogic.Services
             return null;
         }
 
-        public async Task<ObservableCollection<Tours>> SearchForTours(string name, ObservableCollection<Tours> allTours)
+        public async Task<ObservableCollection<Tours>> SearchForTours(string name, ObservableCollection<Tours> allTours, ObservableCollection<Tourlog> allTourlogs)
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    return allTours;
+                }
+
                 ObservableCollection<Tours> matchingTours = new ObservableCollection<Tours>();
                 const int fuzzyRatio = 50;
+
                 foreach(var tour in allTours)
                 {
                     if (Fuzz.Ratio(name, tour.Name) > fuzzyRatio)
                     {
                         matchingTours.Add(tour);
+                    }
+                }
+
+                foreach(var tourlog in allTourlogs)
+                {
+                    if (Fuzz.Ratio(name, tourlog.Author) > fuzzyRatio || Fuzz.Ratio(name, tourlog.Comment) > fuzzyRatio)
+                    {
+                        if (!matchingTours.Contains(tourlog.Tour))
+                            matchingTours.Add(tourlog.Tour);
                     }
                 }
                 return matchingTours;

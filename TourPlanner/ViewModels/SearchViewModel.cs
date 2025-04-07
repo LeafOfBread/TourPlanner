@@ -55,7 +55,7 @@ namespace TourPlanner.UI.ViewModels
 
         public async Task SearchForTours()
         {
-            var foundTours = await _tourService.SearchForTours(SearchInput, _mainViewModel.TourViewModel.AllTours);
+            var foundTours = await _tourService.SearchForTours(SearchInput, _mainViewModel.TourViewModel.AllTours, _mainViewModel.TourLogViewModel.AllTourLogs);
 
             if (foundTours != null)
             {
