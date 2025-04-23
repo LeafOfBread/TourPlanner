@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:views="clr-namespace:TourPlanner.Views"
-        xmlns:vm="clr-namespace:TourPlanner.UI.ViewModels"
         mc:Ignorable="d"
         Title="Tour Planner" Height="650" Width="1000">
 
@@ -34,11 +33,15 @@
 
 
         <Grid Grid.Row="1">
-            <TextBox x:Name="SearchTextBox" Text="{Binding SearchInput}" FontSize="20" Foreground="#E3E2E2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="9*"/>
+                <ColumnDefinition Width="241*"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="SearchTextBox" Text="{Binding SearchInput}" FontSize="20" Foreground="#E3E2E2" 
                      Background="#064F89"
-                     DataContext="{Binding SearchViewModel}"/>
-            <Button x:Name="SearchButton" HorizontalAlignment="Right" VerticalAlignment="Stretch" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Content="&#xE721;" FontSize="25" Background="#E3D7C2"
-                    DataContext="{Binding SearchViewModel}" Command="{Binding SearchTourCommand}"/>
+                     DataContext="{Binding SearchViewModel}" Grid.ColumnSpan="2"/>
+            <Button x:Name="SearchButton" HorizontalAlignment="Left" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Content="&#xE721;" FontSize="25" Background="#E3D7C2"
+                    DataContext="{Binding SearchViewModel}" Command="{Binding SearchTourCommand}" Grid.Column="1" Margin="935,0,0,0"/>
         </Grid>
 
         <Grid Grid.Row="2" HorizontalAlignment="Stretch" Background="#5295C4">
@@ -73,42 +76,43 @@
             </Button>
         </Grid>
 
-                <Grid Grid.Row="3">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="9*"/>
+                <ColumnDefinition Width="40*"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="1">
+            <Grid Grid.Column="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="45"/>
                     <RowDefinition Height="2*"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                
+
                 <!--Either Listview of selected tour details OR addtour-->
                 <ContentControl Grid.Row="0" Grid.Column="1"
                                 Content="{Binding CurrentTourView}"
                                 DataContext="{Binding TourViewModel}">
-                    
+
                 </ContentControl>
 
                 <!--Show either all tourlogs, or show AddTourLogView-->
                 <ContentControl Grid.Row="2" Grid.Column="1" 
                                 Content="{Binding CurrentLogView}" 
                                 DataContext="{Binding TourLogViewModel}">
-                        
+
                 </ContentControl>
 
-                    <!--View containing the image of a given tour-->
+                <!--View containing the image of a given tour-->
                 <views:TourImageView Grid.Row="1" Grid.Column="1"/>
             </Grid>
 
             <!--ListBox contains a list of all available tours-->
-            <views:TourListBox Grid.RowSpan="2" Grid.Column="0"
+            <views:TourListBox Grid.Column="0"
                                SelectedTour="{Binding SelectedTour, Mode=TwoWay}" 
-                               DataContext="{Binding TourViewModel}"/>
+                               DataContext="{Binding TourViewModel}" Grid.ColumnSpan="2"/>
         </Grid>
     </Grid>
 </Window>

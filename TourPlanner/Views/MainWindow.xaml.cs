@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TourPlanner.UI.HelperClasses;
 using TourPlanner.UI.ViewModels;
 using TourPlanner.BusinessLogic.Services;
+using Microsoft.Web.WebView2.WinForms;
 
 namespace TourPlanner
 {

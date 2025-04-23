@@ -1,6 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Moq.Protected;
+using Moq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using TourPlanner.BusinessLogic.Services;
 using TourPlannerClasses.DB;
@@ -39,8 +43,8 @@ namespace UnitTests
             // Arrange
             var mockTours = new List<Tours>
         {
-            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
-            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus)
+            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus)
         };
 
             // Add mock tours to the in-memory database
@@ -63,8 +67,8 @@ namespace UnitTests
             //Arrange
             var mockTours = new List<Tours>
         {
-            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
-            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus)
+            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus)
         };
 
             await _context.Tours.AddRangeAsync(mockTours);
@@ -83,7 +87,7 @@ namespace UnitTests
         public async Task InsertTour_ShouldCorrectlyInsert()
         {
             //Arrange
-            var tourToInsert = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat);
+            var tourToInsert = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat);
             //Act
             await _tourService.InsertTours(tourToInsert);
 
@@ -97,7 +101,7 @@ namespace UnitTests
         public async Task DeleteTour_ShouldCorrectlyDelete()
         {
             //Arrange
-            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat);
+            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat);
             await _context.Tours.AddAsync(mockTour);
             await _context.SaveChangesAsync();
 
@@ -114,12 +118,12 @@ namespace UnitTests
         public async Task UpdateTour_ShouldCorrectlyUpdate()
         {
             //Arrange
-            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat);
+            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat);
             await _context.AddAsync(mockTour);
             await _context.SaveChangesAsync();
 
             //Act
-            var mockTourWithEdits = new Tours(1, "Updated Tour", "New Description", "Another Start", "Different End", new TimeSpan(1, 1, 0), 55.89, TransportType.Plane);
+            var mockTourWithEdits = new Tours(1, "Updated Tour", "New Description", "Another Start", "Different End", new TimeSpan(1, 1, 0), 55.89, TourPlannerClasses.Models.TransportType.Plane);
             await _tourService.UpdateTour(mockTourWithEdits);
 
             //Assert
@@ -137,21 +141,23 @@ namespace UnitTests
         public async Task SearchForTours_ShouldReturnSimilarTours()
         {
             //Arrange
-            ObservableCollection <Tours> listOfTours = new ObservableCollection<Tours>()
+            ObservableCollection<Tours> listOfTours = new ObservableCollection<Tours>()
             {
-                new Tours(1, "SimilarSoundingTour", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
-                new Tours(2, "SmilerSoundTour", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus),
-                new Tours(1, "ThisIsNotTheSame", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
-                new Tours(2, "Smiler", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus),
-                new Tours(1, "Simulation", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TransportType.Boat),
-                new Tours(2, "Test", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TransportType.Bus),
+                new Tours(1, "SimilarSoundingTour", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+                new Tours(2, "SmilerSoundTour", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus),
+                new Tours(1, "ThisIsNotTheSame", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+                new Tours(2, "Smiler", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus),
+                new Tours(1, "Simulation", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+                new Tours(2, "Test", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus),
             };
+
+            ObservableCollection<Tourlog> emptyTourlogs = new ObservableCollection<Tourlog>() { };
 
             string tourNameToLookFor = "SimilarTour";
             var expectedTourNames = new List<string> { "SimilarSoundingTour", "SmilerSoundTour", "Smiler", "Simulation" };
 
             //Act
-            var result = await _tourService.SearchForTours(tourNameToLookFor, listOfTours);
+            var result = await _tourService.SearchForTours(tourNameToLookFor, listOfTours, emptyTourlogs);
 
 
             //Assert
@@ -167,9 +173,44 @@ namespace UnitTests
         }
 
         [Fact]
-        public async Task InitializeApiHandlerCorrectly()
+        public async Task GetCoordinates_ReturnsCorrectCoordinates_WhenApiReturnsValidData()
         {
-            //Arrange
+            // Arrange
+            var fakeResponseJson = "{\"features\":[{\"geometry\":{\"coordinates\":[16.3738,48.2082]}}]}";
+
+            var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
+            httpMessageHandlerMock
+                .Protected()
+                .Setup<Task<HttpResponseMessage>>(
+                    "SendAsync",
+                    ItExpr.IsAny<HttpRequestMessage>(),
+                    ItExpr.IsAny<CancellationToken>()
+                )
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(fakeResponseJson, Encoding.UTF8, "application/json")
+                });
+
+            var client = new HttpClient(httpMessageHandlerMock.Object)
+            {
+                BaseAddress = new Uri("https://api.openrouteservice.org/") // Ensure this is correct
+            };
+
+            var configReaderMock = new Mock<ConfigReader>();
+            configReaderMock.Setup(c => c.GetApiKeys()).Returns(new List<string> { "fake-api-key", "fake-mapbox-key" });
+
+            var handler = new ApiHandler(configReaderMock.Object, client);
+
+            // Act
+            var result = await handler.GetCoordinates("Vienna", "Graz");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(4, result.Count); // Two points (lon, lat for start and end)
+            Assert.Equal(16.3738f, result[0], 3);
+            Assert.Equal(48.2082f, result[1], 3);
         }
+
     }
 }

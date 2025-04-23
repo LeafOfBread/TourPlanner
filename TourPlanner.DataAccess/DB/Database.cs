@@ -75,7 +75,7 @@ namespace TourPlannerClasses.DB
             throw new FileNotFoundException("Could not find dbconfig.json in expected locations.", ConfigFilePath);
         }
 
-        public List<string> GetApiKeys()
+        public virtual List<string> GetApiKeys()
         {
             //initialize list
             List<string> ApiKeys = new List<string>();

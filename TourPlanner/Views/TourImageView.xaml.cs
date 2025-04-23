@@ -36,8 +36,35 @@ namespace TourPlanner.Views
         public TourImageView()
         {
             InitializeComponent();
+            this.Loaded += TourImageView_Loaded;
             SourceUri = GetSourceUri();
             this.DataContext = this;
+        }
+
+        private async void TourImageView_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await webView.EnsureCoreWebView2Async();
+
+                string appDir = AppDomain.CurrentDomain.BaseDirectory;
+                string relativePath = Path.Combine("..", "..", "..", "Views", "Map", "map.html");
+                string absolutePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, relativePath));
+
+
+                if (File.Exists(absolutePath))
+                {
+                    webView.Source = new Uri(absolutePath);
+                }
+                else
+                {
+                    MessageBox.Show($"File not found: {absolutePath}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"WebView2 initialization failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public static string GetSourceUri()
