@@ -4,6 +4,7 @@ using TourPlannerClasses.Models;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using Microsoft.Extensions.Configuration;
 
 namespace TourPlannerClasses.DB
 {
@@ -35,65 +36,36 @@ namespace TourPlannerClasses.DB
     {
         public TourDbContext CreateDbContext(string[] args)
         {
-            ConfigReader reader = new ConfigReader();
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddUserSecrets<TourDbContext>()
+                .Build();
+
             var optionsBuilder = new DbContextOptionsBuilder<TourDbContext>();
-            var connectionString = reader.GetConnectionString();
+            var connectionString = config["ConnectionString"];
             optionsBuilder.UseNpgsql(connectionString);
+
             return new TourDbContext(optionsBuilder.Options);
         }
     }
 
     public class ConfigReader
     {
-        private static readonly string ConfigFilePath = GetConfigFilePath();
-        public string GetConnectionString()
+        private readonly IConfiguration _config;
+
+        public ConfigReader()
         {
-            string json = File.ReadAllText(ConfigFilePath);
-            var jsonObj = JObject.Parse(json);
-            var test = GetApiKeys();
-            return jsonObj["ConnectionString"]?.ToString();
+            _config = new ConfigurationBuilder()
+                .AddUserSecrets<ConfigReader>()
+                .Build();
         }
 
-        private static string GetConfigFilePath()
+        public string GetConnectionString() => _config["ConnectionString"];
+
+        public List<string> GetApiKeys() => new()
         {
-            string basePath = AppDomain.CurrentDomain.BaseDirectory;
-            string configFileName = "dbconfig.json";
-
-            string[] possiblePaths =
-            {
-                Path.Combine(basePath, configFileName),
-                Path.Combine(basePath, "..", "..", "..", "..", "TourPlanner.DataAccess", "DB", configFileName)
-            };
-
-            foreach (string path in possiblePaths)
-            {
-                if (File.Exists(path))
-                {
-                    return Path.GetFullPath(path);
-                }
-            }
-            throw new FileNotFoundException("Could not find dbconfig.json in expected locations.", ConfigFilePath);
-        }
-
-        public virtual List<string> GetApiKeys()
-        {
-            //initialize list
-            List<string> ApiKeys = new List<string>();
-
-            string json = File.ReadAllText(ConfigFilePath);
-            var jsonObject = JObject.Parse(json);
-
-            //read both apikeys from config file
-            string ApiKey1 = jsonObject["OpenRouteApiKey"]?.ToString();
-            string ApiKey2 = jsonObject["MapBoxApiKey"]?.ToString();
-
-            //add to list and return both keys
-            ApiKeys.Add(ApiKey1);
-            ApiKeys.Add(ApiKey2);
-
-            return ApiKeys;
-        }
-
-        public ConfigReader() { }
+            _config["OpenRouteApiKey"],
+            _config["MapBoxApiKey"]
+        };
     }
 }

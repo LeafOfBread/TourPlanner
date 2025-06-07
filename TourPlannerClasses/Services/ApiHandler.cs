@@ -15,7 +15,9 @@ namespace TourPlanner.BusinessLogic.Services
 {
     public interface IApiHandler
     {
-        public Task GetRouteInformation(string start, string end);
+        public Task GetRouteDirections(string start, string end);
+        public Task<List<float>> GetCoordinates(string startLocation, string endLocation);
+        public float[] HandleJsonResponseCoordinates(object data);
     }
 
     public class ApiHandler : IApiHandler           //unfinished, no idea if this actually works, took this code from the openrouteservices documentation. api key should work in theory
@@ -35,7 +37,7 @@ namespace TourPlanner.BusinessLogic.Services
             _httpClient = httpClient;
         }
 
-        public async Task GetRouteInformation(string start, string end)
+        public async Task GetRouteDirections(string start, string end)
         {
             var baseAddress = new Uri("https://api.openrouteservice.org/");
             
@@ -56,42 +58,28 @@ namespace TourPlanner.BusinessLogic.Services
         {
             List<float> coordinates = new List<float>();
 
-            var baseAddressStart = new Uri($"https://api.openrouteservice.org/geocode/search?api_key={OpenRouteApiKey}&text={startLocation}");
-            var baseAddressEnd = new Uri($"https://api.openrouteservice.org/geocode/search?api_key={OpenRouteApiKey}&text={endLocation}");
-
-            using (var httpClient = new HttpClient { BaseAddress = baseAddressStart })
+            var urls = new[]
             {
-                httpClient.DefaultRequestHeaders.Clear();
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8");
+            $"https://api.openrouteservice.org/geocode/search?api_key={OpenRouteApiKey}&text={startLocation}",
+            $"https://api.openrouteservice.org/geocode/search?api_key={OpenRouteApiKey}&text={endLocation}"
+            };
 
-                using (var response = await httpClient.GetAsync(baseAddressStart))
-                {
-                    string responseData = await response.Content.ReadAsStringAsync();
-                    var data = JsonConvert.DeserializeObject(responseData);
-                    var startCoordinates = HandleJsonResponse(data);
-                    coordinates.Add(startCoordinates[0]);
-                    coordinates.Add(startCoordinates[1]);
-                }
-            }
-
-            using (var httpClient = new HttpClient { BaseAddress = baseAddressEnd })
+            foreach (var url in urls)
             {
-                httpClient.DefaultRequestHeaders.Clear();
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8");
+                var request = new HttpRequestMessage(HttpMethod.Get, url);
+                request.Headers.TryAddWithoutValidation("accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8");
 
-                using (var response = await httpClient.GetAsync(baseAddressEnd))
-                {
-                    string responseData = await response.Content.ReadAsStringAsync();
-                    var data = JsonConvert.DeserializeObject(responseData);
-                    var endCoordinates = HandleJsonResponse(data);
-                    coordinates.Add(endCoordinates[0]);
-                    coordinates.Add(endCoordinates[1]);
-                }
+                var response = await _httpClient.SendAsync(request);
+                string responseData = await response.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject(responseData);
+                var coords = HandleJsonResponseCoordinates(data);
+                coordinates.Add(coords[0]);
+                coordinates.Add(coords[1]);
             }
             return coordinates;
         }
 
-        public float[] HandleJsonResponse(object data)
+        public float[] HandleJsonResponseCoordinates(object data)
         {
             var json = data as JObject;
             var coordinates = json?["features"]?[0]?["geometry"]?["coordinates"];

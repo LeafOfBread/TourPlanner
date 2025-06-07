@@ -176,12 +176,12 @@ namespace UnitTests
         public async Task GetCoordinates_ReturnsCorrectCoordinates_WhenApiReturnsValidData()
         {
             // Arrange
-            var fakeResponseJson = "{\"features\":[{\"geometry\":{\"coordinates\":[16.3738,48.2082]}}]}";
+            var fakeResponseJson = "{\"features\":[{\"geometry\":{\"coordinates\":[48.2082, 16.3738]}}]}";
 
             var httpMessageHandlerMock = new Mock<HttpMessageHandler>();
             httpMessageHandlerMock
                 .Protected()
-                .Setup<Task<HttpResponseMessage>>(
+                .SetupSequence<Task<HttpResponseMessage>>(
                     "SendAsync",
                     ItExpr.IsAny<HttpRequestMessage>(),
                     ItExpr.IsAny<CancellationToken>()
@@ -190,12 +190,14 @@ namespace UnitTests
                 {
                     StatusCode = HttpStatusCode.OK,
                     Content = new StringContent(fakeResponseJson, Encoding.UTF8, "application/json")
-                });
+                }) // startLocation
+                .ReturnsAsync(new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.OK,
+                    Content = new StringContent(fakeResponseJson, Encoding.UTF8, "application/json")
+                }); // endLocation
 
-            var client = new HttpClient(httpMessageHandlerMock.Object)
-            {
-                BaseAddress = new Uri("https://api.openrouteservice.org/") // Ensure this is correct
-            };
+            var client = new HttpClient(httpMessageHandlerMock.Object);
 
             var configReaderMock = new Mock<ConfigReader>();
             configReaderMock.Setup(c => c.GetApiKeys()).Returns(new List<string> { "fake-api-key", "fake-mapbox-key" });
@@ -207,10 +209,11 @@ namespace UnitTests
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(4, result.Count); // Two points (lon, lat for start and end)
-            Assert.Equal(16.3738f, result[0], 3);
-            Assert.Equal(48.2082f, result[1], 3);
+            Assert.Equal(4, result.Count); // [lon, lat, lon, lat]
+            Assert.Equal(48.2082f, result[0], 3);
+            Assert.Equal(16.3738f, result[1], 3);
         }
+
 
     }
 }

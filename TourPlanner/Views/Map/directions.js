@@ -1,6 +1,6 @@
 window.onload = function () {
     var map = L.map('map', {
-        center: [51.505, -0.09],
+        center: [48.210033, 16.363449],
         zoom: 13
     });
 
