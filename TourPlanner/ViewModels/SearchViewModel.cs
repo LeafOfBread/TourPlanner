@@ -22,10 +22,13 @@ namespace TourPlanner.UI.ViewModels
             get => _searchInput;
             set
             {
-                _searchInput = value;
-                OnPropertyChanged(nameof(SearchInput));
+                if (_searchInput != value)
+                {
+                    _searchInput = value;
+                    OnPropertyChanged(nameof(SearchInput));
+                    _ = SearchForTours(); // trigger search on each input change
+                }
             }
-            
         }
 
         private ObservableCollection<Tours> _foundTours;

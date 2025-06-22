@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.Extensions.Configuration;
+using log4net;
 
 namespace TourPlannerClasses.DB
 {
@@ -52,20 +53,48 @@ namespace TourPlannerClasses.DB
     public class ConfigReader
     {
         private readonly IConfiguration _config;
+        private static readonly ILog _log = LogManager.GetLogger(typeof(ConfigReader));
 
         public ConfigReader()
         {
-            _config = new ConfigurationBuilder()
+            try
+            {
+                _config = new ConfigurationBuilder()
                 .AddUserSecrets<ConfigReader>()
                 .Build();
+                _log.Info("Configuration successfully loaded.");
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Failed to load configuration.", ex);
+                throw;
+            }
         }
 
-        public string GetConnectionString() => _config["ConnectionString"];
+        public string GetConnectionString()
+        {
+            var connectionString = _config["ConnectionString"];
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                _log.Warn("Connection string is null or empty.");
+            }
+            else
+            {
+                _log.Debug("Connection string retrieved.");
+            }
+            return connectionString;
+        }
 
-        public List<string> GetApiKeys() => new()
+        public virtual List<string> GetApiKeys()
+        {
+            var keys = new List<string>
         {
             _config["OpenRouteApiKey"],
             _config["MapBoxApiKey"]
         };
+
+            _log.Info("API keys loaded.");
+            return keys;
+        }
     }
 }

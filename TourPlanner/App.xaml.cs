@@ -5,6 +5,9 @@ using TourPlannerClasses.DB;
 using TourPlanner.UI.HelperClasses;
 using TourPlanner.UI.ViewModels;
 using TourPlanner.BusinessLogic.Services;
+using log4net;
+using log4net.Config;
+using System.IO;
 
 namespace TourPlanner
 {
@@ -14,10 +17,15 @@ namespace TourPlanner
     public partial class App : Application
     {
         public static IServiceProvider ServiceProvider { get; private set; }
+        private static readonly ILog _log = LogManager.GetLogger(typeof(App));
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)   
         {
             var services = new ServiceCollection();
+
+            XmlConfigurator.Configure(new FileInfo("LoggerConfig.xml"));
+            _log.Info("TourPlanner application starting...");
+            _log.Info($"Current working directory: {Directory.GetCurrentDirectory()}");
 
             //database
             ConfigReader reader = new ConfigReader();

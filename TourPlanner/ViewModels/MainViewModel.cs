@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,6 +17,7 @@ namespace TourPlanner.UI.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        private static readonly ILog _log = LogManager.GetLogger(typeof(MainViewModel));
         public TourViewModel TourViewModel { get; }
         public TourLogViewModel TourLogViewModel { get; }
         public SearchViewModel SearchViewModel { get; }
@@ -39,13 +41,24 @@ namespace TourPlanner.UI.ViewModels
             ShowHomeMenuCommand = new RelayCommand(() => ShowHomeMenu(tourService, tourlogService));
 
             _ = LoadDataAsync(tourService, tourlogService);
+
+            _log.Info("Initialized MainViewModel");
         }
 
 
         private async Task LoadDataAsync(ITourService _tourService, TourLogService _tourlogService)
         {
-            await LoadTourLogs(_tourlogService);
-            await LoadTours(_tourService);
+            try
+            {
+                await LoadTourLogs(_tourlogService);
+                await LoadTours(_tourService);
+                _log.Info("Successfully loaded available Tours and Tourlogs");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("Error loading Tours and Tourlogs", ex);
+                throw;
+            }
         }
 
         private async Task LoadTours(ITourService _tourService)
