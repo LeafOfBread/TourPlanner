@@ -37,9 +37,14 @@
                 <ColumnDefinition Width="9*"/>
                 <ColumnDefinition Width="241*"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="SearchTextBox" Text="{Binding SearchInput}" FontSize="20" Foreground="#E3E2E2" 
+            <TextBox x:Name="SearchTextBox" 
+                     Text="{Binding SearchInput, UpdateSourceTrigger=PropertyChanged}" 
+                     TextChanged="SearchBox_TextChanged" 
+                     FontSize="20" 
+                     Foreground="#E3E2E2" 
                      Background="#064F89"
                      DataContext="{Binding SearchViewModel}" Grid.ColumnSpan="2"/>
+            
             <Button x:Name="SearchButton" HorizontalAlignment="Left" Foreground="Gray" FontFamily="Segoe MDL2 Assets" Content="&#xE721;" FontSize="25" Background="#E3D7C2"
                     DataContext="{Binding SearchViewModel}" Command="{Binding SearchTourCommand}" Grid.Column="1" Margin="935,0,0,0"/>
         </Grid>
@@ -47,9 +52,10 @@
         <Grid Grid.Row="2" HorizontalAlignment="Stretch" Background="#5295C4">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.5*"/>
-                <ColumnDefinition Width="0.5*"/>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="50*"/>
+                <ColumnDefinition Width="387*"/>
+                <ColumnDefinition Width="13*"/>
             </Grid.ColumnDefinitions>
 
             <Border Grid.Column="0">
@@ -64,7 +70,7 @@
                 <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
 
-            <Button x:Name="EditTourButton" Command="{Binding EditTourViewCommand}" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Background="White">
+            <Button x:Name="EditTourButton" Command="{Binding EditTourViewCommand}" Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center" Background="White" Margin="80,0,0,0">
                 <TextBlock Text="&#xE10C;" FontFamily="Segoe MDL2 Assets" FontSize="16"/>
             </Button>
         </Grid>
@@ -111,8 +117,7 @@
 
             <!--ListBox contains a list of all available tours-->
             <views:TourListBox Grid.Column="0"
-                               SelectedTour="{Binding SelectedTour, Mode=TwoWay}" 
-                               DataContext="{Binding TourViewModel}" Grid.ColumnSpan="2"/>
+                               SelectedTour="{Binding TourViewModel.SelectedTour, Mode=TwoWay}" Grid.ColumnSpan="2"/>
         </Grid>
     </Grid>
 </Window>

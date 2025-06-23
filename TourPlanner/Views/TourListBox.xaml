@@ -8,15 +8,11 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
 
-    <UserControl.DataContext>
-        <vm:TourViewModel />
-    </UserControl.DataContext>
-    
     <ListBox x:Name="TourList" 
          Background="#E3D7C2" 
-         ItemsSource="{Binding AllTours}" 
+         ItemsSource="{Binding TourViewModel.AllTours}" 
          DisplayMemberPath="Name" 
          GotFocus="DisplayTourDetails"
-         SelectedItem="{Binding SelectedTour, Mode=TwoWay}">
+         SelectedItem="{Binding TourViewModel.SelectedTour, Mode=TwoWay}">
     </ListBox>
 </UserControl>

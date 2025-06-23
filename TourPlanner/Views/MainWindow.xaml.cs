@@ -39,6 +39,14 @@ namespace TourPlanner
                                    App.ServiceProvider.GetRequiredService<InputValidator>())
         {
         }
+
+        private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (DataContext is MainViewModel vm)
+            {
+                _ = vm.SearchViewModel.SearchForTours();
+            }
+        }
     }
 
     public class RelayCommand : ICommand

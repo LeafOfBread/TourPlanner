@@ -22,7 +22,7 @@ namespace TourPlanner.UI.ViewModels
             get => _searchInput;
             set
             {
-                if (_searchInput != value)
+                if (value != _searchInput)
                 {
                     _searchInput = value;
                     OnPropertyChanged(nameof(SearchInput));
@@ -58,7 +58,7 @@ namespace TourPlanner.UI.ViewModels
 
         public async Task SearchForTours()
         {
-            var foundTours = await _tourService.SearchForTours(SearchInput, _mainViewModel.TourViewModel.AllTours, _mainViewModel.TourLogViewModel.AllTourLogs);
+            var foundTours = await _tourService.SearchForTours(SearchInput, _mainViewModel.TourViewModel.MasterTours, _mainViewModel.TourLogViewModel.AllTourLogs);
 
             if (foundTours != null)
             {

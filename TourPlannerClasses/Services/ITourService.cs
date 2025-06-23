@@ -65,7 +65,7 @@ namespace TourPlanner.BusinessLogic.Services
                 }
 
                 ObservableCollection<Tours> matchingTours = new ObservableCollection<Tours>();
-                const int fuzzyRatio = 50;
+                const int fuzzyRatio = 40;
 
                 foreach(var tour in allTours)
                 {

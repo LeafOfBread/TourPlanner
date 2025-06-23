@@ -46,6 +46,8 @@ namespace TourPlanner.UI.ViewModels
         private Tours _selectedTour;
         private ObservableCollection<Tours> _tourDetails;
 
+        public ObservableCollection<Tours> MasterTours { get; set; } = new ObservableCollection<Tours>();
+
         public ObservableCollection<Tours> TourDetails
         {
             get => _tourDetails;

@@ -65,6 +65,7 @@ namespace TourPlanner.UI.ViewModels
         {
             var tours = await _tourService.GetAllTours();
             TourViewModel.AllTours = new ObservableCollection<Tours>(tours);
+            TourViewModel.MasterTours = new ObservableCollection<Tours>(tours);
         }
 
         private async Task LoadTourLogs(TourLogService _tourlogService)
