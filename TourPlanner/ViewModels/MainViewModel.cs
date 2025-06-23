@@ -63,27 +63,70 @@ namespace TourPlanner.UI.ViewModels
 
         private async Task LoadTours(ITourService _tourService)
         {
-            var tours = await _tourService.GetAllTours();
-            TourViewModel.AllTours = new ObservableCollection<Tours>(tours);
-            TourViewModel.MasterTours = new ObservableCollection<Tours>(tours);
+            try
+            {
+                var tours = await _tourService.GetAllTours();
+                TourViewModel.AllTours = new ObservableCollection<Tours>(tours);
+                TourViewModel.MasterTours = new ObservableCollection<Tours>(tours);
+                if (tours != null)
+                    _log.Info("Successfully loaded tours from database");
+                else
+                    _log.Info("LoadTours could not find any tours.");
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Exception thrown during LoadTours:", ex);
+                throw;
+            }
         }
 
         private async Task LoadTourLogs(TourLogService _tourlogService)
         {
-            var tourlogs = await _tourlogService.GetTourlogsAsync();
-            TourLogViewModel.AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
+            try
+            {
+                var tourlogs = await _tourlogService.GetTourlogsAsync();
+                TourLogViewModel.AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
+                if (tourlogs != null)
+                    _log.Info("Successfully loaded tourlogs from database");
+                else
+                    _log.Info("LoadTourLogs could not find any tourlogs");
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Exception was thrown during LoadTourLogs: ", ex);
+                throw;
+            }
         }
 
         public void ShowTourListView()
         {
-            TourViewModel.CurrentTourView = new TourListView();
+            try
+            {
+                TourViewModel.CurrentTourView = new TourListView();
+                _log.Info("User switched to TourListView.");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("User tried to switch to TourListView, but an exception was thrown: ", ex);
+                throw;
+            }
         }
         public void ShowAddTourView()
         {
-            if (TourViewModel.SelectedTour != null)
+            try
             {
-                TourViewModel.NewTour = new Tours();
-                TourViewModel.CurrentTourView = new AddTourView();
+                if (TourViewModel.SelectedTour != null)
+                {
+                    TourViewModel.NewTour = new Tours();
+                    TourViewModel.CurrentTourView = new AddTourView();
+                    _log.Info("User switched to AddTourView.");
+                }
+                _log.Info("User tried to switch to AddTourView, but SelectedTour was null");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("An exception was thrown while trying to switch to AddTourView: ", ex);
+                throw;
             }
         }
 
