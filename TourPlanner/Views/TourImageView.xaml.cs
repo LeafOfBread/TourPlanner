@@ -21,23 +21,10 @@ namespace TourPlanner.Views
     /// </summary>
     public partial class TourImageView : UserControl, INotifyPropertyChanged
     {
-        private string _sourceUri;
-
-        public string SourceUri
-        {
-            get => _sourceUri;
-            set
-            {
-                _sourceUri = value;
-                OnPropertyChanged(nameof(SourceUri));
-            }
-        }
-
         public TourImageView()
         {
             InitializeComponent();
             this.Loaded += TourImageView_Loaded;
-            SourceUri = GetSourceUri();
             this.DataContext = this;
         }
 
@@ -67,10 +54,7 @@ namespace TourPlanner.Views
             }
         }
 
-        public static string GetSourceUri()
-        {
-            return Path.GetFullPath("../../../Views/Images/placeholder1.jpg");
-        }
+        public Microsoft.Web.WebView2.Wpf.WebView2 Browser => webView;
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected virtual void OnPropertyChanged(string propertyName)

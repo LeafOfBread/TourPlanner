@@ -17,6 +17,8 @@ using TourPlanner.BusinessLogic.Services;
 using TourPlanner.UI.HelperClasses;
 using TourPlanner.Views;
 using TourPlannerClasses.Models;
+using Microsoft.Web.WebView2.Wpf;
+using System.Globalization;
 
 namespace TourPlanner.UI.ViewModels
 {
@@ -27,6 +29,7 @@ namespace TourPlanner.UI.ViewModels
         private readonly InputValidator _validator;
         private UserControl _currentTourView;
         private static readonly ILog _log = LogManager.GetLogger(typeof(TourViewModel));
+        private WebView2 _webView;
 
         public UserControl CurrentTourView
         {
@@ -81,7 +84,10 @@ namespace TourPlanner.UI.ViewModels
                     OnPropertyChanged(nameof(SelectedTour));
 
                     if (_selectedTour != null)
+                    {
                         _log.Info($"Selected tour changed to: ID={_selectedTour.Id}, Name={_selectedTour.Name}");
+                        _ = UpdateMapAsync();
+                    }
                     else
                         _log.Warn("Selected tour set to null.");
 
@@ -337,6 +343,29 @@ namespace TourPlanner.UI.ViewModels
             ClearInputs();
         }
 
+        public void SetWebView(WebView2 webView)
+        {
+            _webView = webView;
+        }
+
+        public async Task UpdateMapAsync()
+        {
+            if (_webView == null || SelectedTour == null)
+                return;
+
+            double fromLat = SelectedTour.FromLat; // Vienna
+            double fromLng = SelectedTour.FromLng;
+            double toLat = SelectedTour.ToLat;   // Linz
+            double toLng = SelectedTour.ToLng;
+
+            string jsCall = string.Format(CultureInfo.InvariantCulture,
+                "showRoute({0}, {1}, {2}, {3});",
+                fromLat, fromLng, toLat, toLng);
+
+            await _webView.ExecuteScriptAsync(jsCall);
+
+            _log.Info($"Map updated for tour '{SelectedTour.Name}'");
+        }
 
         public int GetSelectedTourId()
         {

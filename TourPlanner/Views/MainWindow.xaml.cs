@@ -30,7 +30,9 @@ namespace TourPlanner
         public MainWindow(ITourService tourService, TourLogService tourlogService, InputValidator validator)
         {
             InitializeComponent();
+
             _viewModel = new MainViewModel(tourService, tourlogService, validator);
+            _viewModel.TourViewModel.SetWebView(TourMapView.Browser);
             DataContext = _viewModel;
         }
 

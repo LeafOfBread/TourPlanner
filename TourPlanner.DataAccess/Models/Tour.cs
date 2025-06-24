@@ -21,7 +21,11 @@ namespace TourPlannerClasses.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public string From { get; set; }
+        public double FromLat { get; set; }
+        public double FromLng { get; set; }
         public string To { get; set; }
+        public double ToLat { get; set; }
+        public double ToLng { get; set; }
         public TimeSpan Duration { get; set; }
         public double Distance { get; set; }
         public TransportType Transport { get; set; }
@@ -30,13 +34,17 @@ namespace TourPlannerClasses.Models
 
         public Tours() { }
 
-        public Tours(int id, string name, string description, string from, string to, TimeSpan duration, double distance, TransportType transport)
+        public Tours(int id, string name, string description, string from, double fromLat, double fromLng, string to, double toLat, double toLng, TimeSpan duration, double distance, TransportType transport)
         {
             this.Id = id;
             this.Name = name;
             this.Description = description;
             this.From = from;
+            this.FromLat = fromLat;
+            this.FromLng = fromLng;
             this.To = to;
+            this.ToLat = toLat;
+            this.ToLng = toLng;
             this.Duration = duration;
             this.Distance = distance;
             this.Transport = transport;

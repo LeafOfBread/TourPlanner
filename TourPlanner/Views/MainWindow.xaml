@@ -112,7 +112,7 @@
                 </ContentControl>
 
                 <!--View containing the image of a given tour-->
-                <views:TourImageView Grid.Row="1" Grid.Column="1"/>
+                <views:TourImageView x:Name="TourMapView" Grid.Row="1" Grid.Column="1"/>
             </Grid>
 
             <!--ListBox contains a list of all available tours-->
