@@ -12,6 +12,8 @@ using System.Windows.Input;
 using System.Windows.Controls;
 using TourPlanner.Views;
 using System.Windows;
+using log4net;
+using log4net.Repository.Hierarchy;
 
 namespace TourPlanner.UI.ViewModels
 {
@@ -21,6 +23,7 @@ namespace TourPlanner.UI.ViewModels
         private readonly ITourService _tourService;
         private readonly TourLogService _tourlogService;
         private readonly InputValidator _validator;
+        private static readonly ILog _log = LogManager.GetLogger(typeof(TourLogViewModel));
 
         private UserControl _currentLogView;
         public UserControl CurrentLogView
@@ -69,7 +72,6 @@ namespace TourPlanner.UI.ViewModels
 
         private ObservableCollection<Tourlog> _tourlogDetails;
 
-
         public ICommand SubmitLogCommand { get; private set; }
         public ICommand DeleteLogCommand { get; private set; }
         public ICommand EditLogCommand { get; private set; }
@@ -103,104 +105,164 @@ namespace TourPlanner.UI.ViewModels
             EditLogCommand = new RelayCommand(() => EditTourLogAsync());
             ShowAddLogViewCommand = new RelayCommand(() => _mainViewModel.ShowAddTourLog());
             ShowEditLogViewCommand = new RelayCommand(() => _mainViewModel.ShowEditTourLog());
+
+            _log.Info("Initialized TourLogViewModel");
         }
 
         public void UpdateTourLogDetails()
         {
-            if (_mainViewModel.TourViewModel.SelectedTour == null)
+            try
             {
-                TourLogDetails?.Clear();
-                return;
-            }
+                if (_mainViewModel.TourViewModel.SelectedTour == null)
+                {
+                    TourLogDetails?.Clear();
+                    _log.Error("UpdateTourLogDetails returned early because the selected tour was null");
+                    return;
+                }
 
-            if (AllTourLogs == null)
+                if (AllTourLogs == null)
+                {
+                    TourLogDetails?.Clear();
+                    _log.Error("UpdateTourLogDetails returned early because AllTourLogs was null");
+                    return;
+                }
+
+                TourLogDetails = new ObservableCollection<Tourlog>(
+                    AllTourLogs.Where(log => log.TourId == _mainViewModel.TourViewModel.SelectedTour.Id)
+                );
+                _log.Info("Successfully updated tourlog details");
+            }
+            catch (Exception ex)
             {
-                TourLogDetails?.Clear();
-                return;
+                _log.Error("An exception was thrown while trying to update tourlog details: ", ex);
+                throw;
             }
-
-            TourLogDetails = new ObservableCollection<Tourlog>(
-                AllTourLogs.Where(log => log.TourId == _mainViewModel.TourViewModel.SelectedTour.Id)
-            );
         }
 
         public async Task SaveLogAsync()
         {
-            var tourFromDb = await _tourService.GetTourById(_mainViewModel.TourViewModel.SelectedTour.Id);
-
-            if (tourFromDb != null)
+            try
             {
-                NewTourLog.TourId = tourFromDb.Id;
+                var tourFromDb = await _tourService.GetTourById(_mainViewModel.TourViewModel.SelectedTour.Id);
 
-                string errMessage = _validator.ValidateTourlogInput(NewTourLog);
-
-                if (errMessage == "")
-                    await _tourlogService.InsertTourLog(NewTourLog);
-
-                else
+                if (tourFromDb != null)
                 {
-                    MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-            }
+                    NewTourLog.TourId = tourFromDb.Id;
 
-            var tourlogs = await _tourlogService.GetTourlogsAsync();
-            AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
-            _mainViewModel.ShowTourlogView();
-            ClearInputs();
+                    string errMessage = _validator.ValidateTourlogInput(NewTourLog);
+
+                    if (errMessage == "")
+                    {
+                        await _tourlogService.InsertTourLog(NewTourLog);
+                        _log.Info("TourLogInput was valid");
+                    }
+
+                    else
+                    {
+                        MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        _log.Error("TourLogInput was invalid");
+                        return;
+                    }
+                }
+                else
+                    _log.Error("tourFromDB returned as null!");
+
+                    var tourlogs = await _tourlogService.GetTourlogsAsync();
+                AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
+                _mainViewModel.ShowTourlogView();
+                ClearInputs();
+            }
+            catch(Exception ex)
+            {
+                _log.Error("An exception occured while trying to save a tourlog: ", ex);
+                throw;
+            }
         }
 
         public async Task DeleteTourLogAsync()
         {
-            if (SelectedTourLog != null)
+            try
             {
-                await _tourlogService.DeleteTourLog(SelectedTourLog);
-                var tourlogs = await _tourlogService.GetTourlogsAsync();
-                AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
-                _mainViewModel.ShowTourlogView();
+                if (SelectedTourLog != null)
+                {
+                    await _tourlogService.DeleteTourLog(SelectedTourLog);
+                    var tourlogs = await _tourlogService.GetTourlogsAsync();
+                    AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
+                    _mainViewModel.ShowTourlogView();
+                }
+                _log.Error("SelectedTourLog was null!");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("An exception was thrown trying to delete a tour: ", ex);
+                throw;
             }
         }
 
         public async Task EditTourLogAsync()
         {
-            if (SelectedTourLog != null)
+            try
             {
-                var tourlogFromDb = await _tourlogService.GetTourlogById(SelectedTourLog.TourLogId);
-                if (tourlogFromDb != null)
+                if (SelectedTourLog != null)
                 {
-                    tourlogFromDb.Author = TourlogToEdit.Author;
-                    tourlogFromDb.Date = DateTime.SpecifyKind(TourlogToEdit.Date, DateTimeKind.Utc);
-                    tourlogFromDb.Difficulty = TourlogToEdit.Difficulty;
-                    tourlogFromDb.TotalDistance = TourlogToEdit.TotalDistance;
-                    tourlogFromDb.TotalTime = TourlogToEdit.TotalTime;
-                    tourlogFromDb.Rating = TourlogToEdit.Rating;
-                    tourlogFromDb.Comment = TourlogToEdit.Comment;
-
-                    string errMessage = _validator.ValidateTourlogInput(tourlogFromDb);
-
-                    if (errMessage == "")
-                        await _tourlogService.EditTourLog(tourlogFromDb);
-
-                    else
+                    var tourlogFromDb = await _tourlogService.GetTourlogById(SelectedTourLog.TourLogId);
+                    if (tourlogFromDb != null)
                     {
-                        MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        return;
+                        tourlogFromDb.Author = TourlogToEdit.Author;
+                        tourlogFromDb.Date = DateTime.SpecifyKind(TourlogToEdit.Date, DateTimeKind.Utc);
+                        tourlogFromDb.Difficulty = TourlogToEdit.Difficulty;
+                        tourlogFromDb.TotalDistance = TourlogToEdit.TotalDistance;
+                        tourlogFromDb.TotalTime = TourlogToEdit.TotalTime;
+                        tourlogFromDb.Rating = TourlogToEdit.Rating;
+                        tourlogFromDb.Comment = TourlogToEdit.Comment;
+
+                        string errMessage = _validator.ValidateTourlogInput(tourlogFromDb);
+
+                        if (errMessage == "")
+                        {
+                            await _tourlogService.EditTourLog(tourlogFromDb);
+                            _log.Info("Tourlog input was valid!");
+                        }
+
+                        else
+                        {
+                            MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            _log.Error("Tourlog input was invalid!");
+                            return;
+                        }
                     }
+                    else
+                        _log.Error("tourlogFromDb was null!");
+
+                    var tourlogs = await _tourlogService.GetTourlogsAsync();
+                    AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
+                    _mainViewModel.ShowTourlogView();
+                    ClearInputs();
                 }
-                var tourlogs = await _tourlogService.GetTourlogsAsync();
-                AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
-                _mainViewModel.ShowTourlogView();
-                ClearInputs();
+                _log.Error("Selected tourlog was null!");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("An exception was thrown trying to edit a tourlog: ", ex);
+                throw;
             }
         }
         public void ClearInputs()
         {
-            _addAuthor = "";
-            _addComment = "";
-            _addDistance = 0;
-            _addTime = TimeSpan.Zero;
-            _addRating = 5;
-            _addDate = DateTime.Now;
+            try
+            {
+                _addAuthor = "";
+                _addComment = "";
+                _addDistance = 0;
+                _addTime = TimeSpan.Zero;
+                _addRating = 5;
+                _addDate = DateTime.Now;
+            }
+            catch(Exception ex)
+            {
+                _log.Error("An exception occured while trying to clear input fields: ", ex);
+                throw;
+            }
         }
 
 

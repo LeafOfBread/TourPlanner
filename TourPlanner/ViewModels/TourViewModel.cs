@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations.Operations;
+﻿using log4net;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -25,6 +26,7 @@ namespace TourPlanner.UI.ViewModels
         private readonly ITourService _tourService;
         private readonly InputValidator _validator;
         private UserControl _currentTourView;
+        private static readonly ILog _log = LogManager.GetLogger(typeof(TourViewModel));
 
         public UserControl CurrentTourView
         {
@@ -77,12 +79,19 @@ namespace TourPlanner.UI.ViewModels
                 {
                     _selectedTour = value;
                     OnPropertyChanged(nameof(SelectedTour));
+
+                    if (_selectedTour != null)
+                        _log.Info($"Selected tour changed to: ID={_selectedTour.Id}, Name={_selectedTour.Name}");
+                    else
+                        _log.Warn("Selected tour set to null.");
+
                     UpdateTourDetails();
                     _mainViewModel.TourLogViewModel.UpdateTourLogDetails();
                     HandleTourSelectionChanged();
                 }
             }
         }
+
 
         public TourViewModel() { }
         public TourViewModel(MainViewModel mainViewModel, ITourService tourService, InputValidator validator)
@@ -114,6 +123,8 @@ namespace TourPlanner.UI.ViewModels
             UpdateTourCommand = new RelayCommand(() => EditTourAsync());
 
             ClearInputs();
+
+            _log.Info("Initialized TourViewModel");
         }
 
         public void UpdateTourDetails()
@@ -233,40 +244,64 @@ namespace TourPlanner.UI.ViewModels
             }
         }
 
-         public async Task SaveTourAsync()
+        public async Task SaveTourAsync()
         {
-            string errMessage = _validator.ValidateTourInput(NewTour);  //if validator returns no error -> insert new tour
+            string errMessage = _validator.ValidateTourInput(NewTour);
             if (errMessage == "")
+            {
+                _log.Info($"Saving new tour: {NewTour.Name}");
                 await _tourService.InsertTours(NewTour);
+                _log.Info("New tour saved successfully.");
+            }
             else
             {
+                _log.Warn($"Validation failed for new tour: {errMessage}");
                 MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // reload all tours to also display the new one
             var tours = await _tourService.GetAllTours();
-
-            // new collection to trigger property change
             AllTours = new ObservableCollection<Tours>(tours);
+            _log.Info("Tour list refreshed after save.");
+
             _mainViewModel.ShowTourListView();
             ClearInputs();
         }
 
+
         public async Task DeleteTourAsync()
         {
-            await _tourService.DeleteTour(SelectedTour);
+            if (SelectedTour != null)
+            {
+                _log.Info($"Deleting tour: ID={SelectedTour.Id}, Name={SelectedTour.Name}");
+                await _tourService.DeleteTour(SelectedTour);
+            }
+            else
+            {
+                _log.Warn("DeleteTourAsync called, but SelectedTour was null.");
+                return;
+            }
 
             var tours = await _tourService.GetAllTours();
             AllTours = new ObservableCollection<Tours>(tours);
+            _log.Info("Tour list refreshed after deletion.");
         }
+
 
         public async Task EditTourAsync()
         {
+            if (SelectedTour == null)
+            {
+                _log.Warn("EditTourAsync called, but SelectedTour was null.");
+                return;
+            }
+
             var tourFromDb = await _tourService.GetTourById(SelectedTour.Id);
 
             if (tourFromDb != null)
             {
+                _log.Info($"Editing tour: ID={tourFromDb.Id}, Name={tourFromDb.Name}");
+
                 tourFromDb.Name = EditTour.Name;
                 tourFromDb.From = EditTour.From;
                 tourFromDb.To = EditTour.To;
@@ -277,20 +312,31 @@ namespace TourPlanner.UI.ViewModels
 
                 string errMessage = _validator.ValidateTourInput(tourFromDb);
                 if (errMessage == "")
+                {
                     await _tourService.UpdateTour(tourFromDb);
-
+                    _log.Info("Tour updated successfully.");
+                }
                 else
                 {
+                    _log.Warn($"Validation failed during edit: {errMessage}");
                     MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }
+            else
+            {
+                _log.Error($"EditTourAsync failed: Tour with ID={SelectedTour.Id} not found in DB.");
+                return;
+            }
 
             var tours = await _tourService.GetAllTours();
             AllTours = new ObservableCollection<Tours>(tours);
+            _log.Info("Tour list refreshed after edit.");
+
             _mainViewModel.ShowTourListView();
-            ClearInputs();    //clear user inputs when insertion is finished
+            ClearInputs();
         }
+
 
         public int GetSelectedTourId()
         {
@@ -302,21 +348,29 @@ namespace TourPlanner.UI.ViewModels
 
         private void ClearInputs()
         {
-            //Tour
+            _log.Info("Cleared user input fields.");
             _addTourName = "";
             _addTourFrom = "";
             _addTourTo = "";
             _addTourDescription = "";
         }
 
+
         private void HandleTourSelectionChanged()
         {
             if (CurrentTourView is AddTourView || CurrentTourView is EditTourView)
+            {
+                _log.Info("Tour selection changed — returning to TourListView.");
                 _mainViewModel.ShowTourListView();
+            }
 
             if (_mainViewModel.TourLogViewModel.CurrentLogView is AddTourLogView || _mainViewModel.TourLogViewModel.CurrentLogView is EditTourlogView)
+            {
+                _log.Info("Tour selection changed — returning to TourLogView.");
                 _mainViewModel.ShowTourlogView();
+            }
         }
+
 
         public event PropertyChangedEventHandler PropertyChanged;
 

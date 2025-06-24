@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -71,7 +72,7 @@ namespace TourPlanner.UI.ViewModels
                 if (tours != null)
                     _log.Info("Successfully loaded tours from database");
                 else
-                    _log.Info("LoadTours could not find any tours.");
+                    _log.Error("LoadTours could not find any tours.");
             }
             catch (Exception ex)
             {
@@ -89,7 +90,7 @@ namespace TourPlanner.UI.ViewModels
                 if (tourlogs != null)
                     _log.Info("Successfully loaded tourlogs from database");
                 else
-                    _log.Info("LoadTourLogs could not find any tourlogs");
+                    _log.Error("LoadTourLogs could not find any tourlogs");
             }
             catch (Exception ex)
             {
@@ -103,11 +104,11 @@ namespace TourPlanner.UI.ViewModels
             try
             {
                 TourViewModel.CurrentTourView = new TourListView();
-                _log.Info("User switched to TourListView.");
+                _log.Info("Navigated to TourListView");
             }
             catch(Exception ex)
             {
-                _log.Error("User tried to switch to TourListView, but an exception was thrown: ", ex);
+                _log.Error("Tried to navigate to TourListView, but an exception was thrown: ", ex);
                 throw;
             }
         }
@@ -115,68 +116,119 @@ namespace TourPlanner.UI.ViewModels
         {
             try
             {
-                if (TourViewModel.SelectedTour != null)
-                {
                     TourViewModel.NewTour = new Tours();
                     TourViewModel.CurrentTourView = new AddTourView();
-                    _log.Info("User switched to AddTourView.");
-                }
-                _log.Info("User tried to switch to AddTourView, but SelectedTour was null");
+                    _log.Info("Navigated to AddTourView.");
             }
             catch(Exception ex)
             {
-                _log.Error("An exception was thrown while trying to switch to AddTourView: ", ex);
+                _log.Error("Tried to navigate to ShowAddTourView, but an exception was thrown: ", ex);
                 throw;
             }
         }
 
         public void ShowTourlogView()
         {
-            TourLogViewModel.CurrentLogView = new TourLogsView();
+            try
+            {
+                TourLogViewModel.CurrentLogView = new TourLogsView();
+                _log.Info("Navigated to ShowTourlogView.");
+            }
+            catch (Exception ex)
+            {
+                _log.Error("Tried to navigate to ShowTourLogView, but an exception was thrown: ", ex);
+                throw;
+            }
         }
 
         public void ShowEditTourView()
         {
-            if (TourViewModel.SelectedTour != null)
+            try
             {
-                TourViewModel.AddTourName = TourViewModel.SelectedTour.Name;
-                TourViewModel.AddTourFrom = TourViewModel.SelectedTour.From;
-                TourViewModel.AddTourTo = TourViewModel.SelectedTour.To;
-                TourViewModel.AddTourDescription = TourViewModel.SelectedTour.Description;
+                if (TourViewModel.SelectedTour != null)
+                {
+                    TourViewModel.AddTourName = TourViewModel.SelectedTour.Name;
+                    TourViewModel.AddTourFrom = TourViewModel.SelectedTour.From;
+                    TourViewModel.AddTourTo = TourViewModel.SelectedTour.To;
+                    TourViewModel.AddTourDescription = TourViewModel.SelectedTour.Description;
 
-                TourViewModel.CurrentTourView = new EditTourView();
+                    TourViewModel.CurrentTourView = new EditTourView();
+                    _log.Info("Navigated to ShowEditTourView");
+                }
+                else
+                    _log.Error("Tried to navigate to ShowEditTourView, but the selected tour was null!");
             }
+            catch(Exception ex)
+            {
+                _log.Error("Tried to navigate to ShowEditTourView, but an exception was thrown: ", ex);
+                throw;
+            }
+            
         }
 
         public void ShowAddTourLog()
         {
-            TourLogViewModel.ClearInputs();
-            if (TourViewModel.SelectedTour != null)
-                TourLogViewModel.CurrentLogView = new AddTourLogView();
+            try
+            {
+                TourLogViewModel.ClearInputs();
+                if (TourViewModel.SelectedTour != null)
+                {
+                    TourLogViewModel.CurrentLogView = new AddTourLogView();
+                    _log.Info("Navigated to ShowAddTourLog");
+                }
+                else
+                    _log.Error("Tried to navigate to ShowAddTourLog, but the selected tour was null!");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("Tried to navigate to ShowAddTourLog, but an exception was thrown: ", ex);
+                throw;
+            }
         }
 
         public void ShowEditTourLog()
         {
-            if (TourViewModel.SelectedTour != null && TourLogViewModel.SelectedTourLog != null)
+            try
             {
-                TourLogViewModel.AddAuthor = TourLogViewModel.SelectedTourLog.Author;
-                TourLogViewModel.AddDate = TourLogViewModel.SelectedTourLog.Date;
-                TourLogViewModel.AddDifficulty = TourLogViewModel.SelectedTourLog.Difficulty;
-                TourLogViewModel.AddDistance = TourLogViewModel.SelectedTourLog.TotalDistance;
-                TourLogViewModel.AddTime = TourLogViewModel.SelectedTourLog.TotalTime;
-                TourLogViewModel.AddRating = TourLogViewModel.SelectedTourLog.Rating;
-                TourLogViewModel.AddComment = TourLogViewModel.SelectedTourLog.Comment;
+                if (TourViewModel.SelectedTour != null && TourLogViewModel.SelectedTourLog != null)
+                {
+                    TourLogViewModel.AddAuthor = TourLogViewModel.SelectedTourLog.Author;
+                    TourLogViewModel.AddDate = TourLogViewModel.SelectedTourLog.Date;
+                    TourLogViewModel.AddDifficulty = TourLogViewModel.SelectedTourLog.Difficulty;
+                    TourLogViewModel.AddDistance = TourLogViewModel.SelectedTourLog.TotalDistance;
+                    TourLogViewModel.AddTime = TourLogViewModel.SelectedTourLog.TotalTime;
+                    TourLogViewModel.AddRating = TourLogViewModel.SelectedTourLog.Rating;
+                    TourLogViewModel.AddComment = TourLogViewModel.SelectedTourLog.Comment;
 
 
-                TourLogViewModel.CurrentLogView = new EditTourlogView();
+                    TourLogViewModel.CurrentLogView = new EditTourlogView();
+
+                    _log.Info("Navigated to ShowEditTourLog");
+                }
+                _log.Error("Tried to navigate to ShowEditTourLog, but either the selected tour or tourlog was null!");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("Tried to navigate to ShowEditTourLog, but an exception was thrown: ", ex);
+                throw;
             }
         }
 
         public void ShowHomeMenu(ITourService tourService, TourLogService tourlogService)
         {
-            TourViewModel.CurrentTourView = new TourListView();
-            TourLogViewModel.CurrentLogView = new TourLogsView();
-            _ = LoadDataAsync(tourService, tourlogService);
+            try
+            {
+                TourViewModel.CurrentTourView = new TourListView();
+                TourLogViewModel.CurrentLogView = new TourLogsView();
+                //_ = LoadDataAsync(tourService, tourlogService);   //unnecessary, list of MasterTours now stored in memory instead of pulling from the database each time
+
+                _log.Info("Navigated to home menu.");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("Tried to navigate to home menu, but an exception was thrown: ", ex);
+                throw;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

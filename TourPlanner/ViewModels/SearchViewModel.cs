@@ -1,4 +1,5 @@
-﻿using System;
+﻿using log4net;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -15,6 +16,7 @@ namespace TourPlanner.UI.ViewModels
     {
         private readonly ITourService _tourService;
         private readonly MainViewModel _mainViewModel;
+        private static readonly ILog _log = LogManager.GetLogger(typeof(SearchViewModel));
 
         private string _searchInput;
         public string SearchInput
@@ -54,16 +56,29 @@ namespace TourPlanner.UI.ViewModels
             FoundTours = new ObservableCollection<Tours>();
 
             SearchTourCommand = new RelayCommand(() => SearchForTours());
+
+            _log.Info("Initialized SearchViewModel");
         }
 
         public async Task SearchForTours()
         {
-            var foundTours = await _tourService.SearchForTours(SearchInput, _mainViewModel.TourViewModel.MasterTours, _mainViewModel.TourLogViewModel.AllTourLogs);
-
-            if (foundTours != null)
+            try
             {
-                FoundTours = foundTours;
-                await UpdateTourBox(FoundTours);
+                var foundTours = await _tourService.SearchForTours(SearchInput, _mainViewModel.TourViewModel.MasterTours, _mainViewModel.TourLogViewModel.AllTourLogs);
+
+                if (foundTours != null)
+                {
+                    FoundTours = foundTours;
+                    await UpdateTourBox(FoundTours);
+                    _log.Info($"Successfully searched for {foundTours.Count}");
+                }
+                else
+                    _log.Error("foundTours returned as null!");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("Tried to search for tours, but an exception was thrown: ", ex);
+                throw;
             }
         }
 
