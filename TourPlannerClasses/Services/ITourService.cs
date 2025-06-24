@@ -11,6 +11,7 @@ using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
 using FuzzySharp;
 using System.Data;
+using log4net;
 
 namespace TourPlanner.BusinessLogic.Services
 {
@@ -27,6 +28,7 @@ namespace TourPlanner.BusinessLogic.Services
     public class TourService : ITourService
     {
         private readonly TourDbContext _context;
+        private static readonly ILog _log = LogManager.GetLogger(typeof(TourService));
 
         public TourService(TourDbContext context)
         {
@@ -46,11 +48,14 @@ namespace TourPlanner.BusinessLogic.Services
             {
                 var foundTour = _context.Tours.Find(id);
                 if (foundTour != null)
+                {
+                    _log.Info($"Tour successfully found: {foundTour.Name}");
                     return foundTour;
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error finding Tour by Id: {ex.Message}");
+                _log.Warn($"Error finding Tour by Id: {ex.Message}");
             }
             return null;
         }
