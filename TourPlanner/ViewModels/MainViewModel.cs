@@ -31,7 +31,7 @@ namespace TourPlanner.UI.ViewModels
 
         public MainViewModel(ITourService tourService, TourLogService tourlogService, InputValidator validator)
         {
-            TourViewModel = new TourViewModel(this, tourService, validator);
+            TourViewModel = new TourViewModel(this, tourService, tourlogService, validator);
             TourLogViewModel = new TourLogViewModel(this, tourService, tourlogService, validator);
             SearchViewModel = new SearchViewModel(this, tourService);
 

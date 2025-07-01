@@ -19,6 +19,9 @@ using TourPlanner.Views;
 using TourPlannerClasses.Models;
 using Microsoft.Web.WebView2.Wpf;
 using System.Globalization;
+using System.IO;
+using System.Text.Json;
+using Microsoft.Win32;
 
 namespace TourPlanner.UI.ViewModels
 {
@@ -26,6 +29,7 @@ namespace TourPlanner.UI.ViewModels
     {
         private readonly MainViewModel _mainViewModel;
         private readonly ITourService _tourService;
+        private readonly TourLogService _tourlogService;
         private readonly InputValidator _validator;
         private UserControl _currentTourView;
         private static readonly ILog _log = LogManager.GetLogger(typeof(TourViewModel));
@@ -45,6 +49,8 @@ namespace TourPlanner.UI.ViewModels
         public ICommand SaveTourCommand { get; private set; }
         public ICommand DeleteTourCommand { get; private set; }
         public ICommand UpdateTourCommand { get; private set; }
+        public ICommand ImportTourCommand { get; private set; }
+        public ICommand ExportTourCommand { get; private set; }
 
         //tour fields
         private ObservableCollection<Tours> _allTours;
@@ -100,10 +106,11 @@ namespace TourPlanner.UI.ViewModels
 
 
         public TourViewModel() { }
-        public TourViewModel(MainViewModel mainViewModel, ITourService tourService, InputValidator validator)
+        public TourViewModel(MainViewModel mainViewModel, ITourService tourService, TourLogService tourlogService, InputValidator validator)
         {   //DI
             _mainViewModel = mainViewModel;
             _tourService = tourService;
+            _tourlogService = tourlogService;
             _validator = validator;
 
             //initialization
@@ -127,6 +134,8 @@ namespace TourPlanner.UI.ViewModels
             SaveTourCommand = new RelayCommand(() => SaveTourAsync());
             DeleteTourCommand = new RelayCommand(() => DeleteTourAsync());
             UpdateTourCommand = new RelayCommand(() => EditTourAsync());
+            ImportTourCommand = new RelayCommand(() => ImportTourAsync());
+            ExportTourCommand = new RelayCommand(() => ExportTourAsync());
 
             ClearInputs();
 
@@ -341,6 +350,101 @@ namespace TourPlanner.UI.ViewModels
 
             _mainViewModel.ShowTourListView();
             ClearInputs();
+        }
+
+        public async Task ImportTourAsync()
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "JSON Files (*.json)|*json",
+                Multiselect = false
+            };
+           
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    string json = await File.ReadAllTextAsync(openFileDialog.FileName);
+                    var importedTour = JsonSerializer.Deserialize<Tours>(json,
+                        new JsonSerializerOptions
+                        {
+                            ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
+                        });
+
+                    if (importedTour != null)
+                    {
+                        foreach(Tours tour in AllTours)
+                        {
+                            if (tour.Name == importedTour.Name)
+                            {
+                                MessageBox.Show("This tour already exists!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                                return;
+                            }
+                        }
+
+                        await _tourService.InsertTours(importedTour);
+
+                        foreach(Tourlog log in importedTour.Tourlogs)
+                        {
+                            log.Tour = importedTour;
+                            log.Tour.Id = importedTour.Id;
+                            await _tourlogService.InsertTourLog(log);
+                        }
+
+                        var tours = await _tourService.GetAllTours();
+                        AllTours = new ObservableCollection<Tours>(tours);
+
+                        var tourlogs = await _tourlogService.GetTourlogsAsync();
+                        _mainViewModel.TourLogViewModel.AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
+
+                        MessageBox.Show("Tour imported successfully", "Import", MessageBoxButton.OK, MessageBoxImage.Information);
+                        _log.Info($"Imported tour from {openFileDialog.FileName}");
+                    }
+                    else
+                        MessageBox.Show("Could not read tour from file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch(Exception ex)
+                {
+                    _log.Error("Error importing tour: ", ex);
+                    MessageBox.Show($"Error importing tour:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        public async Task ExportTourAsync()
+        {
+            if (SelectedTour == null)
+            {
+                MessageBox.Show("Please first select a tour you would like to export.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
+                _log.Info("Tried to export a tour, but SelectedTour was NULL");
+                return;
+            }
+
+            var saveFileDialog = new SaveFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json",
+                FileName = $"{SelectedTour.Name}.json"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    string json = JsonSerializer.Serialize(SelectedTour, new JsonSerializerOptions
+                    {
+                        WriteIndented = true,
+                        ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
+                    });
+                    await File.WriteAllTextAsync(saveFileDialog.FileName, json);
+                    MessageBox.Show("Tour exported successfully", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _log.Info($"Exported tour to {saveFileDialog.FileName}");
+                }
+                catch(Exception ex)
+                {
+                    _log.Error("Error exporting tour: ", ex);
+                    MessageBox.Show($"Error exporting tour:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
         public void SetWebView(WebView2 webView)
