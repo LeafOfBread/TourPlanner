@@ -10,6 +10,7 @@ using TourPlanner.BusinessLogic.Services;
 using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
 using Xunit;
+using System.Text.Json;
 
 namespace UnitTests
 {
@@ -224,7 +225,7 @@ namespace UnitTests
             var client = new HttpClient(httpMessageHandlerMock.Object);
 
             var configReaderMock = new Mock<ConfigReader>();
-            configReaderMock.Setup(c => c.GetApiKeys()).Returns(new List<string> { "fake-api-key", "fake-mapbox-key" });
+            configReaderMock.Setup(c => c.GetApiKeys()).Returns(new List<string> { "fake-api-key" });
 
             var handler = new ApiHandler(configReaderMock.Object, client);
 
@@ -237,7 +238,135 @@ namespace UnitTests
             Assert.Equal(48.2082f, result[0], 3);
             Assert.Equal(16.3738f, result[1], 3);
         }
+        [Fact]
+        public async Task ExportTourToFileAsync_WritesCorrectJson()
+        {
+            // Arrange
+            var fakeTour = new Tours
+            {
+                Name = "Test Tour",
+                Description = "Description",
+                From = "Vienna",
+                FromLat = 48.2,
+                FromLng = 16.3,
+                To = "Graz",
+                ToLat = 47.07,
+                ToLng = 15.43,
+                Duration = TimeSpan.FromHours(2),
+                Distance = 120.5,
+                Transport = TourPlannerClasses.Models.TransportType.Car,
+                Tourlogs = new List<Tourlog>
+                {
+                    new Tourlog
+                    {
+                        Date = new DateTime(2025, 01, 01),
+                        Comment = "Great ride!",
+                        Difficulty = Difficulty.Medium,
+                        TotalDistance = 120,
+                        TotalTime = TimeSpan.FromHours(2),
+                        Rating = 5,
+                        Author = "Tester"
+                    }
+                }
+            };
 
+            var mockLogService = new Mock<TourLogService>(null);
+            var tourService = new TourService(null, mockLogService.Object);
 
+            var tempFile = Path.GetTempFileName();
+
+            try
+            {
+                // Act
+                await tourService.ExportTourToFileAsync(fakeTour, tempFile);
+
+                // Assert
+                var json = await File.ReadAllTextAsync(tempFile);
+                var dto = JsonSerializer.Deserialize<TourExportDto>(json);
+
+                Assert.NotNull(dto);
+                Assert.Equal(fakeTour.Name, dto.Name);
+                Assert.Equal(fakeTour.From, dto.From);
+                Assert.Equal(fakeTour.To, dto.To);
+                Assert.Single(dto.Tourlogs);
+                Assert.Equal("Tester", dto.Tourlogs[0].Author);
+            }
+            finally
+            {
+                if (File.Exists(tempFile))
+                    File.Delete(tempFile);
+            }
+        }
+
+        [Fact]
+        public async Task ImportTourFromFileAsync_ReadsAndMapsCorrectly()
+        {
+            // Arrange
+            var dto = new TourExportDto
+            {
+                Name = "Imported Tour",
+                Description = "Some import",
+                From = "Vienna",
+                FromLat = 48.2,
+                FromLng = 16.3,
+                To = "Graz",
+                ToLat = 47.07,
+                ToLng = 15.43,
+                Duration = TimeSpan.FromHours(2),
+                Distance = 120.5,
+                Transport = TourPlannerClasses.Models.TransportType.Car,
+                Tourlogs = new List<TourlogExportDto>
+                {
+                    new TourlogExportDto
+                    {
+                        Date = new DateTime(2025, 02, 02),
+                        Comment = "Imported log",
+                        Difficulty = (int)Difficulty.Medium,
+                        TotalDistance = 120,
+                        TotalTime = TimeSpan.FromHours(2),
+                        Rating = 4,
+                        Author = "Importer"
+                    }
+                }
+            };
+
+            var json = JsonSerializer.Serialize(dto, new JsonSerializerOptions { WriteIndented = true });
+            var tempFile = Path.GetTempFileName();
+
+            await File.WriteAllTextAsync(tempFile, json);
+
+            var mockLogService = new Mock<TourLogService>(null);
+            var tourService = new TourService(null, mockLogService.Object);
+
+            // Act
+            var importedTour = await tourService.ImportTourFromFileAsync(tempFile);
+
+            // Assert
+            Assert.NotNull(importedTour);
+            Assert.Equal(dto.Name, importedTour.Name);
+            Assert.Equal(dto.From, importedTour.From);
+            Assert.Equal(dto.To, importedTour.To);
+            Assert.Single(importedTour.Tourlogs);
+            Assert.Equal("Importer", importedTour.Tourlogs.First().Author);
+
+            mockLogService.Verify(
+                s => s.InsertTourLog(It.Is<Tourlog>(tl => tl.Author == "Importer")),
+                Times.Once);
+
+            // Clean up
+            if (File.Exists(tempFile))
+                File.Delete(tempFile);
+        }
+
+        [Fact]
+        public async Task ImportTourFromFileAsync_ReturnsNull_WhenFileDoesNotExist()
+        {
+            var mockLogService = new Mock<TourLogService>(null);
+            var tourService = new TourService(null, mockLogService.Object);
+
+            var result = await tourService.ImportTourFromFileAsync("nonexistent_file.json");
+
+            Assert.Null(result);
+        }
     }
 }

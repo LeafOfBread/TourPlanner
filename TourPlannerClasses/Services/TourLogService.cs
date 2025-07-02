@@ -9,7 +9,17 @@ using TourPlannerClasses.Models;
 
 namespace TourPlanner.BusinessLogic.Services
 {
-    public class TourLogService
+    public interface ITourLogService
+    {
+        Task<List<Tourlog>> GetTourlogsAsync();
+        Task InsertTourLog(Tourlog newLog);
+        Task DeleteTourLog(Tourlog tourlogToRemove);
+        Task<Tourlog> GetTourlogById(int id);
+        Task EditTourLog(Tourlog tourlogToEdit);
+    }
+
+
+    public class TourLogService : ITourLogService
     {
         private readonly TourDbContext _context;
 
@@ -23,7 +33,7 @@ namespace TourPlanner.BusinessLogic.Services
             return _context.TourLogs.ToList();
         }
 
-        public async Task InsertTourLog(Tourlog newLog)
+        public virtual async Task InsertTourLog(Tourlog newLog)
         {
             try
             {

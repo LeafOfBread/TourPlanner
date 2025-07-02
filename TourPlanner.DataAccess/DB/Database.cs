@@ -90,9 +90,7 @@ namespace TourPlannerClasses.DB
             var keys = new List<string>
         {
             _config["OpenRouteApiKey"],
-            _config["MapBoxApiKey"]
         };
-
             _log.Info("API keys loaded.");
             return keys;
         }

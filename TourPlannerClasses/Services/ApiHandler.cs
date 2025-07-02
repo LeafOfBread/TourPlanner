@@ -25,7 +25,6 @@ namespace TourPlanner.BusinessLogic.Services
     public class ApiHandler : IApiHandler           //unfinished, no idea if this actually works, took this code from the openrouteservices documentation. api key should work in theory
     {
         private readonly string OpenRouteApiKey;
-        private readonly string MapBoxApiKey;
         private readonly List<string> ApiKeys;
         private readonly ConfigReader _configReader;
         private readonly HttpClient _httpClient;
@@ -35,7 +34,6 @@ namespace TourPlanner.BusinessLogic.Services
             _configReader = configReader;
             ApiKeys = _configReader.GetApiKeys();
             OpenRouteApiKey = ApiKeys[0];
-            MapBoxApiKey = ApiKeys[1];
             _httpClient = httpClient;
         }
 
