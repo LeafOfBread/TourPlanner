@@ -16,7 +16,7 @@
                     <GridViewColumn Header="Description" DisplayMemberBinding="{Binding Description}"/>
                     <GridViewColumn Header="From" DisplayMemberBinding="{Binding From}"/>
                     <GridViewColumn Header="To" DisplayMemberBinding="{Binding To}"/>
-                    <GridViewColumn Header="Distance" DisplayMemberBinding="{Binding Distance}"/>
+                    <GridViewColumn Header="Distance (km)" DisplayMemberBinding="{Binding Distance}"/>
                     <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding Duration}"/>
                     <GridViewColumn Header="Transport" DisplayMemberBinding="{Binding Transport}"/>
                 </GridView>

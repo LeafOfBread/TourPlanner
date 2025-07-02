@@ -15,7 +15,9 @@ namespace TourPlanner.BusinessLogic.Services
 {
     public interface IApiHandler
     {
-        public Task GetRouteDirections(string start, string end);
+        public Task<RouteInfo> GetRouteDirections(float startLon, float startLat,
+            float endLon, float endLat,
+            string profile);
         public Task<List<float>> GetCoordinates(string startLocation, string endLocation);
         public float[] HandleJsonResponseCoordinates(object data);
     }
@@ -37,21 +39,53 @@ namespace TourPlanner.BusinessLogic.Services
             _httpClient = httpClient;
         }
 
-        public async Task GetRouteDirections(string start, string end)
+        public async Task<RouteInfo> GetRouteDirections(
+            float startLon, float startLat,
+            float endLon, float endLat,
+            string profile = "driving-car")
         {
-            var baseAddress = new Uri("https://api.openrouteservice.org/");
-            
-            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
-            {
-                httpClient.DefaultRequestHeaders.Clear();
-                httpClient.DefaultRequestHeaders.TryAddWithoutValidation("accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8");
+            var url = $"https://api.openrouteservice.org/v2/directions/{profile}/geojson";
 
-                using (var response = await httpClient.GetAsync("directions"))
+            var requestBody = new
+            {
+                coordinates = new[]
                 {
-                    string responseData = await response.Content.ReadAsStringAsync();
-                    var data = JsonConvert.DeserializeObject(responseData);
+                    new[] { startLon, startLat },
+                    new[] { endLon, endLat }
                 }
+            };
+
+            var json = JsonConvert.SerializeObject(requestBody);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Headers.TryAddWithoutValidation(
+                "accept",
+                "application/json, application/geo+json"
+            ); request.Headers.TryAddWithoutValidation("authorization", OpenRouteApiKey);
+            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.SendAsync(request);
+            var responseJson = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                // Print helpful error from server
+                throw new Exception(
+                    $"OpenRouteService API error: {response.StatusCode}\n{responseJson}"
+                );
             }
+            var jObject = JObject.Parse(responseJson);
+            var distance = jObject["features"]?[0]?["properties"]?["summary"]?["distance"]?.Value<double>() ?? 0;
+            var duration = jObject["features"]?[0]?["properties"]?["summary"]?["duration"]?.Value<double>() ?? 0;
+
+            var coordinates = jObject["features"]?[0]?["geometry"]?["coordinates"]?.ToObject<List<List<double>>>();
+
+            return new RouteInfo
+            {
+                DistanceMeters = distance,
+                DurationSeconds = duration,
+                Geometry = coordinates
+            };
         }
 
         public async Task<List<float>> GetCoordinates(string startLocation, string endLocation)
@@ -93,5 +127,11 @@ namespace TourPlanner.BusinessLogic.Services
 
             return new float[2]; // default empty
         }
+    }
+    public class RouteInfo
+    {
+        public double DistanceMeters { get; set; }
+        public double DurationSeconds { get; set; }
+        public List<List<double>> Geometry { get; set; }
     }
 }

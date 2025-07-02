@@ -29,8 +29,8 @@ namespace UnitTests
                 .Options;
 
             _context = new TourDbContext(options);
-            _tourService = new TourService(_context);
-            _tourlogService = new TourLogService(_context);
+            _tourlogService = new TourLogService(_context); 
+            _tourService = new TourService(_context, _tourlogService);
 
             // make sure database is clean before running tests
             _context.Database.EnsureDeleted();
@@ -42,10 +42,10 @@ namespace UnitTests
         {
             // Arrange
             var mockTours = new List<Tours>
-        {
-            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
-            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus)
-        };
+{
+    new Tours(1, "Tour 1", "Description 1", "Start 1", 48.2, 16.37, "End 1", 48.21, 16.38, new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+    new Tours(2, "Tour 2", "Description 2", "Start 2", 48.3, 16.4, "End 2", 48.31, 16.41, new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus)
+};
 
             // Add mock tours to the in-memory database
             await _context.Tours.AddRangeAsync(mockTours);
@@ -66,10 +66,10 @@ namespace UnitTests
         {
             //Arrange
             var mockTours = new List<Tours>
-        {
-            new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
-            new Tours(2, "Tour 2", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus)
-        };
+{
+    new Tours(1, "Tour 1", "Description 1", "Start 1", 48.2, 16.37, "End 1", 48.21, 16.38, new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+    new Tours(2, "Tour 2", "Description 2", "Start 2", 48.3, 16.4, "End 2", 48.31, 16.41, new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus)
+};
 
             await _context.Tours.AddRangeAsync(mockTours);
             await _context.SaveChangesAsync();
@@ -87,7 +87,13 @@ namespace UnitTests
         public async Task InsertTour_ShouldCorrectlyInsert()
         {
             //Arrange
-            var tourToInsert = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat);
+            var tourToInsert = new Tours(
+    1, "Tour 1", "Description 1",
+    "Start 1", 48.2, 16.37,
+    "End 1", 48.21, 16.38,
+    new TimeSpan(1, 0, 0), 10.5,
+    TourPlannerClasses.Models.TransportType.Boat
+);
             //Act
             await _tourService.InsertTours(tourToInsert);
 
@@ -101,7 +107,13 @@ namespace UnitTests
         public async Task DeleteTour_ShouldCorrectlyDelete()
         {
             //Arrange
-            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat);
+            var mockTour = new Tours(
+                1, "Tour 1", "Description 1",
+                "Start 1", 48.2, 16.37,
+                "End 1", 48.21, 16.38,
+                new TimeSpan(1, 0, 0), 10.5,
+                TourPlannerClasses.Models.TransportType.Boat
+            ); 
             await _context.Tours.AddAsync(mockTour);
             await _context.SaveChangesAsync();
 
@@ -118,12 +130,24 @@ namespace UnitTests
         public async Task UpdateTour_ShouldCorrectlyUpdate()
         {
             //Arrange
-            var mockTour = new Tours(1, "Tour 1", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat);
+            var mockTour = new Tours(
+                1, "Tour 1", "Description 1",
+                "Start 1", 48.2, 16.37,
+                "End 1", 48.21, 16.38,
+                new TimeSpan(1, 0, 0), 10.5,
+                TourPlannerClasses.Models.TransportType.Boat
+            ); 
             await _context.AddAsync(mockTour);
             await _context.SaveChangesAsync();
 
             //Act
-            var mockTourWithEdits = new Tours(1, "Updated Tour", "New Description", "Another Start", "Different End", new TimeSpan(1, 1, 0), 55.89, TourPlannerClasses.Models.TransportType.Plane);
+            var mockTourWithEdits = new Tours(
+                1, "Updated Tour", "New Description",
+                "Another Start", 48.3, 16.4,
+                "Different End", 48.31, 16.41,
+                new TimeSpan(1, 1, 0), 55.89,
+                TourPlannerClasses.Models.TransportType.Plane
+            ); 
             await _tourService.UpdateTour(mockTourWithEdits);
 
             //Assert
@@ -143,12 +167,12 @@ namespace UnitTests
             //Arrange
             ObservableCollection<Tours> listOfTours = new ObservableCollection<Tours>()
             {
-                new Tours(1, "SimilarSoundingTour", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
-                new Tours(2, "SmilerSoundTour", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus),
-                new Tours(1, "ThisIsNotTheSame", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
-                new Tours(2, "Smiler", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus),
-                new Tours(1, "Simulation", "Description 1", "Start 1", "End 1", new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
-                new Tours(2, "Test", "Description 2", "Start 2", "End 2", new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus),
+                new Tours(1, "SimilarSoundingTour", "Description 1", "Start 1", 43.123, 16.340, "End 1", 41.320, 14.320, new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+                new Tours(2, "SmilerSoundTour", "Description 2", "Start 2", 43.123, 16.340, "End 2", 41.320, 14.320, new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus),
+                new Tours(1, "ThisIsNotTheSame", "Description 1", "Start 1", 43.123, 16.340, "End 1", 41.320, 14.320, new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+                new Tours(2, "Smiler", "Description 2", "Start 2", 43.123, 16.340, "End 2", 41.320, 14.320, new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus),
+                new Tours(1, "Simulation", "Description 1", "Start 1", 43.123, 16.340, "End 1", 41.320, 14.320, new TimeSpan(1, 0, 0), 10.5, TourPlannerClasses.Models.TransportType.Boat),
+                new Tours(2, "Test", "Description 2", "Start 2", 43.123, 16.340, "End 2", 41.320, 14.320, new TimeSpan(2, 0, 0), 20.0, TourPlannerClasses.Models.TransportType.Bus),
             };
 
             ObservableCollection<Tourlog> emptyTourlogs = new ObservableCollection<Tourlog>() { };

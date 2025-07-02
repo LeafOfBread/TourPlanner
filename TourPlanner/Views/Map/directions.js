@@ -8,10 +8,9 @@ window.onload = function () {
     }).addTo(map);
 };
 
-function showRoute(fromLat, fromLng, toLat, toLng) {
-    console.log("From:", fromLat, fromLng, "To:", toLat, toLng);
+function showFullRoute(routeCoords) {
     if (!map) {
-        console.warn("Map is not initialized yet.");
+        console.warn("Map not initialized yet.");
         return;
     }
 
@@ -19,10 +18,6 @@ function showRoute(fromLat, fromLng, toLat, toLng) {
         map.removeLayer(routeLayer);
     }
 
-    routeLayer = L.polyline([
-        [fromLat, fromLng],
-        [toLat, toLng]
-    ], { color: 'blue' }).addTo(map);
-
+    routeLayer = L.polyline(routeCoords, { color: 'blue' }).addTo(map);
     map.fitBounds(routeLayer.getBounds());
 }

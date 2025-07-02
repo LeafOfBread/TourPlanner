@@ -27,18 +27,20 @@ namespace TourPlanner
     public partial class MainWindow : Window
     {
         private readonly MainViewModel _viewModel;
-        public MainWindow(ITourService tourService, TourLogService tourlogService, InputValidator validator)
+        public MainWindow(ITourService tourService, TourLogService tourlogService, InputValidator validator, ConfigReader configReader, ApiHandler apiHandler)
         {
             InitializeComponent();
 
-            _viewModel = new MainViewModel(tourService, tourlogService, validator);
+            _viewModel = new MainViewModel(tourService, tourlogService, validator, apiHandler, configReader);
             _viewModel.TourViewModel.SetWebView(TourMapView.Browser);
             DataContext = _viewModel;
         }
 
         public MainWindow() : this(App.ServiceProvider.GetRequiredService<TourService>(),
                                    App.ServiceProvider.GetRequiredService<TourLogService>(),
-                                   App.ServiceProvider.GetRequiredService<InputValidator>())
+                                   App.ServiceProvider.GetRequiredService<InputValidator>(),
+                                   App.ServiceProvider.GetRequiredService<ConfigReader>(),
+                                   App.ServiceProvider.GetRequiredService<ApiHandler>())
         {
         }
 

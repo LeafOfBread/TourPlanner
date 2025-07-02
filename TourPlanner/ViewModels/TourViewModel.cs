@@ -12,16 +12,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Markup;
 using TourPlanner.BusinessLogic.Services;
 using TourPlanner.UI.HelperClasses;
 using TourPlanner.Views;
 using TourPlannerClasses.Models;
 using Microsoft.Web.WebView2.Wpf;
 using System.Globalization;
-using System.IO;
-using System.Text.Json;
 using Microsoft.Win32;
+
 
 namespace TourPlanner.UI.ViewModels
 {
@@ -31,6 +29,7 @@ namespace TourPlanner.UI.ViewModels
         private readonly ITourService _tourService;
         private readonly TourLogService _tourlogService;
         private readonly InputValidator _validator;
+        private readonly ApiHandler _apiHandler;
         private UserControl _currentTourView;
         private static readonly ILog _log = LogManager.GetLogger(typeof(TourViewModel));
         private WebView2 _webView;
@@ -106,12 +105,13 @@ namespace TourPlanner.UI.ViewModels
 
 
         public TourViewModel() { }
-        public TourViewModel(MainViewModel mainViewModel, ITourService tourService, TourLogService tourlogService, InputValidator validator)
+        public TourViewModel(MainViewModel mainViewModel, ITourService tourService, TourLogService tourlogService, InputValidator validator, ApiHandler apiHandler)
         {   //DI
             _mainViewModel = mainViewModel;
             _tourService = tourService;
             _tourlogService = tourlogService;
             _validator = validator;
+            _apiHandler = apiHandler;
 
             //initialization
             TourDetails = new ObservableCollection<Tours>();
@@ -262,18 +262,33 @@ namespace TourPlanner.UI.ViewModels
         public async Task SaveTourAsync()
         {
             string errMessage = _validator.ValidateTourInput(NewTour);
-            if (errMessage == "")
-            {
-                _log.Info($"Saving new tour: {NewTour.Name}");
-                await _tourService.InsertTours(NewTour);
-                _log.Info("New tour saved successfully.");
-            }
-            else
+            if (errMessage != "")
             {
                 _log.Warn($"Validation failed for new tour: {errMessage}");
-                MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
+
+            var coords = await _apiHandler.GetCoordinates(NewTour.From, NewTour.To);
+            if (coords.Count != 4)
+            {
+                MessageBox.Show("Could not resolve locations.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            NewTour.FromLng = coords[0];
+            NewTour.FromLat = coords[1];
+            NewTour.ToLng = coords[2];
+            NewTour.ToLat = coords[3];
+
+            var routeInfo = await _apiHandler.GetRouteDirections(
+                coords[0], coords[1],
+                coords[2], coords[3]);
+
+            NewTour.Distance = Math.Round(routeInfo.DistanceMeters / 1000.0, 2);
+            NewTour.Duration = TimeSpan.FromSeconds(routeInfo.DurationSeconds);
+
+            await _tourService.InsertTours(NewTour);
 
             var tours = await _tourService.GetAllTours();
             AllTours = new ObservableCollection<Tours>(tours);
@@ -328,6 +343,26 @@ namespace TourPlanner.UI.ViewModels
                 string errMessage = _validator.ValidateTourInput(tourFromDb);
                 if (errMessage == "")
                 {
+                    var coords = await _apiHandler.GetCoordinates(tourFromDb.From, tourFromDb.To);
+                    if (coords.Count != 4)
+                    {
+                        MessageBox.Show("Could not resolve locations.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    tourFromDb.FromLng = coords[0];
+                    tourFromDb.FromLat = coords[1];
+                    tourFromDb.ToLng = coords[2];
+                    tourFromDb.ToLat = coords[3];
+
+                    var routeInfo = await _apiHandler.GetRouteDirections(
+                                    coords[0], coords[1],
+                                    coords[2], coords[3],
+                                    "driving-car");
+
+                    tourFromDb.Distance = Math.Round(routeInfo.DistanceMeters / 1000.0, 2);
+                    tourFromDb.Duration = TimeSpan.FromSeconds(routeInfo.DurationSeconds);
+
                     await _tourService.UpdateTour(tourFromDb);
                     _log.Info("Tour updated successfully.");
                 }
@@ -348,75 +383,17 @@ namespace TourPlanner.UI.ViewModels
             AllTours = new ObservableCollection<Tours>(tours);
             _log.Info("Tour list refreshed after edit.");
 
+            _ = UpdateMapAsync();
+
             _mainViewModel.ShowTourListView();
             ClearInputs();
-        }
-
-        public async Task ImportTourAsync()
-        {
-            var openFileDialog = new OpenFileDialog
-            {
-                Filter = "JSON Files (*.json)|*json",
-                Multiselect = false
-            };
-           
-            if (openFileDialog.ShowDialog() == true)
-            {
-                try
-                {
-                    string json = await File.ReadAllTextAsync(openFileDialog.FileName);
-                    var importedTour = JsonSerializer.Deserialize<Tours>(json,
-                        new JsonSerializerOptions
-                        {
-                            ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
-                        });
-
-                    if (importedTour != null)
-                    {
-                        foreach(Tours tour in AllTours)
-                        {
-                            if (tour.Name == importedTour.Name)
-                            {
-                                MessageBox.Show("This tour already exists!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                                return;
-                            }
-                        }
-
-                        await _tourService.InsertTours(importedTour);
-
-                        foreach(Tourlog log in importedTour.Tourlogs)
-                        {
-                            log.Tour = importedTour;
-                            log.Tour.Id = importedTour.Id;
-                            await _tourlogService.InsertTourLog(log);
-                        }
-
-                        var tours = await _tourService.GetAllTours();
-                        AllTours = new ObservableCollection<Tours>(tours);
-
-                        var tourlogs = await _tourlogService.GetTourlogsAsync();
-                        _mainViewModel.TourLogViewModel.AllTourLogs = new ObservableCollection<Tourlog>(tourlogs);
-
-                        MessageBox.Show("Tour imported successfully", "Import", MessageBoxButton.OK, MessageBoxImage.Information);
-                        _log.Info($"Imported tour from {openFileDialog.FileName}");
-                    }
-                    else
-                        MessageBox.Show("Could not read tour from file.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-                catch(Exception ex)
-                {
-                    _log.Error("Error importing tour: ", ex);
-                    MessageBox.Show($"Error importing tour:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-            }
         }
 
         public async Task ExportTourAsync()
         {
             if (SelectedTour == null)
             {
-                MessageBox.Show("Please first select a tour you would like to export.", "Info", MessageBoxButton.OK, MessageBoxImage.Information);
-                _log.Info("Tried to export a tour, but SelectedTour was NULL");
+                MessageBox.Show("Please select a tour to export.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
 
@@ -428,21 +405,33 @@ namespace TourPlanner.UI.ViewModels
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                try
+                await _tourService.ExportTourToFileAsync(SelectedTour, saveFileDialog.FileName);
+                MessageBox.Show("Tour exported successfully.", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        public async Task ImportTourAsync()
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "JSON Files (*.json)|*.json"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                var importedTour = await _tourService.ImportTourFromFileAsync(openFileDialog.FileName);
+
+                if (importedTour != null)
                 {
-                    string json = JsonSerializer.Serialize(SelectedTour, new JsonSerializerOptions
-                    {
-                        WriteIndented = true,
-                        ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
-                    });
-                    await File.WriteAllTextAsync(saveFileDialog.FileName, json);
-                    MessageBox.Show("Tour exported successfully", "Export", MessageBoxButton.OK, MessageBoxImage.Information);
-                    _log.Info($"Exported tour to {saveFileDialog.FileName}");
+                    var tours = await _tourService.GetAllTours();
+                    var logs = await _tourlogService.GetTourlogsAsync();
+                    AllTours = new ObservableCollection<Tours>(tours);
+                    _mainViewModel.TourLogViewModel.AllTourLogs = new ObservableCollection<Tourlog>(logs);
+                    MessageBox.Show("Tour imported successfully.", "Import", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
-                catch(Exception ex)
+                else
                 {
-                    _log.Error("Error exporting tour: ", ex);
-                    MessageBox.Show($"Error exporting tour:\n{ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Import failed.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -457,18 +446,39 @@ namespace TourPlanner.UI.ViewModels
             if (_webView == null || SelectedTour == null)
                 return;
 
-            double fromLat = SelectedTour.FromLat; // Vienna
+            double fromLat = SelectedTour.FromLat;
             double fromLng = SelectedTour.FromLng;
-            double toLat = SelectedTour.ToLat;   // Linz
+            double toLat = SelectedTour.ToLat;
             double toLng = SelectedTour.ToLng;
 
-            string jsCall = string.Format(CultureInfo.InvariantCulture,
-                "showRoute({0}, {1}, {2}, {3});",
-                fromLat, fromLng, toLat, toLng);
+            try
+            {
+                RouteInfo route = await _apiHandler.GetRouteDirections(
+                    (float)fromLng, (float)fromLat,
+                    (float)toLng, (float)toLat,
+                    "driving-car"
+                );
 
-            await _webView.ExecuteScriptAsync(jsCall);
+                if (route?.Geometry == null || !route.Geometry.Any())
+                {
+                    _log.Warn($"No geometry returned for tour '{SelectedTour.Name}'");
+                    return;
+                }
 
-            _log.Info($"Map updated for tour '{SelectedTour.Name}'");
+                var leafletCoords = route.Geometry
+                    .Select(coord => $"[{coord[1].ToString(CultureInfo.InvariantCulture)}, {coord[0].ToString(CultureInfo.InvariantCulture)}]");
+
+                string jsArray = "[" + string.Join(",", leafletCoords) + "]";
+
+                string jsCall = $"showFullRoute({jsArray});";
+                await _webView.ExecuteScriptAsync(jsCall);
+
+                _log.Info($"Updated map for tour '{SelectedTour.Name}' with OpenRouteService route.");
+            }
+            catch (Exception ex)
+            {
+                _log.Error($"Failed updating map for tour '{SelectedTour.Name}': {ex.Message}", ex);
+            }
         }
 
         public int GetSelectedTourId()

@@ -12,6 +12,7 @@ using System.Windows.Input;
 using TourPlanner.BusinessLogic.Services;
 using TourPlanner.UI.HelperClasses;
 using TourPlanner.Views;
+using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
 
 namespace TourPlanner.UI.ViewModels
@@ -29,9 +30,9 @@ namespace TourPlanner.UI.ViewModels
         public ICommand ShowEditLogViewCommand { get; private set; }
         public ICommand ShowHomeMenuCommand { get; private set; }
 
-        public MainViewModel(ITourService tourService, TourLogService tourlogService, InputValidator validator)
+        public MainViewModel(ITourService tourService, TourLogService tourlogService, InputValidator validator, ApiHandler apiHandler, ConfigReader configReader)
         {
-            TourViewModel = new TourViewModel(this, tourService, tourlogService, validator);
+            TourViewModel = new TourViewModel(this, tourService, tourlogService, validator, apiHandler);
             TourLogViewModel = new TourLogViewModel(this, tourService, tourlogService, validator);
             SearchViewModel = new SearchViewModel(this, tourService);
 

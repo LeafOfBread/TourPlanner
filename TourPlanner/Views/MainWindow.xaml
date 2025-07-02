@@ -64,7 +64,7 @@
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Tours" FontSize="16"/>
 
             </Border>
-            <Button x:Name="AddTourButton" Command="{Binding AddTourCommand}" Grid.Column="1" VerticalAlignment="Center" Background="LightGreen" Margin="0,0,120,0">
+            <Button x:Name="AddTourButton" Command="{Binding AddTourCommand}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Background="LightGreen" Margin="0,0,120,0">
                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16"/>
             </Button>
 

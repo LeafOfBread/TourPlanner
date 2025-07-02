@@ -19,7 +19,7 @@ namespace TourPlanner
         public static IServiceProvider ServiceProvider { get; private set; }
         private static readonly ILog _log = LogManager.GetLogger(typeof(App));
 
-        protected override void OnStartup(StartupEventArgs e)   
+        protected override void OnStartup(StartupEventArgs e)
         {
             var services = new ServiceCollection();
 
@@ -27,20 +27,21 @@ namespace TourPlanner
             _log.Info("TourPlanner application starting...");
             _log.Info($"Current working directory: {Directory.GetCurrentDirectory()}");
 
-            //database
+            // database
             ConfigReader reader = new ConfigReader();
             var connectionString = reader.GetConnectionString();
             services.AddDbContext<TourDbContext>(options =>
-            options.UseNpgsql(connectionString),
-            ServiceLifetime.Scoped);
+                options.UseNpgsql(connectionString),
+                ServiceLifetime.Scoped);
 
-            //services
+            // services
             services.AddScoped<TourService>();
             services.AddScoped<TourLogService>();
             services.AddScoped<InputValidator>();
+            services.AddScoped<ConfigReader>();
+            services.AddHttpClient<ApiHandler>();   // <-- Add this instead of AddScoped<ApiHandler>()
 
             services.AddSingleton<MainViewModel>();
-
             services.AddSingleton<MainWindow>();
 
             ServiceProvider = services.BuildServiceProvider();

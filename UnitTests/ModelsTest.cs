@@ -13,20 +13,28 @@ namespace UnitTests
             string expectedName = "Mountain Trip";
             string expectedDescription = "A scenic tour in the Alps";
             string expectedFrom = "Innsbruck";
+            double fromLat = 48.121;
+            double fromLon = 16.392;
             string expectedTo = "Salzburg";
+            double toLat = 41.210;
+            double toLon = 12.102;
             TimeSpan expectedDuration = TimeSpan.FromHours(5);
             double expectedDistance = 120.5;
             TransportType expectedTransport = TransportType.Car;
 
             // Act
-            var tour = new Tours(expectedId, expectedName, expectedDescription, expectedFrom, expectedTo, expectedDuration, expectedDistance, expectedTransport);
+            var tour = new Tours(expectedId, expectedName, expectedDescription, expectedFrom, fromLat, fromLon, expectedTo, toLat, toLon, expectedDuration, expectedDistance, expectedTransport);
 
             // Assert
             Assert.Equal(expectedId, tour.Id);
             Assert.Equal(expectedName, tour.Name);
             Assert.Equal(expectedDescription, tour.Description);
             Assert.Equal(expectedFrom, tour.From);
+            Assert.Equal(fromLat, tour.FromLat);
+            Assert.Equal(fromLon, tour.FromLng);
             Assert.Equal(expectedTo, tour.To);
+            Assert.Equal(toLat, tour.ToLat);
+            Assert.Equal(toLon, tour.ToLng);
             Assert.Equal(expectedDuration, tour.Duration);
             Assert.Equal(expectedDistance, tour.Distance);
             Assert.Equal(expectedTransport, tour.Transport);
@@ -64,7 +72,7 @@ namespace UnitTests
         [Fact]
         public void Tourlog_CanBeLinkedToTour()
         {
-            var tour = new Tours(10, "Mountain Trip", "Scenic tour", "Innsbruck", "Salzburg", TimeSpan.FromHours(5), 120.5, TransportType.Bus);
+            var tour = new Tours(10, "Mountain Trip", "Scenic tour", "Innsbruck", 42.120, 11.201, "Salzburg", 40.129, 10.430, TimeSpan.FromHours(5), 120.5, TransportType.Bus);
             var tourlog = new Tourlog { Tour = tour };
             Assert.NotNull(tourlog.Tour);
             Assert.Equal("Mountain Trip", tourlog.Tour.Name);
