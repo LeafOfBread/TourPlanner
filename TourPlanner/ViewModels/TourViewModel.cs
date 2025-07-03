@@ -120,12 +120,7 @@ namespace TourPlanner.UI.ViewModels
             {
                 TransportType.Walking,
                 TransportType.Bicycle,
-                TransportType.Tram,
-                TransportType.Bus,
-                TransportType.Train,
                 TransportType.Car,
-                TransportType.Boat,
-                TransportType.Plane
             };
 
             CurrentTourView = new TourListView();
@@ -281,13 +276,26 @@ namespace TourPlanner.UI.ViewModels
             NewTour.ToLng = coords[2];
             NewTour.ToLat = coords[3];
 
+            double approximateDistance = _apiHandler.Haversine(NewTour.FromLat, NewTour.FromLng, NewTour.ToLat, NewTour.ToLng);
+
+            if(approximateDistance > 6000)
+            {
+                MessageBox.Show("Distance between Start and End cannot exceed 6000km!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                _log.Warn("User tried to add tour that exceeds 6000km");
+                return;
+            }
+
+            string profile = TransportHandler(NewTour.Transport);
+
             var routeInfo = await _apiHandler.GetRouteDirections(
                 coords[0], coords[1],
-                coords[2], coords[3]);
+                coords[2], coords[3],
+                profile);
 
             NewTour.Distance = Math.Round(routeInfo.DistanceMeters / 1000.0, 2);
-            NewTour.Duration = TimeSpan.FromSeconds(routeInfo.DurationSeconds);
-
+            NewTour.Duration = TimeSpan.FromSeconds(
+                (int)routeInfo.DurationSeconds
+            );
             await _tourService.InsertTours(NewTour);
 
             var tours = await _tourService.GetAllTours();
@@ -355,13 +363,28 @@ namespace TourPlanner.UI.ViewModels
                     tourFromDb.ToLng = coords[2];
                     tourFromDb.ToLat = coords[3];
 
+                    double approximateDistance = _apiHandler.Haversine(tourFromDb.FromLat, tourFromDb.FromLng, tourFromDb.ToLat, tourFromDb.ToLng);
+
+                    if (approximateDistance > 6000)
+                    {
+                        MessageBox.Show("Distance between Start and End cannot exceed 6000km!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        _log.Warn("User tried to add tour that exceeds 6000km");
+                        var returnToNormal = await _tourService.GetAllTours();
+                        AllTours = new ObservableCollection<Tours>(returnToNormal);
+                        return;
+                    }
+
+                    string profile = TransportHandler(NewTour.Transport);
+
                     var routeInfo = await _apiHandler.GetRouteDirections(
                                     coords[0], coords[1],
                                     coords[2], coords[3],
-                                    "driving-car");
+                                    profile);
 
                     tourFromDb.Distance = Math.Round(routeInfo.DistanceMeters / 1000.0, 2);
-                    tourFromDb.Duration = TimeSpan.FromSeconds(routeInfo.DurationSeconds);
+                    tourFromDb.Duration = TimeSpan.FromSeconds(
+                        (int)routeInfo.DurationSeconds
+                    );
 
                     await _tourService.UpdateTour(tourFromDb);
                     _log.Info("Tour updated successfully.");
@@ -453,10 +476,12 @@ namespace TourPlanner.UI.ViewModels
 
             try
             {
+                string profile = TransportHandler(SelectedTour.Transport);
+
                 RouteInfo route = await _apiHandler.GetRouteDirections(
                     (float)fromLng, (float)fromLat,
                     (float)toLng, (float)toLat,
-                    "driving-car"
+                    profile
                 );
 
                 if (route?.Geometry == null || !route.Geometry.Any())
@@ -487,6 +512,17 @@ namespace TourPlanner.UI.ViewModels
                 return SelectedTour.Id;
             else
                 return 0;
+        }
+
+        public string TransportHandler(TourPlannerClasses.Models.TransportType transport)
+        {
+            return transport switch
+            {
+                TourPlannerClasses.Models.TransportType.Walking => "foot-walking",
+                TourPlannerClasses.Models.TransportType.Bicycle => "cycling-road",
+                TourPlannerClasses.Models.TransportType.Car => "driving-car",
+                _ => "driving-car"
+            };
         }
 
         private void ClearInputs()

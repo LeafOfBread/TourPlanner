@@ -38,9 +38,9 @@ namespace TourPlanner.BusinessLogic.Services
         }
 
         public async Task<RouteInfo> GetRouteDirections(
-            float startLon, float startLat,
-            float endLon, float endLat,
-            string profile = "driving-car")
+        float startLon, float startLat,
+        float endLon, float endLat,
+        string profile)
         {
             var url = $"https://api.openrouteservice.org/v2/directions/{profile}/geojson";
 
@@ -48,9 +48,12 @@ namespace TourPlanner.BusinessLogic.Services
             {
                 coordinates = new[]
                 {
-                    new[] { startLon, startLat },
-                    new[] { endLon, endLat }
-                }
+            new[] { startLon, startLat },
+            new[] { endLon, endLat }
+        },
+                instructions = false,
+                geometry_simplify = false,
+                units = "m"
             };
 
             var json = JsonConvert.SerializeObject(requestBody);
@@ -59,7 +62,8 @@ namespace TourPlanner.BusinessLogic.Services
             request.Headers.TryAddWithoutValidation(
                 "accept",
                 "application/json, application/geo+json"
-            ); request.Headers.TryAddWithoutValidation("authorization", OpenRouteApiKey);
+            );
+            request.Headers.TryAddWithoutValidation("authorization", OpenRouteApiKey);
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -67,11 +71,11 @@ namespace TourPlanner.BusinessLogic.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                // Print helpful error from server
                 throw new Exception(
                     $"OpenRouteService API error: {response.StatusCode}\n{responseJson}"
                 );
             }
+
             var jObject = JObject.Parse(responseJson);
             var distance = jObject["features"]?[0]?["properties"]?["summary"]?["distance"]?.Value<double>() ?? 0;
             var duration = jObject["features"]?[0]?["properties"]?["summary"]?["duration"]?.Value<double>() ?? 0;
@@ -85,6 +89,7 @@ namespace TourPlanner.BusinessLogic.Services
                 Geometry = coordinates
             };
         }
+
 
         public async Task<List<float>> GetCoordinates(string startLocation, string endLocation)
         {
@@ -125,6 +130,20 @@ namespace TourPlanner.BusinessLogic.Services
 
             return new float[2]; // default empty
         }
+
+        public double Haversine(double lat1, double lon1, double lat2, double lon2)
+        {
+            var R = 6371.0; // Earth radius in km
+            var dLat = ToRadians(lat2 - lat1);
+            var dLon = ToRadians(lon2 - lon1);
+            var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                    Math.Cos(ToRadians(lat1)) * Math.Cos(ToRadians(lat2)) *
+                    Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R * c;
+        }
+
+        private double ToRadians(double deg) => deg * (Math.PI / 180);
     }
     public class RouteInfo
     {

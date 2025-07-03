@@ -126,7 +126,7 @@ namespace UnitTests
             var apiHandler = new ApiHandler(_configReader, httpClient);
 
             // Act
-            var result = await apiHandler.GetRouteDirections(16.3738f, 48.2082f, 15.437f, 47.0707f);
+            var result = await apiHandler.GetRouteDirections(16.3738f, 48.2082f, 15.437f, 47.0707f, "car-driving");
 
             // Assert
             Assert.NotNull(result);
@@ -224,7 +224,11 @@ namespace UnitTests
             // Arrange
             var configReader = new ConfigReader();
             var apiKeys = configReader.GetApiKeys();
-            var httpClient = new HttpClient();
+
+            var httpClient = new HttpClient
+            {
+                Timeout = TimeSpan.FromSeconds(30)
+            };
 
             var handler = new ApiHandler(configReader, httpClient);
 
@@ -233,20 +237,28 @@ namespace UnitTests
             float endLon = 16.3333f;
             float endLat = 48.2200f;
 
-            // Act
-            var route = await handler.GetRouteDirections(
-                startLon,
-                startLat,
-                endLon,
-                endLat,
-                "cycling-regular"
-            );
+            try
+            {
+                // Act
+                var route = await handler.GetRouteDirections(
+                    startLon,
+                    startLat,
+                    endLon,
+                    endLat,
+                    "cycling-road"
+                );
 
-            // Assert
-            Assert.NotNull(route);
-            Assert.True(route.DistanceMeters > 0);
-            Assert.True(route.DurationSeconds > 0);
-            Assert.NotNull(route.Geometry);
+                // Assert
+                Assert.NotNull(route);
+                Assert.True(route.DistanceMeters > 0);
+                Assert.True(route.DurationSeconds > 0);
+                Assert.NotNull(route.Geometry);
+            }
+            catch (Exception ex)
+            {
+                // Helpful for debugging
+                throw new Exception($"API test failed: {ex.Message}", ex);
+            }
         }
     }
 }

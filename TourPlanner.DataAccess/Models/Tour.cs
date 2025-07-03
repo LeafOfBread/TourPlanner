@@ -55,11 +55,6 @@ namespace TourPlannerClasses.Models
     {
         Walking,    //0
         Bicycle,    //1
-        Tram,       //2
-        Bus,        //3
-        Train,      //4
-        Car,        //5
-        Plane,      //6
-        Boat        //7
+        Car,        //2
     }
 }

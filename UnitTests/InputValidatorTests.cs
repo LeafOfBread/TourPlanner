@@ -21,8 +21,8 @@ namespace UnitTests
                 Name = "TestTour",
                 From = "Salzburg",
                 To = "Eisenstadt",
-                Description = "Tour by Train",
-                Transport = TransportType.Train
+                Description = "Tour by Car",
+                Transport = TransportType.Car
             };
 
             string result = _validator.ValidateTourInput(newTour);
@@ -58,8 +58,8 @@ namespace UnitTests
                 Name = "TestTour",
                 From = "",                      //whitespace should return err message
                 To = "Eisenstadt",
-                Description = "Tour by Train",
-                Transport = TransportType.Train
+                Description = "Tour by Car",
+                Transport = TransportType.Car
             };
 
             string result = _validator.ValidateTourInput(newTour);

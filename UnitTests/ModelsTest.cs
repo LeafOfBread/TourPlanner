@@ -72,7 +72,7 @@ namespace UnitTests
         [Fact]
         public void Tourlog_CanBeLinkedToTour()
         {
-            var tour = new Tours(10, "Mountain Trip", "Scenic tour", "Innsbruck", 42.120, 11.201, "Salzburg", 40.129, 10.430, TimeSpan.FromHours(5), 120.5, TransportType.Bus);
+            var tour = new Tours(10, "Mountain Trip", "Scenic tour", "Innsbruck", 42.120, 11.201, "Salzburg", 40.129, 10.430, TimeSpan.FromHours(5), 120.5, TransportType.Car);
             var tourlog = new Tourlog { Tour = tour };
             Assert.NotNull(tourlog.Tour);
             Assert.Equal("Mountain Trip", tourlog.Tour.Name);
