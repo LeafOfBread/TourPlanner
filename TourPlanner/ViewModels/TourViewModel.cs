@@ -19,7 +19,9 @@ using TourPlannerClasses.Models;
 using Microsoft.Web.WebView2.Wpf;
 using System.Globalization;
 using Microsoft.Win32;
-
+using QuestPDF.Fluent;
+using System.IO;
+using Microsoft.Web.WebView2.Core;
 
 namespace TourPlanner.UI.ViewModels
 {
@@ -50,6 +52,10 @@ namespace TourPlanner.UI.ViewModels
         public ICommand UpdateTourCommand { get; private set; }
         public ICommand ImportTourCommand { get; private set; }
         public ICommand ExportTourCommand { get; private set; }
+        public ICommand SingleReportCommand { get; private set; }
+        public ICommand SummarizeReportCommand { get; private set; }
+        public ICommand RandomTourCommand { get; private set; }
+        public ICommand RefreshCommand { get; private set; }
 
         //tour fields
         private ObservableCollection<Tours> _allTours;
@@ -131,6 +137,10 @@ namespace TourPlanner.UI.ViewModels
             UpdateTourCommand = new RelayCommand(() => EditTourAsync());
             ImportTourCommand = new RelayCommand(() => ImportTourAsync());
             ExportTourCommand = new RelayCommand(() => ExportTourAsync());
+            SingleReportCommand = new RelayCommand(() => HandleSingleReport());
+            SummarizeReportCommand = new RelayCommand(() => HandleReportSummary());
+            RandomTourCommand = new RelayCommand(() => RandomizeTour());
+            RefreshCommand = new RelayCommand(() => RefreshTours());
 
             ClearInputs();
 
@@ -252,6 +262,13 @@ namespace TourPlanner.UI.ViewModels
                 _editTour.Transport = value;
                 OnPropertyChanged(nameof(AddTourTransport));
             }
+        }
+
+        public async Task RefreshTours()
+        {
+            var tours = await _tourService.GetAllTours();
+            AllTours = new ObservableCollection<Tours>(tours);
+            _log.Info("Refreshed all tours.");
         }
 
         public async Task SaveTourAsync()
@@ -412,6 +429,23 @@ namespace TourPlanner.UI.ViewModels
             ClearInputs();
         }
 
+        public async Task RandomizeTour()
+        {
+            string message = await _tourService.CreateRandomTour();
+            if (message != "")
+            {
+                _log.Warn("Random tour generation failed.");
+                MessageBox.Show("Oops, something went wrong while generating a random tour", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            await UpdateMapAsync();
+
+            var tours = await _tourService.GetAllTours();
+            AllTours = new ObservableCollection<Tours>(tours);
+            _log.Info("Tour list refreshed after random tour generation.");
+        }
+
         public async Task ExportTourAsync()
         {
             if (SelectedTour == null)
@@ -457,6 +491,112 @@ namespace TourPlanner.UI.ViewModels
                     MessageBox.Show("Import failed.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        public async Task HandleSingleReport()
+        {
+            if (SelectedTour == null)
+            {
+                _log.Warn("Cannot create tour report if SelectedTour is null");
+                MessageBox.Show("Please select a tour first", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var saveDialog = new SaveFileDialog
+            {
+                Filter = "PDF Files (*.pdf)|*.pdf",
+                FileName = $"{SelectedTour.Name}_Report.pdf"
+            };
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                await CaptureMapScreenshotAsync("MyMap.png");
+                var doc = new TourReportDocument(SelectedTour);
+
+                byte[] pdfBytes;
+
+                try
+                {
+                    pdfBytes = doc.GeneratePdf();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"PDF generation error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                if (pdfBytes == null || pdfBytes.Length == 0)
+                {
+                    MessageBox.Show("Generated PDF is empty.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                await File.WriteAllBytesAsync(saveDialog.FileName, pdfBytes);
+                MessageBox.Show("Report generated successfully!", "Success");
+
+                if (File.Exists("MyMap.png"))
+                        File.Delete("MyMap.png");
+            }
+        }
+
+        public async Task HandleReportSummary()
+        {
+            var saveDialog = new SaveFileDialog
+            {
+                Filter = "PDF Files (*.pdf)|*.pdf",
+                FileName = "SummaryReport.pdf"
+            };
+
+            if (saveDialog.ShowDialog() == true)
+            {
+                var summaries = await GenerateTourSummaries();
+                var summaryDoc = new TourSummaryReportDocument(summaries);
+                
+                try
+                {
+                    summaryDoc.GeneratePdf(saveDialog.FileName);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"PDF generation error: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                MessageBox.Show("Report generated successfully!", "Success");
+            }
+        }
+
+        public async Task CaptureMapScreenshotAsync(string filePath)
+        {
+            var webview = _webView;
+
+            if(webview?.CoreWebView2 == null)
+            {
+                MessageBox.Show("Map view is not ready yet.", "Error");
+                return;
+            }
+            using var stream = new MemoryStream();
+            await webview.CoreWebView2.CapturePreviewAsync(CoreWebView2CapturePreviewImageFormat.Png, stream);
+
+            await File.WriteAllBytesAsync(filePath, stream.ToArray());
+        }
+        public async Task<List<TourSummaryDto>> GenerateTourSummaries()
+        {
+            var allTours = await _tourService.GetAllTours();
+
+            var summaries = allTours.Select(tour =>
+            {
+                var logs = tour.Tourlogs;
+
+                return new TourSummaryDto
+                {
+                    TourName = tour.Name,
+                    AverageDistance = logs.Any() ? logs.Average(l => l.TotalDistance) : 0,
+                    AverageDuration = logs.Any() ? TimeSpan.FromSeconds(logs.Average(l => l.TotalTime.TotalSeconds)) : TimeSpan.Zero,
+                    AverageRating = logs.Any() ? logs.Average(l => l.Rating) : 0
+                };
+            }).ToList();
+
+            return summaries;
         }
 
         public void SetWebView(WebView2 webView)
@@ -514,13 +654,13 @@ namespace TourPlanner.UI.ViewModels
                 return 0;
         }
 
-        public string TransportHandler(TourPlannerClasses.Models.TransportType transport)
+        public string TransportHandler(TransportType transport)
         {
             return transport switch
             {
-                TourPlannerClasses.Models.TransportType.Walking => "foot-walking",
-                TourPlannerClasses.Models.TransportType.Bicycle => "cycling-road",
-                TourPlannerClasses.Models.TransportType.Car => "driving-car",
+                TransportType.Walking => "foot-walking",
+                TransportType.Bicycle => "cycling-road",
+                TransportType.Car => "driving-car",
                 _ => "driving-car"
             };
         }

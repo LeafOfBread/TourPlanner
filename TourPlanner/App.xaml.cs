@@ -23,6 +23,8 @@ namespace TourPlanner
         {
             var services = new ServiceCollection();
 
+            QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
             XmlConfigurator.Configure(new FileInfo("LoggerConfig.xml"));
             _log.Info("TourPlanner application starting...");
             _log.Info($"Current working directory: {Directory.GetCurrentDirectory()}");

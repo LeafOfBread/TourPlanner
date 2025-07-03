@@ -31,7 +31,7 @@ namespace UnitTests
 
             _context = new TourDbContext(options);
             _tourlogService = new TourLogService(_context);
-            _tourService = new TourService(_context, _tourlogService);
+            _tourService = new TourService(_context, _tourlogService, _apiHandler);
 
             // make sure database is clean before running tests
             _context.Database.EnsureDeleted();
@@ -271,7 +271,7 @@ namespace UnitTests
             };
 
             var mockLogService = new Mock<TourLogService>(null);
-            var tourService = new TourService(null, mockLogService.Object);
+            var tourService = new TourService(null, mockLogService.Object, _apiHandler);
 
             var tempFile = Path.GetTempFileName();
 
@@ -336,7 +336,7 @@ namespace UnitTests
             await File.WriteAllTextAsync(tempFile, json);
 
             var mockLogService = new Mock<TourLogService>(null);
-            var tourService = new TourService(null, mockLogService.Object);
+            var tourService = new TourService(null, mockLogService.Object, _apiHandler);
 
             // Act
             var importedTour = await tourService.ImportTourFromFileAsync(tempFile);
@@ -362,7 +362,7 @@ namespace UnitTests
         public async Task ImportTourFromFileAsync_ReturnsNull_WhenFileDoesNotExist()
         {
             var mockLogService = new Mock<TourLogService>(null);
-            var tourService = new TourService(null, mockLogService.Object);
+            var tourService = new TourService(null, mockLogService.Object, _apiHandler);
 
             var result = await tourService.ImportTourFromFileAsync("nonexistent_file.json");
 

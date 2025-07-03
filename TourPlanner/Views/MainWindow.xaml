@@ -56,7 +56,8 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="4*"/>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -64,7 +65,7 @@
                 <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="Tours" FontSize="16"/>
 
             </Border>
-            <Button x:Name="AddTourButton" Command="{Binding AddTourCommand}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Background="LightGreen" Margin="0,0,120,0">
+            <Button x:Name="AddTourButton" Command="{Binding AddTourCommand}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" Background="LightGreen" Margin="0,0,120,0">
                 <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE710;" FontSize="16"/>
             </Button>
 
@@ -82,6 +83,22 @@
 
             <Button x:Name="ExportTourButton" Command="{Binding ExportTourCommand}" DataContext="{Binding TourViewModel}" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="80, 0, 0, 0" Background="LightSalmon">
                 <TextBlock Text="Export" FontFamily="Arial" FontSize="16"/>
+            </Button>
+
+            <Button x:Name="SingleReportButton" Command="{Binding SingleReportCommand}" DataContext="{Binding TourViewModel}" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0, 0, 100, 0" Background="LightGreen">
+                <TextBlock Text="Single Report" FontFamily="Arial" FontSize="16"/>
+            </Button>
+
+            <Button x:Name="SummarizeReportButton" Command="{Binding SummarizeReportCommand}" DataContext="{Binding TourViewModel}" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="100, 0, 0, 0" Background="LightSalmon">
+                <TextBlock Text="Summarize" FontFamily="Arial" FontSize="16"/>
+            </Button>
+
+            <Button x:Name="RandomTourButton" Command="{Binding RandomTourCommand}" DataContext="{Binding TourViewModel}" Grid.Column="4" HorizontalAlignment="Left" VerticalAlignment="Center" Background="Pink">
+                <TextBlock Text="Tour Randomizer" FontFamily="Arial" FontSize="16"/>
+            </Button>
+
+            <Button x:Name="RefreshButton" Command="{Binding RefreshCommand}" DataContext="{Binding TourViewModel}" Grid.Column="2" HorizontalAlignment="Left" VerticalAlignment="Center" Background="Gray" Margin="20, 0, 0, 0">
+                <TextBlock Text="Refresh" FontFamily="Arial" FontSize="16"/>
             </Button>
         </Grid>
 

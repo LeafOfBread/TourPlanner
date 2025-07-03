@@ -20,6 +20,7 @@ namespace TourPlanner.BusinessLogic.Services
             string profile);
         public Task<List<float>> GetCoordinates(string startLocation, string endLocation);
         public float[] HandleJsonResponseCoordinates(object data);
+        public double Haversine(double lat1, double lon1, double lat2, double lon2);
     }
 
     public class ApiHandler : IApiHandler           //unfinished, no idea if this actually works, took this code from the openrouteservices documentation. api key should work in theory
