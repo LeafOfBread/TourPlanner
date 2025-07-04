@@ -17,6 +17,8 @@ using System.Text.Json;
 using System.Windows;
 using System.Windows.Markup;
 using System.IO;
+using System.CodeDom;
+using TourPlanner.DataAccess;
 
 namespace TourPlanner.BusinessLogic.Services
 {
@@ -50,25 +52,32 @@ namespace TourPlanner.BusinessLogic.Services
 
         public virtual async Task<List<Tours>> GetAllTours()
         {
-            return await _context.Tours.ToListAsync();
+            try
+            {
+                return await _context.Tours.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new NotFoundException(ex.Message);
+            }
         }
 
         public async Task<Tours> GetTourById(int id)
         {
             try
             {
-                var foundTour = _context.Tours.Find(id);
-                if (foundTour != null)
-                {
-                    _log.Info($"Tour successfully found: {foundTour.Name}");
-                    return foundTour;
-                }
+                var foundTour = await _context.Tours.FindAsync(id);
+                if (foundTour == null)
+                    throw new NotFoundException($"Tour with ID {id} not found.");
+
+                _log.Info($"Tour successfully found: {foundTour.Name}");
+                return foundTour;
             }
             catch (Exception ex)
             {
-                _log.Warn($"Error finding Tour by Id: {ex.Message}");
+                _log.Warn($"Error finding Tour by Id {id}: {ex.Message}");
+                throw new DataAccessException($"Error loading tour with ID {id}.", ex);
             }
-            return null;
         }
 
         public async Task<ObservableCollection<Tours>> SearchForTours(string name, ObservableCollection<Tours> allTours, ObservableCollection<Tourlog> allTourlogs)
@@ -104,8 +113,8 @@ namespace TourPlanner.BusinessLogic.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Error looking for tours via their name: {ex.Message}");
+                throw new NotFoundException(ex.Message);
             }
-            return new ObservableCollection<Tours>();
         }
 
         public async Task InsertTours(Tours newTour)
@@ -119,6 +128,7 @@ namespace TourPlanner.BusinessLogic.Services
             catch (Exception ex)
             {
                 Console.WriteLine($"Error inserting tour: {ex.Message}");
+                throw new InsertionException(ex.Message);
             }
         }
         public async Task UpdateTour(Tours tourToUpdate)
@@ -144,17 +154,24 @@ namespace TourPlanner.BusinessLogic.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error updating tour: {ex.Message}");
+                throw new InsertionException(ex.Message);
             }
         }
 
         public async Task DeleteTour(Tours tourToDelete)
         {
-            var foundTour = await GetTourById(tourToDelete.Id);
-            if (foundTour != null)
+            try
             {
-                _context.Remove(tourToDelete);
-                _context.SaveChanges();
+                var foundTour = await GetTourById(tourToDelete.Id);
+                if (foundTour != null)
+                {
+                    _context.Remove(tourToDelete);
+                    _context.SaveChanges();
+                }
+            }
+            catch(Exception ex)
+            {
+                throw new InsertionException(ex.Message);
             }
         }
 

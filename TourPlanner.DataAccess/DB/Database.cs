@@ -6,6 +6,7 @@ using System.IO;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.Extensions.Configuration;
 using log4net;
+using TourPlanner.DataAccess;
 
 namespace TourPlannerClasses.DB
 {
@@ -60,29 +61,35 @@ namespace TourPlannerClasses.DB
             try
             {
                 _config = new ConfigurationBuilder()
-                .AddUserSecrets<ConfigReader>()
-                .Build();
+                    .AddUserSecrets<ConfigReader>()
+                    .Build();
                 _log.Info("Configuration successfully loaded.");
             }
             catch (Exception ex)
             {
                 _log.Error("Failed to load configuration.", ex);
-                throw;
+                throw new DataAccessException("Failed to load configuration.", ex);
             }
         }
 
         public string GetConnectionString()
         {
-            var connectionString = _config["ConnectionString"];
-            if (string.IsNullOrEmpty(connectionString))
+            try
             {
-                _log.Warn("Connection string is null or empty.");
+                var connectionString = _config["ConnectionString"];
+                
+                if (string.IsNullOrEmpty(connectionString))
+                    _log.Warn("Connection string is null or empty.");
+                
+                else
+                    _log.Debug("Connection string retrieved.");
+                
+                return connectionString;
             }
-            else
+            catch(Exception ex)
             {
-                _log.Debug("Connection string retrieved.");
+                throw new DataAccessException(ex.Message);
             }
-            return connectionString;
         }
 
         public virtual List<string> GetApiKeys()

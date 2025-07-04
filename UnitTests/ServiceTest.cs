@@ -302,6 +302,12 @@ namespace UnitTests
         public async Task ImportTourFromFileAsync_ReadsAndMapsCorrectly()
         {
             // Arrange
+            var options = new DbContextOptionsBuilder<TourDbContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
+
+            var context = new TourDbContext(options);
+
             var dto = new TourExportDto
             {
                 Name = "Imported Tour",
@@ -316,18 +322,18 @@ namespace UnitTests
                 Distance = 120.5,
                 Transport = TourPlannerClasses.Models.TransportType.Car,
                 Tourlogs = new List<TourlogExportDto>
-                {
-                    new TourlogExportDto
-                    {
-                        Date = new DateTime(2025, 02, 02),
-                        Comment = "Imported log",
-                        Difficulty = (int)Difficulty.Medium,
-                        TotalDistance = 120,
-                        TotalTime = TimeSpan.FromHours(2),
-                        Rating = 4,
-                        Author = "Importer"
-                    }
-                }
+        {
+            new TourlogExportDto
+            {
+                Date = new DateTime(2025, 02, 02),
+                Comment = "Imported log",
+                Difficulty = (int)Difficulty.Medium,
+                TotalDistance = 120,
+                TotalTime = TimeSpan.FromHours(2),
+                Rating = 4,
+                Author = "Importer"
+            }
+        }
             };
 
             var json = JsonSerializer.Serialize(dto, new JsonSerializerOptions { WriteIndented = true });
@@ -335,8 +341,8 @@ namespace UnitTests
 
             await File.WriteAllTextAsync(tempFile, json);
 
-            var mockLogService = new Mock<TourLogService>(null);
-            var tourService = new TourService(null, mockLogService.Object, _apiHandler);
+            var mockLogService = new Mock<TourLogService>(context);
+            var tourService = new TourService(context, mockLogService.Object, _apiHandler);
 
             // Act
             var importedTour = await tourService.ImportTourFromFileAsync(tempFile);
@@ -357,6 +363,7 @@ namespace UnitTests
             if (File.Exists(tempFile))
                 File.Delete(tempFile);
         }
+
 
         [Fact]
         public async Task ImportTourFromFileAsync_ReturnsNull_WhenFileDoesNotExist()

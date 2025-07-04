@@ -23,7 +23,7 @@ namespace TourPlanner.BusinessLogic.Services
         public double Haversine(double lat1, double lon1, double lat2, double lon2);
     }
 
-    public class ApiHandler : IApiHandler           //unfinished, no idea if this actually works, took this code from the openrouteservices documentation. api key should work in theory
+    public class ApiHandler : IApiHandler
     {
         private readonly string OpenRouteApiKey;
         private readonly List<string> ApiKeys;
@@ -32,23 +32,29 @@ namespace TourPlanner.BusinessLogic.Services
 
         public ApiHandler(ConfigReader configReader, HttpClient httpClient)
         {
-            _configReader = configReader;
-            ApiKeys = _configReader.GetApiKeys();
-            OpenRouteApiKey = ApiKeys[0];
-            _httpClient = httpClient;
+            try
+            {
+                _configReader = configReader;
+                ApiKeys = _configReader.GetApiKeys();
+                OpenRouteApiKey = ApiKeys[0];
+                _httpClient = httpClient;
+            }
+            catch(Exception ex)
+            {
+                throw new ApiException("Error initializing ApiHandler.", ex);
+            }
         }
 
         public async Task<RouteInfo> GetRouteDirections(
-        float startLon, float startLat,
-        float endLon, float endLat,
-        string profile)
+            float startLon, float startLat,
+            float endLon, float endLat,
+            string profile)
         {
             var url = $"https://api.openrouteservice.org/v2/directions/{profile}/geojson";
 
             var requestBody = new
             {
-                coordinates = new[]
-                {
+                coordinates = new[] {
             new[] { startLon, startLat },
             new[] { endLon, endLat }
         },
@@ -60,10 +66,7 @@ namespace TourPlanner.BusinessLogic.Services
             var json = JsonConvert.SerializeObject(requestBody);
 
             var request = new HttpRequestMessage(HttpMethod.Post, url);
-            request.Headers.TryAddWithoutValidation(
-                "accept",
-                "application/json, application/geo+json"
-            );
+            request.Headers.TryAddWithoutValidation("accept", "application/json, application/geo+json");
             request.Headers.TryAddWithoutValidation("authorization", OpenRouteApiKey);
             request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -72,16 +75,28 @@ namespace TourPlanner.BusinessLogic.Services
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception(
+                throw new ApiException(
                     $"OpenRouteService API error: {response.StatusCode}\n{responseJson}"
                 );
             }
 
-            var jObject = JObject.Parse(responseJson);
+            JObject jObject;
+            try
+            {
+                jObject = JObject.Parse(responseJson);
+            }
+            catch (JsonReaderException ex)
+            {
+                throw new ApiException("Invalid JSON received from OpenRouteService.", ex);
+            }
+
             var distance = jObject["features"]?[0]?["properties"]?["summary"]?["distance"]?.Value<double>() ?? 0;
             var duration = jObject["features"]?[0]?["properties"]?["summary"]?["duration"]?.Value<double>() ?? 0;
 
             var coordinates = jObject["features"]?[0]?["geometry"]?["coordinates"]?.ToObject<List<List<double>>>();
+
+            if (coordinates == null)
+                throw new ApiException("Directions API response contained no geometry.");
 
             return new RouteInfo
             {
@@ -91,30 +106,37 @@ namespace TourPlanner.BusinessLogic.Services
             };
         }
 
-
         public async Task<List<float>> GetCoordinates(string startLocation, string endLocation)
         {
-            List<float> coordinates = new List<float>();
-
-            var urls = new[]
+            try
             {
-            $"https://api.openrouteservice.org/geocode/search?api_key={OpenRouteApiKey}&text={startLocation}",
-            $"https://api.openrouteservice.org/geocode/search?api_key={OpenRouteApiKey}&text={endLocation}"
-            };
+                List<float> coordinates = new List<float>();
 
-            foreach (var url in urls)
-            {
-                var request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.TryAddWithoutValidation("accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8");
+                var urls = new[]
+                {
+                $"https://api.openrouteservice.org/geocode/search?api_key={OpenRouteApiKey}&text={startLocation}",
+                $"https://api.openrouteservice.org/geocode/search?api_key={OpenRouteApiKey}&text={endLocation}"
+                };
 
-                var response = await _httpClient.SendAsync(request);
-                string responseData = await response.Content.ReadAsStringAsync();
-                var data = JsonConvert.DeserializeObject(responseData);
-                var coords = HandleJsonResponseCoordinates(data);
-                coordinates.Add(coords[0]);
-                coordinates.Add(coords[1]);
+                foreach (var url in urls)
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, url);
+                    request.Headers.TryAddWithoutValidation("accept", "application/json, application/geo+json, application/gpx+xml, img/png; charset=utf-8");
+
+                    var response = await _httpClient.SendAsync(request);
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    var data = JsonConvert.DeserializeObject(responseData);
+                    var coords = HandleJsonResponseCoordinates(data);
+                    coordinates.Add(coords[0]);
+                    coordinates.Add(coords[1]);
+                }
+                return coordinates;
             }
-            return coordinates;
+            catch(Exception ex)
+            {
+                throw new ApiException("Error occured while trying to fetch coordinates.", ex);
+            }
+            
         }
 
         public float[] HandleJsonResponseCoordinates(object data)
@@ -129,7 +151,8 @@ namespace TourPlanner.BusinessLogic.Services
                 return new float[] { lon, lat };
             }
 
-            return new float[2]; // default empty
+            else
+                throw new ApiException("No coordinates returned from OpenRouteService geocoding.");
         }
 
         public double Haversine(double lat1, double lon1, double lat2, double lon2)
