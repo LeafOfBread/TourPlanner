@@ -30,12 +30,14 @@ namespace TourPlanner.BusinessLogic
 
     public class ValidationException : Exception
     {
-        public Dictionary<string, string[]> Errors { get; }
+        public string PropertyName { get; }
+        public string ErrorMessage { get; }
 
-        public ValidationException(Dictionary<string, string[]> errors)
-            : base("Validation failed.")
+        public ValidationException(string propertyName, string errorMessage)
+            : base($"Validation failed for '{propertyName}': {errorMessage}")
         {
-            Errors = errors;
+            PropertyName = propertyName;
+            ErrorMessage = errorMessage;
         }
     }
 

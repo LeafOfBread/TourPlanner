@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TourPlannerClasses.Models;
-using TourPlanner.UI.HelperClasses;
+using TourPlanner.BusinessLogic.Services;
 
 namespace UnitTests
 {

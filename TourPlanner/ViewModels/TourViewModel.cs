@@ -22,6 +22,7 @@ using Microsoft.Win32;
 using QuestPDF.Fluent;
 using System.IO;
 using Microsoft.Web.WebView2.Core;
+using System.Diagnostics;
 
 namespace TourPlanner.UI.ViewModels
 {
@@ -149,10 +150,18 @@ namespace TourPlanner.UI.ViewModels
 
         public void UpdateTourDetails()
         {
-            if (SelectedTour == null || AllTours == null)
-                return;
+            try
+            {
+                if (SelectedTour == null || AllTours == null)
+                    return;
 
-            TourDetails = new ObservableCollection<Tours> { SelectedTour };
+                TourDetails = new ObservableCollection<Tours> { SelectedTour };
+            }
+            catch(Exception ex)
+            {
+                _log.Error("Failed to update the tourdetails");
+                throw new UiException("Failed to update the tourdetails in the UI", ex);
+            }
         }
 
         //required add tour properties
@@ -266,184 +275,224 @@ namespace TourPlanner.UI.ViewModels
 
         public async Task RefreshTours()
         {
-            var tours = await _tourService.GetAllTours();
-            AllTours = new ObservableCollection<Tours>(tours);
-            _log.Info("Refreshed all tours.");
+            try
+            {
+                var tours = await _tourService.GetAllTours();
+                AllTours = new ObservableCollection<Tours>(tours);
+                _log.Info("Refreshed all tours.");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("RefreshTours failed!");
+                throw new UiException("An exception was thrown while trying to refresh the tours:\n", ex);
+            }
         }
 
         public async Task SaveTourAsync()
         {
-            string errMessage = _validator.ValidateTourInput(NewTour);
-            if (errMessage != "")
+            try
             {
-                _log.Warn($"Validation failed for new tour: {errMessage}");
-                MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
+                string errMessage = _validator.ValidateTourInput(NewTour);
+                if (errMessage != "")
+                {
+                    _log.Warn($"Validation failed for new tour: {errMessage}");
+                    MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
 
-            var coords = await _apiHandler.GetCoordinates(NewTour.From, NewTour.To);
-            if (coords.Count != 4)
+
+                var coords = await _apiHandler.GetCoordinates(NewTour.From, NewTour.To);
+                if (coords.Count != 4)
+                {
+                    MessageBox.Show("Could not resolve locations.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    throw new UiException("Coud not resolve locations for the entered From and To points");
+                }
+
+                NewTour.FromLng = coords[0];
+                NewTour.FromLat = coords[1];
+                NewTour.ToLng = coords[2];
+                NewTour.ToLat = coords[3];
+
+                double approximateDistance = _apiHandler.Haversine(NewTour.FromLat, NewTour.FromLng, NewTour.ToLat, NewTour.ToLng);
+
+                if (approximateDistance > 6000)
+                {
+                    MessageBox.Show("Distance between Start and End cannot exceed 6000km!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _log.Warn("User tried to add tour that exceeds 6000km");
+                    return;
+                }
+
+                string profile = TransportHandler(NewTour.Transport);
+
+                var routeInfo = await _apiHandler.GetRouteDirections(
+                    coords[0], coords[1],
+                    coords[2], coords[3],
+                    profile);
+
+                NewTour.Distance = Math.Round(routeInfo.DistanceMeters / 1000.0, 2);
+                NewTour.Duration = TimeSpan.FromSeconds(
+                    (int)routeInfo.DurationSeconds
+                );
+                await _tourService.InsertTours(NewTour);
+
+                var tours = await _tourService.GetAllTours();
+                AllTours = new ObservableCollection<Tours>(tours);
+                _log.Info("Tour list refreshed after save.");
+
+                _mainViewModel.ShowTourListView();
+                ClearInputs();
+            }
+            catch (Exception ex)
             {
-                MessageBox.Show("Could not resolve locations.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                _log.Error("Exception in SaveTourAsync while resolving coordinates.", ex);
+                throw new UiException("Failed to save tour du to an error.", ex);
             }
-
-            NewTour.FromLng = coords[0];
-            NewTour.FromLat = coords[1];
-            NewTour.ToLng = coords[2];
-            NewTour.ToLat = coords[3];
-
-            double approximateDistance = _apiHandler.Haversine(NewTour.FromLat, NewTour.FromLng, NewTour.ToLat, NewTour.ToLng);
-
-            if(approximateDistance > 6000)
-            {
-                MessageBox.Show("Distance between Start and End cannot exceed 6000km!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                _log.Warn("User tried to add tour that exceeds 6000km");
-                return;
-            }
-
-            string profile = TransportHandler(NewTour.Transport);
-
-            var routeInfo = await _apiHandler.GetRouteDirections(
-                coords[0], coords[1],
-                coords[2], coords[3],
-                profile);
-
-            NewTour.Distance = Math.Round(routeInfo.DistanceMeters / 1000.0, 2);
-            NewTour.Duration = TimeSpan.FromSeconds(
-                (int)routeInfo.DurationSeconds
-            );
-            await _tourService.InsertTours(NewTour);
-
-            var tours = await _tourService.GetAllTours();
-            AllTours = new ObservableCollection<Tours>(tours);
-            _log.Info("Tour list refreshed after save.");
-
-            _mainViewModel.ShowTourListView();
-            ClearInputs();
         }
-
 
         public async Task DeleteTourAsync()
         {
-            if (SelectedTour != null)
+            try
             {
-                _log.Info($"Deleting tour: ID={SelectedTour.Id}, Name={SelectedTour.Name}");
-                await _tourService.DeleteTour(SelectedTour);
-            }
-            else
-            {
-                _log.Warn("DeleteTourAsync called, but SelectedTour was null.");
-                return;
-            }
+                if (SelectedTour != null)
+                {
+                    _log.Info($"Deleting tour: ID={SelectedTour.Id}, Name={SelectedTour.Name}");
+                    await _tourService.DeleteTour(SelectedTour);
+                }
+                else
+                {
+                    _log.Warn("DeleteTourAsync called, but SelectedTour was null.");
+                    return;
+                }
 
-            var tours = await _tourService.GetAllTours();
-            AllTours = new ObservableCollection<Tours>(tours);
-            _log.Info("Tour list refreshed after deletion.");
+                var tours = await _tourService.GetAllTours();
+                AllTours = new ObservableCollection<Tours>(tours);
+                _log.Info("Tour list refreshed after deletion.");
+            }
+            catch(Exception ex)
+            {
+                _log.Error("An exception occured while trying to delete a tour from the database");
+                throw new UiException("An exception occured while trying to delete a tour.", ex);
+            }
         }
 
 
         public async Task EditTourAsync()
         {
-            if (SelectedTour == null)
+            try
             {
-                _log.Warn("EditTourAsync called, but SelectedTour was null.");
-                return;
-            }
-
-            var tourFromDb = await _tourService.GetTourById(SelectedTour.Id);
-
-            if (tourFromDb != null)
-            {
-                _log.Info($"Editing tour: ID={tourFromDb.Id}, Name={tourFromDb.Name}");
-
-                tourFromDb.Name = EditTour.Name;
-                tourFromDb.From = EditTour.From;
-                tourFromDb.To = EditTour.To;
-                tourFromDb.Description = EditTour.Description;
-                tourFromDb.Transport = EditTour.Transport;
-                tourFromDb.Duration = EditTour.Duration;
-                tourFromDb.Distance = EditTour.Distance;
-
-                string errMessage = _validator.ValidateTourInput(tourFromDb);
-                if (errMessage == "")
+                if (SelectedTour == null)
                 {
-                    var coords = await _apiHandler.GetCoordinates(tourFromDb.From, tourFromDb.To);
-                    if (coords.Count != 4)
+                    _log.Warn("EditTourAsync called, but SelectedTour was null.");
+                    return;
+                }
+
+                var tourFromDb = await _tourService.GetTourById(SelectedTour.Id);
+
+                if (tourFromDb != null)
+                {
+                    _log.Info($"Editing tour: ID={tourFromDb.Id}, Name={tourFromDb.Name}");
+
+                    tourFromDb.Name = EditTour.Name;
+                    tourFromDb.From = EditTour.From;
+                    tourFromDb.To = EditTour.To;
+                    tourFromDb.Description = EditTour.Description;
+                    tourFromDb.Transport = EditTour.Transport;
+                    tourFromDb.Duration = EditTour.Duration;
+                    tourFromDb.Distance = EditTour.Distance;
+
+                    string errMessage = _validator.ValidateTourInput(tourFromDb);
+                    if (errMessage == "")
                     {
-                        MessageBox.Show("Could not resolve locations.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        var coords = await _apiHandler.GetCoordinates(tourFromDb.From, tourFromDb.To);
+                        if (coords.Count != 4)
+                        {
+                            MessageBox.Show("Could not resolve locations.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            return;
+                        }
+
+                        tourFromDb.FromLng = coords[0];
+                        tourFromDb.FromLat = coords[1];
+                        tourFromDb.ToLng = coords[2];
+                        tourFromDb.ToLat = coords[3];
+
+                        double approximateDistance = _apiHandler.Haversine(tourFromDb.FromLat, tourFromDb.FromLng, tourFromDb.ToLat, tourFromDb.ToLng);
+
+                        if (approximateDistance > 6000)
+                        {
+                            MessageBox.Show("Distance between Start and End cannot exceed 6000km!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                            _log.Warn("User tried to add tour that exceeds 6000km");
+                            var returnToNormal = await _tourService.GetAllTours();
+                            AllTours = new ObservableCollection<Tours>(returnToNormal);
+                            return;
+                        }
+
+                        string profile = TransportHandler(NewTour.Transport);
+
+                        var routeInfo = await _apiHandler.GetRouteDirections(
+                                        coords[0], coords[1],
+                                        coords[2], coords[3],
+                                        profile);
+
+                        tourFromDb.Distance = Math.Round(routeInfo.DistanceMeters / 1000.0, 2);
+                        tourFromDb.Duration = TimeSpan.FromSeconds(
+                            (int)routeInfo.DurationSeconds
+                        );
+
+                        await _tourService.UpdateTour(tourFromDb);
+                        _log.Info("Tour updated successfully.");
+                    }
+                    else
+                    {
+                        _log.Warn($"Validation failed during edit: {errMessage}");
+                        MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
-
-                    tourFromDb.FromLng = coords[0];
-                    tourFromDb.FromLat = coords[1];
-                    tourFromDb.ToLng = coords[2];
-                    tourFromDb.ToLat = coords[3];
-
-                    double approximateDistance = _apiHandler.Haversine(tourFromDb.FromLat, tourFromDb.FromLng, tourFromDb.ToLat, tourFromDb.ToLng);
-
-                    if (approximateDistance > 6000)
-                    {
-                        MessageBox.Show("Distance between Start and End cannot exceed 6000km!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        _log.Warn("User tried to add tour that exceeds 6000km");
-                        var returnToNormal = await _tourService.GetAllTours();
-                        AllTours = new ObservableCollection<Tours>(returnToNormal);
-                        return;
-                    }
-
-                    string profile = TransportHandler(NewTour.Transport);
-
-                    var routeInfo = await _apiHandler.GetRouteDirections(
-                                    coords[0], coords[1],
-                                    coords[2], coords[3],
-                                    profile);
-
-                    tourFromDb.Distance = Math.Round(routeInfo.DistanceMeters / 1000.0, 2);
-                    tourFromDb.Duration = TimeSpan.FromSeconds(
-                        (int)routeInfo.DurationSeconds
-                    );
-
-                    await _tourService.UpdateTour(tourFromDb);
-                    _log.Info("Tour updated successfully.");
                 }
                 else
                 {
-                    _log.Warn($"Validation failed during edit: {errMessage}");
-                    MessageBox.Show(errMessage, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    _log.Error($"EditTourAsync failed: Tour with ID={SelectedTour.Id} not found in DB.");
                     return;
                 }
+
+                var tours = await _tourService.GetAllTours();
+                AllTours = new ObservableCollection<Tours>(tours);
+                _log.Info("Tour list refreshed after edit.");
+
+                _ = UpdateMapAsync();
+
+                _mainViewModel.ShowTourListView();
+                ClearInputs();
             }
-            else
+            catch(Exception ex)
             {
-                _log.Error($"EditTourAsync failed: Tour with ID={SelectedTour.Id} not found in DB.");
-                return;
+                _log.Error("An exception occured while trying to edit a tour", ex);
+                throw new UiException("An exception occured while trying to edit a tour.", ex);
             }
-
-            var tours = await _tourService.GetAllTours();
-            AllTours = new ObservableCollection<Tours>(tours);
-            _log.Info("Tour list refreshed after edit.");
-
-            _ = UpdateMapAsync();
-
-            _mainViewModel.ShowTourListView();
-            ClearInputs();
         }
 
         public async Task RandomizeTour()
         {
-            string message = await _tourService.CreateRandomTour();
-            if (message != "")
+            try
             {
-                _log.Warn("Random tour generation failed.");
-                MessageBox.Show("Oops, something went wrong while generating a random tour", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
+                string message = await _tourService.CreateRandomTour();
+                if (message != "")
+                {
+                    _log.Warn("Random tour generation failed.");
+                    MessageBox.Show("Oops, something went wrong while generating a random tour", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                await UpdateMapAsync();
+
+                var tours = await _tourService.GetAllTours();
+                AllTours = new ObservableCollection<Tours>(tours);
+                _log.Info("Tour list refreshed after random tour generation.");
             }
-
-            await UpdateMapAsync();
-
-            var tours = await _tourService.GetAllTours();
-            AllTours = new ObservableCollection<Tours>(tours);
-            _log.Info("Tour list refreshed after random tour generation.");
+            catch(Exception ex)
+            {
+                _log.Error("An exception occured while trying to randomize a tour", ex);
+                throw new UiException("An exception occured while trying to randomize a tour", ex);
+            }
         }
 
         public async Task ExportTourAsync()

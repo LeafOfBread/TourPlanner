@@ -134,8 +134,8 @@ namespace TourPlanner.UI.ViewModels
             }
             catch (Exception ex)
             {
-                _log.Error("An exception was thrown while trying to update tourlog details: ", ex);
-                throw;
+                _log.Error("An exception was thrown while trying to update tourlog details.", ex);
+                throw new UiException("Failed to update the tour log details in the UI.", ex);
             }
         }
 
@@ -172,10 +172,10 @@ namespace TourPlanner.UI.ViewModels
                 _mainViewModel.ShowTourlogView();
                 ClearInputs();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _log.Error("An exception occured while trying to save a tourlog: ", ex);
-                throw;
+                _log.Error("An exception was thrown while trying to save a log.", ex);
+                throw new UiException("Failed to save the tour log in the UI.", ex);
             }
         }
 
@@ -192,10 +192,10 @@ namespace TourPlanner.UI.ViewModels
                 }
                 _log.Error("SelectedTourLog was null!");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _log.Error("An exception was thrown trying to delete a tour: ", ex);
-                throw;
+                _log.Error("An exception was thrown while trying to delete a tourlog.", ex);
+                throw new UiException("Failed to delete the tour log in the UI.", ex);
             }
         }
 
@@ -241,10 +241,10 @@ namespace TourPlanner.UI.ViewModels
                 }
                 _log.Error("Selected tourlog was null!");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _log.Error("An exception was thrown trying to edit a tourlog: ", ex);
-                throw;
+                _log.Error("An exception was thrown while trying to update tourlog details.", ex);
+                throw new UiException("Failed to update the tour log details in the database.", ex);
             }
         }
         public void ClearInputs()
@@ -261,7 +261,7 @@ namespace TourPlanner.UI.ViewModels
             catch(Exception ex)
             {
                 _log.Error("An exception occured while trying to clear input fields: ", ex);
-                throw;
+                throw new UiException("Failed to clear the input fields in the UI.", ex);
             }
         }
 

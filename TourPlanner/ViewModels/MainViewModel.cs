@@ -7,6 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using TourPlanner.BusinessLogic.Services;
@@ -48,18 +49,18 @@ namespace TourPlanner.UI.ViewModels
         }
 
 
-        private async Task LoadDataAsync(ITourService _tourService, TourLogService _tourlogService)
+        private async Task LoadDataAsync(ITourService tourService, TourLogService tourlogService)
         {
             try
             {
-                await LoadTourLogs(_tourlogService);
-                await LoadTours(_tourService);
+                await LoadTourLogs(tourlogService);
+                await LoadTours(tourService);
                 _log.Info("Successfully loaded available Tours and Tourlogs");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _log.Error("Error loading Tours and Tourlogs", ex);
-                throw;
+                throw new UiException("An error occurred while loading the data.", ex);
             }
         }
 
@@ -78,7 +79,7 @@ namespace TourPlanner.UI.ViewModels
             catch (Exception ex)
             {
                 _log.Error("Exception thrown during LoadTours:", ex);
-                throw;
+                throw new UiException("An error occurred while loading the tours.", ex);
             }
         }
 
@@ -95,8 +96,8 @@ namespace TourPlanner.UI.ViewModels
             }
             catch (Exception ex)
             {
-                _log.Error("Exception was thrown during LoadTourLogs: ", ex);
-                throw;
+                _log.Error("Exception thrown during LoadTourLogs:", ex);
+                throw new UiException("An error occurred while loading the tourlogs.", ex);
             }
         }
 
@@ -107,24 +108,24 @@ namespace TourPlanner.UI.ViewModels
                 TourViewModel.CurrentTourView = new TourListView();
                 _log.Info("Navigated to TourListView");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _log.Error("Tried to navigate to TourListView, but an exception was thrown: ", ex);
-                throw;
+                _log.Error("Failed to initialize TourListView.", ex);
+                throw new ViewInitializationException(nameof(TourListView), "Could not load the Tour List view.", ex);
             }
         }
         public void ShowAddTourView()
         {
             try
             {
-                    TourViewModel.NewTour = new Tours();
-                    TourViewModel.CurrentTourView = new AddTourView();
-                    _log.Info("Navigated to AddTourView.");
+                TourViewModel.NewTour = new Tours();
+                TourViewModel.CurrentTourView = new AddTourView();
+                _log.Info("Navigated to AddTourView.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _log.Error("Tried to navigate to ShowAddTourView, but an exception was thrown: ", ex);
-                throw;
+                _log.Error("Failed to initialize AddTourView.", ex);
+                throw new ViewInitializationException(nameof(AddTourView), "Could not load the Add Tour view.", ex);
             }
         }
 
@@ -137,8 +138,8 @@ namespace TourPlanner.UI.ViewModels
             }
             catch (Exception ex)
             {
-                _log.Error("Tried to navigate to ShowTourLogView, but an exception was thrown: ", ex);
-                throw;
+                _log.Error("Failed to initialize ShowTourlogView.", ex);
+                throw new ViewInitializationException(nameof(AddTourView), "Could not load the Add Tour view.", ex);
             }
         }
 
@@ -159,12 +160,12 @@ namespace TourPlanner.UI.ViewModels
                 else
                     _log.Error("Tried to navigate to ShowEditTourView, but the selected tour was null!");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _log.Error("Tried to navigate to ShowEditTourView, but an exception was thrown: ", ex);
-                throw;
+                _log.Error("Failed to initialize ShowEditTourView.", ex);
+                throw new ViewInitializationException(nameof(AddTourView), "Could not load the Add Tour view.", ex);
             }
-            
+
         }
 
         public void ShowAddTourLog()
@@ -180,10 +181,10 @@ namespace TourPlanner.UI.ViewModels
                 else
                     _log.Error("Tried to navigate to ShowAddTourLog, but the selected tour was null!");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _log.Error("Tried to navigate to ShowAddTourLog, but an exception was thrown: ", ex);
-                throw;
+                _log.Error("Failed to initialize ShowAddTourLog.", ex);
+                throw new ViewInitializationException(nameof(AddTourView), "Could not load the Add Tour view.", ex);
             }
         }
 
@@ -208,10 +209,10 @@ namespace TourPlanner.UI.ViewModels
                 }
                 _log.Error("Tried to navigate to ShowEditTourLog, but either the selected tour or tourlog was null!");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _log.Error("Tried to navigate to ShowEditTourLog, but an exception was thrown: ", ex);
-                throw;
+                _log.Error("Failed to initialize ShowEditTourLog.", ex);
+                throw new ViewInitializationException(nameof(AddTourView), "Could not load the Add Tour view.", ex);
             }
         }
 
@@ -225,10 +226,10 @@ namespace TourPlanner.UI.ViewModels
 
                 _log.Info("Navigated to home menu.");
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                _log.Error("Tried to navigate to home menu, but an exception was thrown: ", ex);
-                throw;
+                _log.Error("Failed to initialize ShowHomeMenu.", ex);
+                throw new ViewInitializationException(nameof(AddTourView), "Could not load the Add Tour view.", ex);
             }
         }
 
