@@ -19,6 +19,7 @@
                     <GridViewColumn Header="Distance (km)" DisplayMemberBinding="{Binding Distance}"/>
                     <GridViewColumn Header="Duration" DisplayMemberBinding="{Binding Duration}"/>
                     <GridViewColumn Header="Transport" DisplayMemberBinding="{Binding Transport}"/>
+                    <GridViewColumn Header="Child Friendliness" DisplayMemberBinding="{Binding IsChildFriendly}"/>
                 </GridView>
             </ListView.View>
         </ListView>

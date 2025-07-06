@@ -47,6 +47,8 @@ namespace TourPlanner.BusinessLogic.Services
                         col.Item().Text($"Transport: {_tour.Transport}");
                         col.Item().Text($"Distance: {_tour.Distance} km");
                         col.Item().Text($"Duration: {_tour.Duration.ToString(@"hh\:mm\:ss")}");
+                        col.Item().Text($"Popularity: {_tour.Popularity} logs");
+                        col.Item().Text($"Child Friendly: {(_tour.IsChildFriendly ? "Yes" : "No")}");
 
                         col.Item().Text("Tour Logs:").Bold();
 

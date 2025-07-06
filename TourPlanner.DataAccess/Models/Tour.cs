@@ -31,6 +31,26 @@ namespace TourPlannerClasses.Models
         public TransportType Transport { get; set; }
 
         public virtual ICollection<Tourlog> Tourlogs { get; set; } = new List<Tourlog>();
+        
+        [NotMapped]
+        public int Popularity => Tourlogs?.Count ?? 0;
+        [NotMapped]
+        public bool IsChildFriendly
+        {
+            get
+            {
+                if (Tourlogs == null || !Tourlogs.Any())
+                    return false;
+
+                var avgDifficulty = Tourlogs.Average(tl => (int)tl.Difficulty);
+                var avgDistance = Tourlogs.Average(tl => tl.TotalDistance);
+                var avgDuration = Tourlogs.Average(tl => tl.TotalTime.TotalHours);
+
+                return avgDifficulty <= (int)Difficulty.Medium
+                    && avgDistance <= 10
+                    && avgDuration <= 2;
+            }
+        }
 
         public Tours() { }
 

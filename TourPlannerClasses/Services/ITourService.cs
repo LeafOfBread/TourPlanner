@@ -54,7 +54,11 @@ namespace TourPlanner.BusinessLogic.Services
         {
             try
             {
-                return await _context.Tours.ToListAsync();
+                var tours = await _context.Tours.ToListAsync();
+                var sortedTours = tours
+                    .OrderByDescending(t => t.Popularity)
+                    .ToList();
+                return sortedTours;
             }
             catch (Exception ex)
             {
