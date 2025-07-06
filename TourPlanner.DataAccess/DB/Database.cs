@@ -88,7 +88,7 @@ namespace TourPlannerClasses.DB
             }
             catch(Exception ex)
             {
-                throw new DataAccessException(ex.Message);
+                throw new DataAccessException("Failed to get the connection string for the database:\n" + ex.Message);
             }
         }
 

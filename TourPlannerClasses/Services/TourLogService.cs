@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TourPlannerClasses.DB;
 using TourPlannerClasses.Models;
@@ -18,7 +17,6 @@ namespace TourPlanner.BusinessLogic.Services
         Task EditTourLog(Tourlog tourlogToEdit);
     }
 
-
     public class TourLogService : ITourLogService
     {
         private readonly TourDbContext _context;
@@ -30,7 +28,14 @@ namespace TourPlanner.BusinessLogic.Services
 
         public async Task<List<Tourlog>> GetTourlogsAsync()
         {
-            return _context.TourLogs.ToList();
+            try
+            {
+                return await _context.TourLogs.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new NotFoundException("Failed to retrieve tour logs. " + ex.Message);
+            }
         }
 
         public virtual async Task InsertTourLog(Tourlog newLog)
@@ -40,11 +45,11 @@ namespace TourPlanner.BusinessLogic.Services
                 newLog.TourLogId = 0;
                 newLog.Date = DateTime.SpecifyKind(newLog.Date, DateTimeKind.Utc);
                 _context.TourLogs.Add(newLog);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while inserting new Tourlog: {ex.Message}");
+                throw new InsertionException("Error while inserting new Tourlog: " + ex.Message);
             }
         }
 
@@ -53,11 +58,11 @@ namespace TourPlanner.BusinessLogic.Services
             try
             {
                 _context.TourLogs.Remove(tourlogToRemove);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occured while trying to remove tourlog: {ex.Message}");
+                throw new InsertionException("Error occurred while trying to remove Tourlog: " + ex.Message);
             }
         }
 
@@ -65,35 +70,48 @@ namespace TourPlanner.BusinessLogic.Services
         {
             try
             {
-                var foundTourlog = _context.TourLogs.Find(id);
+                var foundTourlog = await _context.TourLogs.FindAsync(id);
 
-                if (foundTourlog != null)
+                if (foundTourlog == null)
+                {
+                    throw new SingleNotFoundException(nameof(Tourlog), $"Tourlog with ID {id} was not found.");
+                }
+
                 return foundTourlog;
+            }
+            catch (SingleNotFoundException)
+            {
+                throw; // rethrow to caller
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error while trying to find Tourlog via Id: {ex.Message}");
+                throw new NotFoundException($"Error while trying to find Tourlog via Id {id}: {ex.Message}");
             }
-            return null;
         }
 
         public async Task EditTourLog(Tourlog tourlogToEdit)
         {
             try
             {
-                var existingTourlog = _context.TourLogs.Find(tourlogToEdit.TourLogId);
-                    
-                if (existingTourlog != null)
-                {
-                    _context.Entry(existingTourlog).CurrentValues.SetValues(tourlogToEdit);
-                    _context.Entry(existingTourlog).State = EntityState.Modified;
+                var existingTourlog = await _context.TourLogs.FindAsync(tourlogToEdit.TourLogId);
 
-                    int changes = _context.SaveChanges();
+                if (existingTourlog == null)
+                {
+                    throw new SingleNotFoundException(nameof(Tourlog), $"Tourlog with ID {tourlogToEdit.TourLogId} was not found.");
                 }
+
+                _context.Entry(existingTourlog).CurrentValues.SetValues(tourlogToEdit);
+                _context.Entry(existingTourlog).State = EntityState.Modified;
+
+                int changes = await _context.SaveChangesAsync();
+            }
+            catch (SingleNotFoundException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error occured while updating tourlog: {ex.Message}");
+                throw new InsertionException($"Error occurred while updating Tourlog: {ex.Message}");
             }
         }
     }
